@@ -1,4 +1,8 @@
 <!---
+<<<<<<< HEAD
+=======
+
+>>>>>>> template/main
 This file is used to generate your project datasheet. Please fill in the information below and delete any unused
 sections.
 
@@ -6,6 +10,7 @@ You can also include images in this folder and reference them in the markdown. E
 512 kb in size, and the combined size of all images must be less than 1 MB.
 -->
 
+<<<<<<< HEAD
 ## 🧠 AdEx Spiking Neuron Core
 
 This project is a digital hardware implementation of the Adaptive Exponential (AdEx) Integrate-and-Fire neuron model. It's designed to run on an ASIC, simulating the behavior of a biological neuron, including its membrane potential and adaptation mechanisms. The core is highly configurable, allowing it to model various neural firing patterns like regular spiking, bursting, and fast spiking.
@@ -144,3 +149,12 @@ The test procedure is as follows:
 ## External hardware
 
 N/A. This project is a self-contained digital core and requires no external components.
+=======
+## How it works
+
+Just a test
+
+## How to test
+
+Just a test
+>>>>>>> template/main
