@@ -1,10 +1,18 @@
+<<<<<<< HEAD
 ARG VARIANT=ubuntu-22.04
+=======
+ARG VARIANT=ubuntu-24.04
+>>>>>>> template/main
 FROM mcr.microsoft.com/vscode/devcontainers/base:${VARIANT}
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PDK_ROOT=/home/vscode/ttsetup/pdk
 ENV PDK=ihp-sg13g2
+<<<<<<< HEAD
 ARG TT_SUPPORT_TOOLS_BRANCH=ttihp25b
+=======
+ARG TT_SUPPORT_TOOLS_BRANCH=main
+>>>>>>> template/main
 
 RUN apt update
 RUN apt install -y iverilog gtkwave python3 python3-pip python3-venv python3-tk python-is-python3 libcairo2 verilator libpng-dev libqhull-dev
@@ -16,6 +24,7 @@ RUN git clone -b ${TT_SUPPORT_TOOLS_BRANCH} https://github.com/TinyTapeout/tt-su
 COPY test/requirements.txt /ttsetup/test_requirements.txt
 COPY .devcontainer/copy_tt_support_tools.sh /ttsetup
 
+<<<<<<< HEAD
 RUN pip3 install -r /ttsetup/test_requirements.txt -r /ttsetup/tt-support-tools/requirements.txt
 
 # Clone the IHP PDK
@@ -30,3 +39,16 @@ RUN umask 022 && \
 # Install openlane
 ENV OPENLANE_IMAGE_OVERRIDE=ghcr.io/tinytapeout/openlane2:ihp-v3.0.0.dev17
 RUN pip install https://github.com/TinyTapeout/openlane2/releases/download/ihp-v3.0.0.dev17/openlane-3.0.0.dev17-py3-none-any.whl
+=======
+RUN python -m venv /ttsetup/venv
+RUN /ttsetup/venv/bin/pip install -r /ttsetup/test_requirements.txt -r /ttsetup/tt-support-tools/requirements.txt
+
+# Install verible (for formatting)
+RUN umask 022 && \
+    curl -L https://github.com/chipsalliance/verible/releases/download/v0.0-4023-gc1271a00/verible-v0.0-4023-gc1271a00-linux-static-x86_64.tar.gz | \
+    tar zxf - -C /usr/local --strip-components=1 && \
+    chmod 755 /usr/local/bin
+
+# Install LibreLane
+RUN /ttsetup/venv/bin/pip install librelane==3.0.0.dev44
+>>>>>>> template/main
