@@ -1,0 +1,16 @@
+** sch_path: /foss/designs/adex_neuron/chenxi_working/ttihp26a-adex-neuron-ncs/xschem/DPI.sch
+.subckt DPI I_in VDD V_mem V_lk GND nwell psub
+*.PININFO V_mem:O V_lk:I I_in:I VDD:B GND:B nwell:B psub:B
+Mdifl GND V_lk I_in nwell sg13_hv_pmos w=2u l=2u ng=2 m=8
+Mdifr V_mem V_mem I_in nwell sg13_hv_pmos w=2u l=2u ng=2 m=8
+Mtau V_mem V_lk GND psub sg13_hv_nmos w=4u l=4u ng=2 m=4
+R1 VDD nwell ntap1 A=7.56e-12 P=5.1e-05
+R2 VDD nwell ntap1 A=2.7e-12 P=1.86e-05
+R3 VDD nwell ntap1 A=2.7e-12 P=1.86e-05
+R4 GND psub ptap1 A=2.046e-11 P=0.0001364
+Mdum1 VDD VDD VDD nwell sg13_hv_pmos w=5u l=2u ng=10 m=2
+Mdum2 I_in VDD VDD nwell sg13_hv_pmos w=1u l=2u ng=1 m=8
+Mdum3 GND GND GND psub sg13_hv_nmos w=2u l=4u ng=4 m=2
+Mdum4 GND GND GND psub sg13_hv_nmos w=0.5u l=3u ng=1 m=4
+Mdum5 GND GND GND psub sg13_hv_nmos w=2u l=3u ng=1 m=4
+.ends

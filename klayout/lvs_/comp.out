@@ -1,0 +1,5 @@
+
+Cells have no pins;  pin matching not needed.
+Device classes chip_top.cir and chip_top.spice are equivalent.
+
+Final result: Verify:  cell chip_top.spice has no elements and/or nodes.  Not checked.

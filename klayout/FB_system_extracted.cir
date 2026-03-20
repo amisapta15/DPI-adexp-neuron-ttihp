@@ -1,0 +1,31 @@
+* Extracted by KLayout with SG13G2 LVS runset on : 14/03/2026 00:47
+
+.SUBCKT FB_system GND out V_mem VDD
+M$1 GND GND GND \$1 sg13_hv_nmos L=2u W=14u AS=3.26p AD=2.96p PS=24.52u
++ PD=21.92u
+M$8 GND V_mem \$5 \$1 sg13_hv_nmos L=2u W=2u AS=0.38p AD=0.38p PS=2.76u PD=2.76u
+M$9 \$5 V_mem \$6 \$1 sg13_hv_nmos L=2u W=2u AS=0.38p AD=0.38p PS=2.76u PD=2.76u
+M$10 \$6 V_mem \$7 \$1 sg13_hv_nmos L=2u W=2u AS=0.38p AD=0.38p PS=2.76u
++ PD=2.76u
+M$11 \$7 V_mem out \$1 sg13_hv_nmos L=2u W=2u AS=0.38p AD=0.38p PS=2.76u
++ PD=2.76u
+M$12 out GND GND \$1 sg13_hv_nmos L=2u W=2u AS=0.38p AD=0.68p PS=2.76u PD=5.36u
+M$25 VDD VDD VDD \$23 sg13_hv_pmos L=2u W=15u AS=3.3p AD=3.45p PS=24.6u PD=25.9u
+M$31 VDD VDD out \$23 sg13_hv_pmos L=2u W=2u AS=0.53p AD=0.53p PS=4.06u PD=4.06u
+M$32 out V_mem \$30 \$23 sg13_hv_pmos L=2u W=4u AS=0.76p AD=0.76p PS=5.52u
++ PD=5.52u
+M$38 VDD \$30 \$30 \$23 sg13_hv_pmos L=2u W=4u AS=0.76p AD=0.76p PS=5.52u
++ PD=5.52u
+M$43 VDD VDD V_mem \$23 sg13_hv_pmos L=2u W=1u AS=0.34p AD=0.19p PS=2.68u
++ PD=1.38u
+M$44 V_mem \$30 \$34 \$23 sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p PS=1.38u
++ PD=1.38u
+M$45 \$34 \$30 \$35 \$23 sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p PS=1.38u
++ PD=1.38u
+M$46 \$35 \$30 \$36 \$23 sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p PS=1.38u
++ PD=1.38u
+M$47 \$36 \$30 VDD \$23 sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p PS=1.38u
++ PD=1.38u
+R$55 \$23 VDD ntap1 A=15.54p P=103.6u
+R$56 \$1 GND ptap1 A=14.16p P=94.4u
+.ENDS FB_system

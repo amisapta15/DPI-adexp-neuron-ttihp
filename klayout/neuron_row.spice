@@ -1,0 +1,108 @@
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/neuron_row.sch
+.subckt neuron_row VDD GND bias_VPI in_VI mem_VNTO cm_VI tau_VNI req_VABO ref_VNI refcap_VTO ack_VABI
+*.PININFO in_VI:I cm_VI:I bias_VPI:I VDD:B GND:B mem_VNTO:O req_VABO:O refcap_VTO:O tau_VNI:I ref_VNI:I ack_VABI:I
+Xneuron VDD I_in tau_VNI mem_VNTO req_VABO ack_VABI ref_VNI GND refcap_VTO neuron_noahp
+xv2i VDD bias_VPI cm_VI in_VI I_in GND V2I
+.ends
+
+* expanding   symbol:  neuron_noahp.sym # of pins=9
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/neuron_noahp.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/neuron_noahp.sch
+.subckt neuron_noahp VDD I_in V_lk Vmem REQ ACK V_ref GND Vrefcap
+*.PININFO V_ref:I GND:B VDD:B REQ:O ACK:I I_in:I V_lk:I Vmem:O Vrefcap:O psub:B nwell:B
+Xinv1 VDD net1 Vfb GND inv
+Xinv2 VDD REQ net1 GND inv
+Xdpi1 I_in VDD Vmem V_lk GND DPI
+Xfb VDD Vfb Vmem GND FB_system
+Xref ACK Vmem REQ Vrefcap GND V_ref VDD REF_system
+Cmem GND Vmem cap_cmim w=44.4e-6 l=15e-6
+Cref GND Vrefcap cap_cmim w=22.1e-6 l=15e-6
+.ends
+
+
+* expanding   symbol:  V2I.sym # of pins=6
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/V2I.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/V2I.sch
+.subckt V2I VDD Vbias inn_cm inp_cm out GND
+*.PININFO inn_cm:I inp_cm:I out:O Vbias:I VDD:B GND:B
+MIRA Vm Vm GND GND sg13_hv_nmos w=4u l=1u ng=2 m=4
+MBIAS Vb Vbias VDD VDD sg13_hv_pmos w=4u l=1u ng=2 m=4
+MIRB out Vm GND GND sg13_hv_nmos w=4u l=1u ng=2 m=4
+MdiffINN out inn_cm Vb VDD sg13_hv_pmos w=4u l=1u ng=2 m=4
+MDBIAS VDD VDD VDD VDD sg13_hv_pmos w=4u l=1u ng=2 m=2
+MIDC out Vbias VDD VDD sg13_hv_pmos w=3u l=1u ng=2 m=4
+MDIDC VDD VDD VDD VDD sg13_hv_pmos w=3u l=1u ng=2 m=2
+MdiffINP Vm inp_cm Vb VDD sg13_hv_pmos w=4u l=1u ng=2 m=4
+MDdiffINP Vb Vb Vb VDD sg13_hv_pmos w=4u l=1u ng=2 m=2
+MDdiffINN Vb Vb Vb VDD sg13_hv_pmos w=4u l=1u ng=2 m=2
+MDNMIRA GND GND GND GND sg13_hv_nmos w=4u l=1u ng=2 m=2
+MDNMIRB GND GND GND GND sg13_hv_nmos w=4u l=1u ng=2 m=2
+.ends
+
+
+* expanding   symbol:  inv.sym # of pins=4
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/inv.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/inv.sch
+.subckt inv VDD out in GND
+*.PININFO in:I GND:B out:O VDD:B
+M1 out in VDD VDD sg13_hv_pmos w=4u l=0.5u ng=1
+M2 out in GND GND sg13_hv_nmos w=4u l=0.5u ng=1
+.ends
+
+
+* expanding   symbol:  DPI.sym # of pins=5
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/DPI.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/DPI.sch
+.subckt DPI I_in VDD V_mem V_lk GND
+*.PININFO V_mem:O V_lk:I I_in:I VDD:B GND:B
+Mdifl GND V_lk I_in VDD sg13_hv_pmos w=2u l=2u ng=2 m=8
+Mdifr V_mem V_mem I_in VDD sg13_hv_pmos w=2u l=2u ng=2 m=8
+Mtau V_mem V_lk GND GND sg13_hv_nmos w=4u l=4u ng=2 m=4
+Mdum1 VDD VDD VDD VDD sg13_hv_pmos w=5u l=2u ng=10 m=2
+Mdum2 I_in VDD VDD VDD sg13_hv_pmos w=1u l=2u ng=1 m=8
+Mdum3 GND GND GND GND sg13_hv_nmos w=2u l=4u ng=4 m=2
+Mdum4 GND GND GND GND sg13_hv_nmos w=0.5u l=3u ng=1 m=4
+Mdum5 GND GND GND GND sg13_hv_nmos w=2u l=3u ng=1 m=4
+.ends
+
+
+* expanding   symbol:  FB_system.sym # of pins=4
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/FB_system.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/FB_system.sch
+.subckt FB_system VDD out V_mem GND
+*.PININFO out:O V_mem:B VDD:B GND:B
+Mmirr Vmir Vmir VDD VDD sg13_hv_pmos w=4u l=2u ng=4
+Mmirl4 V_mem Vmir net1 VDD sg13_hv_pmos w=1u l=2u ng=1
+Mthr out V_mem Vmir VDD sg13_hv_pmos w=4u l=2u ng=4
+Mmem1 out V_mem net2 GND sg13_hv_nmos w=1u l=2u ng=1 m=2
+Mmirl3 net1 Vmir net3 VDD sg13_hv_pmos w=1u l=2u ng=1
+Mmirl2 net3 Vmir net4 VDD sg13_hv_pmos w=1u l=2u ng=1
+Mmirl1 net4 Vmir VDD VDD sg13_hv_pmos w=1u l=2u ng=1
+Mmem2 net2 V_mem net5 GND sg13_hv_nmos w=1u l=2u ng=1 m=2
+Mmem3 net5 V_mem net6 GND sg13_hv_nmos w=1u l=2u ng=1 m=2
+Mmem4 net6 V_mem GND GND sg13_hv_nmos w=1u l=2u ng=1 m=2
+Mdum1 GND GND GND GND sg13_hv_nmos w=6u l=2u ng=6 m=2
+Mdum2 GND GND GND GND sg13_hv_nmos w=1u l=2u ng=1 m=2
+Mdum3 out GND GND GND sg13_hv_nmos w=1u l=2u ng=1 m=2
+Mdum4 VDD VDD VDD VDD sg13_hv_pmos w=6u l=2u ng=6 m=2
+Mdum5 VDD VDD VDD VDD sg13_hv_pmos w=1u l=2u ng=1 m=3
+Mdum6 out VDD VDD VDD sg13_hv_pmos w=1u l=2u ng=1 m=2
+Mdum7 V_mem VDD VDD VDD sg13_hv_pmos w=1u l=2u ng=1
+.ends
+
+
+* expanding   symbol:  REF_system.sym # of pins=7
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/REF_system.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/REF_system.sch
+.subckt REF_system ACK V_mem REQ Vrefcap GND V_ref VDD
+*.PININFO VDD:B GND:B V_ref:I REQ:I ACK:I V_mem:I Vrefcap:O
+M10 Vrefcap REQ net2 VDD sg13_hv_pmos w=1u l=0.5u ng=1
+M11 Vrefcap REQ net1 GND sg13_hv_nmos w=1u l=0.5u ng=1
+M12 net2 ACK VDD VDD sg13_hv_pmos w=1u l=0.5u ng=1
+M13 V_mem Vrefcap GND GND sg13_hv_nmos w=1u l=0.5u ng=1
+M14 net1 V_ref GND GND sg13_hv_nmos w=4u l=4u ng=2 m=4
+Mdum3 GND GND GND GND sg13_hv_nmos w=2u l=4u ng=4 m=2
+Mdum4 GND GND GND GND sg13_hv_nmos w=0.5u l=3u ng=1 m=4
+Mdum5 GND GND GND GND sg13_hv_nmos w=2u l=3u ng=1 m=4
+.ends
+

@@ -1,0 +1,409 @@
+timestamp 1602627157
+version 8.3
+tech ihp-sg13g2
+style ngspice()
+scale 1000 1 0.5
+resistclasses 3000000 67000 110 88 88 88 88 18 11 7000 260000 1360000
+parameters sg13_hv_nmos l=l w=w a1=as p1=ps a2=ad p2=pd
+parameters sg13_hv_pmos l=l w=w a1=as p1=ps a2=ad p2=pd
+parameters cap_rfcmim w=w l=l
+parameters cap_cmim w=w l=l
+port "v_ref" 17 14453 3960 14593 4100 m4
+port "Vrefcap" 10 19541 2848 19741 3048 m3
+port "ACK" 8 19541 3324 19741 3524 m3
+port "out" 4 14313 1930 14453 2070 m3
+port "REQ" 9 14453 2321 14653 2521 m3
+port "in" 11 13903 1930 14043 2070 m3
+port "out" 4 13763 1930 13903 2070 m3
+port "out" 4 13213 1798 13353 1938 m3
+port "in" 11 13353 1930 13493 2070 m3
+port "V_mem" 14 9905 1608 10045 1748 m3
+port "V_mem" 14 4417 1608 4557 1748 m3
+port "v_mem" 7 14453 1608 14593 1748 m3
+port "V_lk" 18 4849 3960 4989 4100 m4
+port "inn_cm" 16 543 3960 683 4100 m4
+port "inp_cm" 6 0 2484 148 2624 m3
+port "I_in" 13 4417 2866 4557 3006 m3
+port "out" 4 4277 2866 4417 3006 m3
+port "Vbias" 15 220 3960 360 4100 m4
+port "VDD" 3 13903 3900 14453 4100 m3
+port "VDD" 3 9905 3900 10105 4100 m3
+port "VDD" 3 4417 3900 4617 4100 m3
+port "VDD" 3 13353 3900 13903 4100 m3
+port "VDD" 3 14453 3900 14653 4100 m3
+port "VDD" 3 4221 3900 4417 4100 m3
+port "well" 2 13978 3900 14378 4100 nw
+port "well" 2 4541 2075 4601 3875 nw
+port "well" 2 9521 2075 9581 3875 nw
+port "well" 2 4541 3970 9581 4030 nw
+port "well" 2 13428 3900 13828 4100 nw
+port "VSS" 12 13903 -100 14453 100 m3
+port "GND" 5 9905 -100 10105 100 m3
+port "GND" 5 4417 -100 4617 100 m3
+port "VSS" 12 13353 -100 13903 100 m3
+port "GND" 5 14453 -100 14653 100 m3
+port "GND" 5 4218 -100 4417 100 m3
+node "a_12061_536#" 2 62.8387 12061 536 hvndif 0 0 0 0 16800 968 22176 1140 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "a_11585_536#" 2 62.8325 11585 536 hvndif 0 0 0 0 16800 968 22176 1140 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "a_11109_536#" 2 143.982 11109 536 hvndif 0 0 0 0 16800 968 22176 1140 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "v_ref" 15 13462.1 14453 3960 m4 0 0 0 0 164544 6952 68320 2096 620760 9148 588000 8680 0 0 0 0 0 0 0 0 0 0 0 0
+node "a_16183_427#" 14 1234.01 16183 427 hvndif 0 0 0 0 75000 4020 147564 6996 219422 3868 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "a_17062_3063#" 1 0.606317 17062 3063 hvpdif 0 0 0 0 6400 464 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "Vrefcap" 11 8111.59 19541 2848 m3 0 0 0 0 99288 4492 98660 3218 1074680 11500 68320 2096 15098400 15800 0 0 0 0 0 0 0 0 0 0
+node "ACK" 2 238.381 19541 3324 m3 0 0 0 0 5880 364 9870 422 520600 5606 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "out" 18 1980.87 14313 1930 m3 0 0 0 0 132328 7666 72940 3472 1165760 12186 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+equiv "out" "REQ"
+node "a_12061_3217#" 1 1.46201 12061 3217 hvpdif 0 0 0 0 6400 464 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "a_11585_3217#" 1 1.46976 11585 3217 hvpdif 0 0 0 0 6400 464 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "a_11109_3217#" 1 1.46976 11109 3217 hvpdif 0 0 0 0 6400 464 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "a_10709_2853#" 7 5.3998e-12 10709 2853 p 0 0 0 0 135456 6024 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "in" 12 1863.57 13903 1930 m3 0 0 0 0 138368 7534 34160 1048 49560 988 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+equiv "in" "out"
+node "out" 15 1686.32 13213 1798 m3 0 0 0 0 59360 2948 159376 7552 693700 10470 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+equiv "out" "in"
+equiv "out" "Vfb"
+node "V_mem" 68 24790 4417 1608 m3 0 0 0 0 598294 30518 1466092 26880 2631440 38152 136640 4192 29548800 24720 0 0 0 0 0 0 0 0 0 0
+equiv "V_mem" "v_mem"
+node "V_lk" 36 15785.9 4849 3960 m4 0 0 0 0 357688 17956 558040 9652 1138200 16820 588000 8680 0 0 0 0 0 0 0 0 0 0 0 0
+node "Vm" 37 8713.63 1014 160 p 0 0 0 0 235070 14106 240200 12320 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "inn_cm" 11 698.296 543 3960 m4 0 0 0 0 69230 3656 170351 3566 322962 4894 588122 8682 0 0 0 0 0 0 0 0 0 0 0 0
+node "inp_cm" 9 92.7159 0 2484 m3 0 0 0 0 67990 3610 257841 4822 437342 6528 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "I_in" 78 2784.02 4417 2866 m3 0 0 0 0 657785 34982 954747 30924 1104158 16338 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+equiv "I_in" "out"
+node "Vb" 60 180.83 399 1664 hvpdif 0 0 0 0 544468 31226 185391 9824 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "Vbias" 10 910.155 220 3960 m4 0 0 0 0 86520 4396 71400 1300 276360 4228 588122 8682 0 0 0 0 0 0 0 0 0 0 0 0
+node "VDD" 278 5165.22 4221 3900 m3 0 0 0 0 4385530 182398 1151110 56074 4225400 44122 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+equiv "VDD" "well"
+substrate "VSS" 0 0 13353 -100 m3 0 0 0 0 5589511 224784 1999284 99238 4444640 47254 204960 6288 1023168 14016 43149456 55080 0 0 0 0 0 0 0 0
+equiv "VSS" "GND"
+equiv "VSS" "sub!"
+cap "a_11109_3217#" "a_10709_2853#" 104.767
+cap "Vbias" "I_in" 1328.81
+cap "Vbias" "V_mem" 8.31593
+cap "I_in" "V_mem" 5076.45
+cap "a_11585_536#" "V_mem" 398.534
+cap "out" "V_mem" 5675.23
+cap "Vbias" "VDD" 6223.69
+cap "Vrefcap" "V_mem" 1253.02
+cap "VDD" "I_in" 6461.61
+cap "Vrefcap" "out" 10.8043
+cap "VDD" "V_mem" 18503.8
+cap "V_lk" "I_in" 3895.73
+cap "V_lk" "V_mem" 10340.1
+cap "out" "VDD" 2808.77
+cap "Vrefcap" "VDD" 3187.74
+cap "a_11109_3217#" "a_11585_3217#" 14.2475
+cap "V_lk" "VDD" 9441.09
+cap "a_17062_3063#" "out" 30.915
+cap "ACK" "V_mem" 0.0303864
+cap "Vbias" "inn_cm" 1355.6
+cap "Vbias" "Vm" 12.1286
+cap "inn_cm" "I_in" 1739.32
+cap "Vm" "I_in" 3265.85
+cap "Vrefcap" "ACK" 891.235
+cap "Vm" "V_mem" 7.22884
+cap "inn_cm" "V_mem" 2.25164
+cap "VDD" "ACK" 1215.4
+cap "inn_cm" "VDD" 3169.44
+cap "Vm" "VDD" 624.329
+cap "Vb" "inp_cm" 1728.22
+cap "v_ref" "a_16183_427#" 1545.57
+cap "v_ref" "out" 303.761
+cap "a_11585_3217#" "a_10709_2853#" 104.767
+cap "a_16183_427#" "out" 243.847
+cap "a_11109_3217#" "V_mem" 24.0144
+cap "v_ref" "in" 49.0558
+cap "out" "in" 542.008
+cap "inn_cm" "Vm" 696.285
+cap "a_11109_3217#" "VDD" 42.5496
+cap "a_12061_3217#" "a_10709_2853#" 104.767
+cap "Vrefcap" "a_17062_3063#" 60.2251
+cap "VDD" "a_17062_3063#" 80.4195
+cap "Vbias" "inp_cm" 398.057
+cap "inp_cm" "I_in" 1022.2
+cap "a_10709_2853#" "V_mem" 1105.34
+cap "inp_cm" "V_mem" 6.09083
+cap "out" "a_10709_2853#" 135.141
+cap "a_12061_3217#" "a_11585_3217#" 14.2475
+cap "VDD" "a_10709_2853#" 3973.94
+cap "VDD" "inp_cm" 2938.52
+cap "v_ref" "V_mem" 604.151
+cap "a_12061_536#" "V_mem" 398.534
+cap "a_17062_3063#" "ACK" 18.6538
+cap "out" "v_ref" 22.1325
+cap "a_11585_536#" "a_12061_536#" 81.1431
+cap "a_11109_536#" "V_mem" 398.742
+cap "out" "a_12061_536#" 81.1431
+cap "Vrefcap" "v_ref" 1842.38
+cap "a_11109_536#" "a_11585_536#" 81.1431
+cap "a_16183_427#" "V_mem" 912.556
+cap "out" "V_mem" 365.588
+cap "Vbias" "Vb" 2970.31
+cap "v_ref" "VDD" 454.727
+cap "out" "out" 3.03594
+cap "Vb" "I_in" 3707.95
+cap "Vb" "V_mem" 22.4611
+cap "Vrefcap" "a_16183_427#" 831.553
+cap "Vrefcap" "out" 2810.19
+cap "VDD" "a_16183_427#" 28.4345
+cap "VDD" "out" 1982.84
+cap "in" "V_mem" 205.587
+cap "a_11585_3217#" "V_mem" 9.07668
+cap "out" "in" 496.514
+cap "VDD" "Vb" 5502.65
+cap "inn_cm" "inp_cm" 2435.69
+cap "V_lk" "Vb" 11.7449
+cap "Vm" "inp_cm" 1400.96
+cap "Vrefcap" "in" 31.6761
+cap "VDD" "in" 1700.7
+cap "VDD" "a_11585_3217#" 45.1968
+cap "ACK" "a_16183_427#" 0.410116
+cap "ACK" "out" 121.758
+cap "a_12061_3217#" "V_mem" 8.7405
+cap "inn_cm" "Vb" 1253.67
+cap "Vm" "Vb" 687.716
+cap "a_12061_3217#" "VDD" 58.2987
+device csubckt cap_cmim 15201 500 15202 501 w=4420 l=3000 "None" "VSS" 14520 0 "Vrefcap" 0 15098400,17752
+device csubckt cap_cmim 4537 500 4538 501 w=8880 l=3000 "None" "VSS" 23592 0 "V_mem" 0 29548800,28624
+device msubckt sg13_hv_nmos 18887 173 18888 174 l=600 w=100 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 18011 173 18012 174 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 17135 173 17136 174 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 16259 173 16260 174 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 15383 173 15384 174 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 14707 173 14708 174 l=600 w=100 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 200 6800,336
+device msubckt sg13_hv_nmos 18887 427 18888 428 l=600 w=400 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 800 15200,476
+device msubckt sg13_hv_nmos 18011 427 18012 428 l=800 w=400 "VSS" "v_ref" 1600 0 "a_16183_427#" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 17135 427 17136 428 l=800 w=400 "VSS" "v_ref" 1600 0 "VSS" 400 15200,476 "a_16183_427#" 400 15200,476
+device msubckt sg13_hv_nmos 16259 427 16260 428 l=800 w=400 "VSS" "v_ref" 1600 0 "a_16183_427#" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 15383 427 15384 428 l=800 w=400 "VSS" "v_ref" 1600 0 "VSS" 400 15200,476 "a_16183_427#" 400 15200,476
+device msubckt sg13_hv_nmos 14707 427 14708 428 l=600 w=400 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 800 27200,936
+device msubckt sg13_hv_nmos 18887 955 18888 956 l=600 w=400 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 800 15200,476
+device msubckt sg13_hv_nmos 18011 955 18012 956 l=800 w=400 "VSS" "v_ref" 1600 0 "a_16183_427#" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 17135 955 17136 956 l=800 w=400 "VSS" "v_ref" 1600 0 "VSS" 400 15200,476 "a_16183_427#" 400 15200,476
+device msubckt sg13_hv_nmos 16259 955 16260 956 l=800 w=400 "VSS" "v_ref" 1600 0 "a_16183_427#" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 15383 955 15384 956 l=800 w=400 "VSS" "v_ref" 1600 0 "VSS" 400 15200,476 "a_16183_427#" 400 15200,476
+device msubckt sg13_hv_nmos 14707 955 14708 956 l=600 w=400 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 800 27200,936
+device msubckt sg13_hv_nmos 14117 311 14118 312 l=100 w=800 "VSS" "in" 200 0 "VSS" 800 54400,1736 "out" 800 54400,1736
+device msubckt sg13_hv_nmos 13567 311 13568 312 l=100 w=800 "VSS" "out" 200 0 "VSS" 800 54400,1736 "in" 800 54400,1736
+device msubckt sg13_hv_nmos 12613 208 12614 209 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 7600,276
+device msubckt sg13_hv_nmos 12137 208 12138 209 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 7600,276
+device msubckt sg13_hv_nmos 11661 208 11662 209 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 7600,276
+device msubckt sg13_hv_nmos 11185 208 11186 209 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 7600,276
+device msubckt sg13_hv_nmos 10709 208 10710 209 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 7600,276
+device msubckt sg13_hv_nmos 10233 208 10234 209 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 13600,536
+device msubckt sg13_hv_nmos 12613 536 12614 537 l=400 w=200 "VSS" "VSS" 800 0 "out" 200 7600,276 "VSS" 200 13600,536
+device msubckt sg13_hv_nmos 12137 536 12138 537 l=400 w=200 "VSS" "V_mem" 800 0 "a_12061_536#" 200 7600,276 "out" 200 7600,276
+device msubckt sg13_hv_nmos 11661 536 11662 537 l=400 w=200 "VSS" "V_mem" 800 0 "a_11585_536#" 200 7600,276 "a_12061_536#" 200 7600,276
+device msubckt sg13_hv_nmos 11185 536 11186 537 l=400 w=200 "VSS" "V_mem" 800 0 "a_11109_536#" 200 7600,276 "a_11585_536#" 200 7600,276
+device msubckt sg13_hv_nmos 10709 536 10710 537 l=400 w=200 "VSS" "V_mem" 800 0 "VSS" 200 7600,276 "a_11109_536#" 200 7600,276
+device msubckt sg13_hv_nmos 10233 536 10234 537 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 13600,536
+device msubckt sg13_hv_nmos 12613 864 12614 865 l=400 w=200 "VSS" "VSS" 800 0 "out" 200 7600,276 "VSS" 200 13600,536
+device msubckt sg13_hv_nmos 12137 864 12138 865 l=400 w=200 "VSS" "V_mem" 800 0 "a_12061_536#" 200 7600,276 "out" 200 7600,276
+device msubckt sg13_hv_nmos 11661 864 11662 865 l=400 w=200 "VSS" "V_mem" 800 0 "a_11585_536#" 200 7600,276 "a_12061_536#" 200 7600,276
+device msubckt sg13_hv_nmos 11185 864 11186 865 l=400 w=200 "VSS" "V_mem" 800 0 "a_11109_536#" 200 7600,276 "a_11585_536#" 200 7600,276
+device msubckt sg13_hv_nmos 10709 864 10710 865 l=400 w=200 "VSS" "V_mem" 800 0 "VSS" 200 7600,276 "a_11109_536#" 200 7600,276
+device msubckt sg13_hv_nmos 10233 864 10234 865 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 13600,536
+device msubckt sg13_hv_nmos 18887 1483 18888 1484 l=600 w=100 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 18011 1483 18012 1484 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 17135 1483 17136 1484 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 16259 1483 16260 1484 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 15383 1483 15384 1484 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 14707 1483 14708 1484 l=600 w=100 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 200 6800,336
+device msubckt sg13_hv_nmos 16261 1971 16262 1972 l=100 w=200 "VSS" "out" 200 0 "a_16183_427#" 200 13600,536 "Vrefcap" 200 13600,536
+device msubckt sg13_hv_nmos 12613 1192 12614 1193 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 7600,276
+device msubckt sg13_hv_nmos 12137 1192 12138 1193 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 7600,276
+device msubckt sg13_hv_nmos 11661 1192 11662 1193 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 7600,276
+device msubckt sg13_hv_nmos 11185 1192 11186 1193 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 7600,276
+device msubckt sg13_hv_nmos 10709 1192 10710 1193 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 7600,276
+device msubckt sg13_hv_nmos 10233 1192 10234 1193 l=400 w=200 "VSS" "VSS" 800 0 "VSS" 0 0 "VSS" 400 13600,536
+device msubckt sg13_hv_nmos 8851 173 8852 174 l=600 w=100 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 7975 173 7976 174 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 7099 173 7100 174 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 6223 173 6224 174 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 5347 173 5348 174 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 4671 173 4672 174 l=600 w=100 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 200 6800,336
+device msubckt sg13_hv_nmos 8851 427 8852 428 l=600 w=400 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 800 15200,476
+device msubckt sg13_hv_nmos 7975 427 7976 428 l=800 w=400 "VSS" "V_lk" 1600 0 "V_mem" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 7099 427 7100 428 l=800 w=400 "VSS" "V_lk" 1600 0 "VSS" 400 15200,476 "V_mem" 400 15200,476
+device msubckt sg13_hv_nmos 6223 427 6224 428 l=800 w=400 "VSS" "V_lk" 1600 0 "V_mem" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 5347 427 5348 428 l=800 w=400 "VSS" "V_lk" 1600 0 "VSS" 400 15200,476 "V_mem" 400 15200,476
+device msubckt sg13_hv_nmos 4671 427 4672 428 l=600 w=400 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 800 27200,936
+device msubckt sg13_hv_nmos 8851 955 8852 956 l=600 w=400 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 800 15200,476
+device msubckt sg13_hv_nmos 7975 955 7976 956 l=800 w=400 "VSS" "V_lk" 1600 0 "V_mem" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 7099 955 7100 956 l=800 w=400 "VSS" "V_lk" 1600 0 "VSS" 400 15200,476 "V_mem" 400 15200,476
+device msubckt sg13_hv_nmos 6223 955 6224 956 l=800 w=400 "VSS" "V_lk" 1600 0 "V_mem" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 5347 955 5348 956 l=800 w=400 "VSS" "V_lk" 1600 0 "VSS" 400 15200,476 "V_mem" 400 15200,476
+device msubckt sg13_hv_nmos 4671 955 4672 956 l=600 w=400 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 800 27200,936
+device msubckt sg13_hv_nmos 3498 196 3499 197 l=200 w=400 "VSS" "VSS" 400 0 "VSS" 0 0 "VSS" 800 15200,476
+device msubckt sg13_hv_nmos 3222 196 3223 197 l=200 w=400 "VSS" "VSS" 400 0 "VSS" 0 0 "VSS" 800 15200,476
+device msubckt sg13_hv_nmos 2946 196 2947 197 l=200 w=400 "VSS" "Vm" 400 0 "Vm" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 2670 196 2671 197 l=200 w=400 "VSS" "Vm" 400 0 "VSS" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_nmos 2394 196 2395 197 l=200 w=400 "VSS" "Vm" 400 0 "I_in" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 2118 196 2119 197 l=200 w=400 "VSS" "Vm" 400 0 "VSS" 400 15200,476 "I_in" 400 15200,476
+device msubckt sg13_hv_nmos 1842 196 1843 197 l=200 w=400 "VSS" "Vm" 400 0 "Vm" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 1566 196 1567 197 l=200 w=400 "VSS" "Vm" 400 0 "VSS" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_nmos 1290 196 1291 197 l=200 w=400 "VSS" "Vm" 400 0 "I_in" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 1014 196 1015 197 l=200 w=400 "VSS" "Vm" 400 0 "VSS" 400 15200,476 "I_in" 400 15200,476
+device msubckt sg13_hv_nmos 738 196 739 197 l=200 w=400 "VSS" "VSS" 400 0 "VSS" 0 0 "VSS" 800 15200,476
+device msubckt sg13_hv_nmos 462 196 463 197 l=200 w=400 "VSS" "VSS" 400 0 "VSS" 0 0 "VSS" 800 27200,936
+device msubckt sg13_hv_nmos 3498 652 3499 653 l=200 w=400 "VSS" "VSS" 400 0 "VSS" 0 0 "VSS" 800 15200,476
+device msubckt sg13_hv_nmos 3222 652 3223 653 l=200 w=400 "VSS" "VSS" 400 0 "VSS" 0 0 "VSS" 800 15200,476
+device msubckt sg13_hv_nmos 2946 652 2947 653 l=200 w=400 "VSS" "Vm" 400 0 "I_in" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 2670 652 2671 653 l=200 w=400 "VSS" "Vm" 400 0 "VSS" 400 15200,476 "I_in" 400 15200,476
+device msubckt sg13_hv_nmos 2394 652 2395 653 l=200 w=400 "VSS" "Vm" 400 0 "Vm" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 2118 652 2119 653 l=200 w=400 "VSS" "Vm" 400 0 "VSS" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_nmos 1842 652 1843 653 l=200 w=400 "VSS" "Vm" 400 0 "I_in" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 1566 652 1567 653 l=200 w=400 "VSS" "Vm" 400 0 "VSS" 400 15200,476 "I_in" 400 15200,476
+device msubckt sg13_hv_nmos 1290 652 1291 653 l=200 w=400 "VSS" "Vm" 400 0 "Vm" 400 15200,476 "VSS" 400 15200,476
+device msubckt sg13_hv_nmos 1014 652 1015 653 l=200 w=400 "VSS" "Vm" 400 0 "VSS" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_nmos 738 652 739 653 l=200 w=400 "VSS" "VSS" 400 0 "VSS" 0 0 "VSS" 800 15200,476
+device msubckt sg13_hv_nmos 462 652 463 653 l=200 w=400 "VSS" "VSS" 400 0 "VSS" 0 0 "VSS" 800 27200,936
+device msubckt sg13_hv_nmos 8851 1483 8852 1484 l=600 w=100 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 7975 1483 7976 1484 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 7099 1483 7100 1484 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 6223 1483 6224 1484 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 5347 1483 5348 1484 l=800 w=100 "VSS" "VSS" 1600 0 "VSS" 0 0 "VSS" 200 3800,176
+device msubckt sg13_hv_nmos 4671 1483 4672 1484 l=600 w=100 "VSS" "VSS" 1200 0 "VSS" 0 0 "VSS" 200 6800,336
+device msubckt sg13_hv_nmos 15384 1992 15385 1993 l=100 w=200 "VSS" "Vrefcap" 200 0 "VSS" 200 13600,536 "V_mem" 200 13600,536
+device msubckt sg13_hv_pmos 12613 2207 12614 2208 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 12137 2207 12138 2208 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 11661 2207 11662 2208 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 11185 2207 11186 2208 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 10709 2207 10710 2208 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 10233 2207 10234 2208 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 13600,536
+device msubckt sg13_hv_pmos 12613 2561 12614 2562 l=400 w=200 "VDD" "VDD" 800 0 "out" 200 7600,276 "VDD" 200 13600,536
+device msubckt sg13_hv_pmos 12137 2561 12138 2562 l=400 w=200 "VDD" "V_mem" 800 0 "a_10709_2853#" 200 7600,276 "out" 200 7600,276
+device msubckt sg13_hv_pmos 11661 2561 11662 2562 l=400 w=200 "VDD" "V_mem" 800 0 "out" 200 7600,276 "a_10709_2853#" 200 7600,276
+device msubckt sg13_hv_pmos 11185 2561 11186 2562 l=400 w=200 "VDD" "V_mem" 800 0 "a_10709_2853#" 200 7600,276 "out" 200 7600,276
+device msubckt sg13_hv_pmos 10709 2561 10710 2562 l=400 w=200 "VDD" "V_mem" 800 0 "out" 200 7600,276 "a_10709_2853#" 200 7600,276
+device msubckt sg13_hv_pmos 10233 2561 10234 2562 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 200 13600,536 "out" 200 7600,276
+device msubckt sg13_hv_pmos 17138 3063 17139 3064 l=100 w=200 "VDD" "ACK" 200 0 "a_17062_3063#" 200 7600,276 "VDD" 200 13600,536
+device msubckt sg13_hv_pmos 16962 3063 16963 3064 l=100 w=200 "VDD" "out" 200 0 "Vrefcap" 200 13600,536 "a_17062_3063#" 200 7600,276
+device msubckt sg13_hv_pmos 14117 2874 14118 2875 l=100 w=800 "VDD" "in" 200 0 "VDD" 800 54400,1736 "out" 800 54400,1736
+device msubckt sg13_hv_pmos 13567 2874 13568 2875 l=100 w=800 "VDD" "out" 200 0 "VDD" 800 54400,1736 "in" 800 54400,1736
+device msubckt sg13_hv_pmos 12613 2889 12614 2890 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 12137 2889 12138 2890 l=400 w=200 "VDD" "a_10709_2853#" 800 0 "a_10709_2853#" 200 7600,276 "VDD" 200 7600,276
+device msubckt sg13_hv_pmos 11661 2889 11662 2890 l=400 w=200 "VDD" "a_10709_2853#" 800 0 "VDD" 200 7600,276 "a_10709_2853#" 200 7600,276
+device msubckt sg13_hv_pmos 11185 2889 11186 2890 l=400 w=200 "VDD" "a_10709_2853#" 800 0 "a_10709_2853#" 200 7600,276 "VDD" 200 7600,276
+device msubckt sg13_hv_pmos 10709 2889 10710 2890 l=400 w=200 "VDD" "a_10709_2853#" 800 0 "VDD" 200 7600,276 "a_10709_2853#" 200 7600,276
+device msubckt sg13_hv_pmos 10233 2889 10234 2890 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 13600,536
+device msubckt sg13_hv_pmos 12613 3217 12614 3218 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 12137 3217 12138 3218 l=400 w=200 "VDD" "a_10709_2853#" 800 0 "a_12061_3217#" 200 7600,276 "VDD" 200 7600,276
+device msubckt sg13_hv_pmos 11661 3217 11662 3218 l=400 w=200 "VDD" "a_10709_2853#" 800 0 "a_11585_3217#" 200 7600,276 "a_12061_3217#" 200 7600,276
+device msubckt sg13_hv_pmos 11185 3217 11186 3218 l=400 w=200 "VDD" "a_10709_2853#" 800 0 "a_11109_3217#" 200 7600,276 "a_11585_3217#" 200 7600,276
+device msubckt sg13_hv_pmos 10709 3217 10710 3218 l=400 w=200 "VDD" "a_10709_2853#" 800 0 "V_mem" 200 7600,276 "a_11109_3217#" 200 7600,276
+device msubckt sg13_hv_pmos 10233 3217 10234 3218 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 200 13600,536 "V_mem" 200 7600,276
+device msubckt sg13_hv_pmos 12613 3545 12614 3546 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 12137 3545 12138 3546 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 11661 3545 11662 3546 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 11185 3545 11186 3546 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 10709 3545 10710 3546 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 7600,276
+device msubckt sg13_hv_pmos 10233 3545 10234 3546 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 400 13600,536
+device msubckt sg13_hv_pmos 9003 2051 9004 2052 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 8527 2051 8528 2052 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 8051 2051 8052 2052 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 7575 2051 7576 2052 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 7099 2051 7100 2052 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 6623 2051 6624 2052 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 6147 2051 6148 2052 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 5671 2051 5672 2052 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 5195 2051 5196 2052 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 4719 2051 4720 2052 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 6800,336
+device msubckt sg13_hv_pmos 9003 2305 9004 2306 l=400 w=200 "VDD" "VDD" 800 0 "I_in" 200 7600,276 "VDD" 200 13600,536
+device msubckt sg13_hv_pmos 8527 2305 8528 2306 l=400 w=200 "VDD" "V_lk" 800 0 "VSS" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 8051 2305 8052 2306 l=400 w=200 "VDD" "V_lk" 800 0 "I_in" 200 7600,276 "VSS" 200 7600,276
+device msubckt sg13_hv_pmos 7575 2305 7576 2306 l=400 w=200 "VDD" "V_mem" 800 0 "V_mem" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 7099 2305 7100 2306 l=400 w=200 "VDD" "V_mem" 800 0 "I_in" 200 7600,276 "V_mem" 200 7600,276
+device msubckt sg13_hv_pmos 6623 2305 6624 2306 l=400 w=200 "VDD" "V_mem" 800 0 "V_mem" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 6147 2305 6148 2306 l=400 w=200 "VDD" "V_mem" 800 0 "I_in" 200 7600,276 "V_mem" 200 7600,276
+device msubckt sg13_hv_pmos 5671 2305 5672 2306 l=400 w=200 "VDD" "V_lk" 800 0 "VSS" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 5195 2305 5196 2306 l=400 w=200 "VDD" "V_lk" 800 0 "I_in" 200 7600,276 "VSS" 200 7600,276
+device msubckt sg13_hv_pmos 4719 2305 4720 2306 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 200 13600,536 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 9003 2659 9004 2660 l=400 w=200 "VDD" "VDD" 800 0 "I_in" 200 7600,276 "VDD" 200 13600,536
+device msubckt sg13_hv_pmos 8527 2659 8528 2660 l=400 w=200 "VDD" "V_mem" 800 0 "V_mem" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 8051 2659 8052 2660 l=400 w=200 "VDD" "V_mem" 800 0 "I_in" 200 7600,276 "V_mem" 200 7600,276
+device msubckt sg13_hv_pmos 7575 2659 7576 2660 l=400 w=200 "VDD" "V_lk" 800 0 "VSS" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 7099 2659 7100 2660 l=400 w=200 "VDD" "V_lk" 800 0 "I_in" 200 7600,276 "VSS" 200 7600,276
+device msubckt sg13_hv_pmos 6623 2659 6624 2660 l=400 w=200 "VDD" "V_lk" 800 0 "VSS" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 6147 2659 6148 2660 l=400 w=200 "VDD" "V_lk" 800 0 "I_in" 200 7600,276 "VSS" 200 7600,276
+device msubckt sg13_hv_pmos 5671 2659 5672 2660 l=400 w=200 "VDD" "V_mem" 800 0 "V_mem" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 5195 2659 5196 2660 l=400 w=200 "VDD" "V_mem" 800 0 "I_in" 200 7600,276 "V_mem" 200 7600,276
+device msubckt sg13_hv_pmos 4719 2659 4720 2660 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 200 13600,536 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 9003 3013 9004 3014 l=400 w=200 "VDD" "VDD" 800 0 "I_in" 200 7600,276 "VDD" 200 13600,536
+device msubckt sg13_hv_pmos 8527 3013 8528 3014 l=400 w=200 "VDD" "V_mem" 800 0 "V_mem" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 8051 3013 8052 3014 l=400 w=200 "VDD" "V_mem" 800 0 "I_in" 200 7600,276 "V_mem" 200 7600,276
+device msubckt sg13_hv_pmos 7575 3013 7576 3014 l=400 w=200 "VDD" "V_lk" 800 0 "VSS" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 7099 3013 7100 3014 l=400 w=200 "VDD" "V_lk" 800 0 "I_in" 200 7600,276 "VSS" 200 7600,276
+device msubckt sg13_hv_pmos 6623 3013 6624 3014 l=400 w=200 "VDD" "V_lk" 800 0 "VSS" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 6147 3013 6148 3014 l=400 w=200 "VDD" "V_lk" 800 0 "I_in" 200 7600,276 "VSS" 200 7600,276
+device msubckt sg13_hv_pmos 5671 3013 5672 3014 l=400 w=200 "VDD" "V_mem" 800 0 "V_mem" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 5195 3013 5196 3014 l=400 w=200 "VDD" "V_mem" 800 0 "I_in" 200 7600,276 "V_mem" 200 7600,276
+device msubckt sg13_hv_pmos 4719 3013 4720 3014 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 200 13600,536 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 9003 3367 9004 3368 l=400 w=200 "VDD" "VDD" 800 0 "I_in" 200 7600,276 "VDD" 200 13600,536
+device msubckt sg13_hv_pmos 8527 3367 8528 3368 l=400 w=200 "VDD" "V_lk" 800 0 "VSS" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 8051 3367 8052 3368 l=400 w=200 "VDD" "V_lk" 800 0 "I_in" 200 7600,276 "VSS" 200 7600,276
+device msubckt sg13_hv_pmos 7575 3367 7576 3368 l=400 w=200 "VDD" "V_mem" 800 0 "V_mem" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 7099 3367 7100 3368 l=400 w=200 "VDD" "V_mem" 800 0 "I_in" 200 7600,276 "V_mem" 200 7600,276
+device msubckt sg13_hv_pmos 6623 3367 6624 3368 l=400 w=200 "VDD" "V_mem" 800 0 "V_mem" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 6147 3367 6148 3368 l=400 w=200 "VDD" "V_mem" 800 0 "I_in" 200 7600,276 "V_mem" 200 7600,276
+device msubckt sg13_hv_pmos 5671 3367 5672 3368 l=400 w=200 "VDD" "V_lk" 800 0 "VSS" 200 7600,276 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 5195 3367 5196 3368 l=400 w=200 "VDD" "V_lk" 800 0 "I_in" 200 7600,276 "VSS" 200 7600,276
+device msubckt sg13_hv_pmos 4719 3367 4720 3368 l=400 w=200 "VDD" "VDD" 800 0 "VDD" 200 13600,536 "I_in" 200 7600,276
+device msubckt sg13_hv_pmos 9003 3721 9004 3722 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 8527 3721 8528 3722 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 8051 3721 8052 3722 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 7575 3721 7576 3722 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 7099 3721 7100 3722 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 6623 3721 6624 3722 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 6147 3721 6148 3722 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 5671 3721 5672 3722 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 5195 3721 5196 3722 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 3800,176
+device msubckt sg13_hv_pmos 4719 3721 4720 3722 l=400 w=100 "VDD" "VDD" 800 0 "VDD" 0 0 "VDD" 200 6800,336
+device msubckt sg13_hv_pmos 3503 1664 3504 1665 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 3227 1664 3228 1665 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 2951 1664 2952 1665 l=200 w=400 "VDD" "inp_cm" 400 0 "Vm" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2675 1664 2676 1665 l=200 w=400 "VDD" "inp_cm" 400 0 "Vb" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_pmos 2399 1664 2400 1665 l=200 w=400 "VDD" "inn_cm" 400 0 "I_in" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2123 1664 2124 1665 l=200 w=400 "VDD" "inn_cm" 400 0 "Vb" 400 15200,476 "I_in" 400 15200,476
+device msubckt sg13_hv_pmos 1847 1664 1848 1665 l=200 w=400 "VDD" "inp_cm" 400 0 "Vm" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1571 1664 1572 1665 l=200 w=400 "VDD" "inp_cm" 400 0 "Vb" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_pmos 1295 1664 1296 1665 l=200 w=400 "VDD" "inn_cm" 400 0 "I_in" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1019 1664 1020 1665 l=200 w=400 "VDD" "inn_cm" 400 0 "Vb" 400 15200,476 "I_in" 400 15200,476
+device msubckt sg13_hv_pmos 743 1664 744 1665 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 467 1664 468 1665 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 27200,936
+device msubckt sg13_hv_pmos 3503 2286 3504 2287 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 3227 2286 3228 2287 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 2951 2286 2952 2287 l=200 w=400 "VDD" "inn_cm" 400 0 "I_in" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2675 2286 2676 2287 l=200 w=400 "VDD" "inn_cm" 400 0 "Vb" 400 15200,476 "I_in" 400 15200,476
+device msubckt sg13_hv_pmos 2399 2286 2400 2287 l=200 w=400 "VDD" "inp_cm" 400 0 "Vm" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2123 2286 2124 2287 l=200 w=400 "VDD" "inp_cm" 400 0 "Vb" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_pmos 1847 2286 1848 2287 l=200 w=400 "VDD" "inn_cm" 400 0 "I_in" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1571 2286 1572 2287 l=200 w=400 "VDD" "inn_cm" 400 0 "Vb" 400 15200,476 "I_in" 400 15200,476
+device msubckt sg13_hv_pmos 1295 2286 1296 2287 l=200 w=400 "VDD" "inp_cm" 400 0 "Vm" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1019 2286 1020 2287 l=200 w=400 "VDD" "inp_cm" 400 0 "Vb" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_pmos 743 2286 744 2287 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 467 2286 468 2287 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 27200,936
+device msubckt sg13_hv_pmos 3596 2979 3597 2980 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3320 2979 3321 2980 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3044 2979 3045 2980 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2768 2979 2769 2980 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2492 2979 2493 2980 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2216 2979 2217 2980 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 27200,936 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1828 2980 1829 2981 l=200 w=300 "VDD" "Vbias" 400 0 "I_in" 300 11400,376 "VDD" 300 20400,736
+device msubckt sg13_hv_pmos 1552 2980 1553 2981 l=200 w=300 "VDD" "Vbias" 400 0 "VDD" 300 11400,376 "I_in" 300 11400,376
+device msubckt sg13_hv_pmos 1276 2980 1277 2981 l=200 w=300 "VDD" "Vbias" 400 0 "I_in" 300 11400,376 "VDD" 300 11400,376
+device msubckt sg13_hv_pmos 1000 2980 1001 2981 l=200 w=300 "VDD" "Vbias" 400 0 "VDD" 300 11400,376 "I_in" 300 11400,376
+device msubckt sg13_hv_pmos 724 2980 725 2981 l=200 w=300 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 600 11400,376
+device msubckt sg13_hv_pmos 448 2980 449 2981 l=200 w=300 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 600 20400,736
+device msubckt sg13_hv_pmos 3596 3430 3597 3431 l=200 w=300 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 600 11400,376
+device msubckt sg13_hv_pmos 3320 3430 3321 3431 l=200 w=300 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 600 11400,376
+device msubckt sg13_hv_pmos 3044 3430 3045 3431 l=200 w=300 "VDD" "Vbias" 400 0 "I_in" 300 11400,376 "VDD" 300 11400,376
+device msubckt sg13_hv_pmos 2768 3430 2769 3431 l=200 w=300 "VDD" "Vbias" 400 0 "VDD" 300 11400,376 "I_in" 300 11400,376
+device msubckt sg13_hv_pmos 2492 3430 2493 3431 l=200 w=300 "VDD" "Vbias" 400 0 "I_in" 300 11400,376 "VDD" 300 11400,376
+device msubckt sg13_hv_pmos 2216 3430 2217 3431 l=200 w=300 "VDD" "Vbias" 400 0 "VDD" 300 20400,736 "I_in" 300 11400,376
+device msubckt sg13_hv_pmos 1828 3330 1829 3331 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 27200,936
+device msubckt sg13_hv_pmos 1552 3330 1553 3331 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1276 3330 1277 3331 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1000 3330 1001 3331 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 724 3330 725 3331 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 448 3330 449 3331 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 27200,936

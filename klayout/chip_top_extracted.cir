@@ -1,0 +1,263 @@
+* Extracted by KLayout with SG13G2 LVS runset on : 20/03/2026 17:44
+
+.SUBCKT chip_top VGND ua[5] ua[4] ua[3] ua[2] ua[1] ua[0] VDPWR uio_in[1]
++ uio_in[0] ui_in[1] ui_in[0] uo_out[0] ui_in[2] ui_in[3] uo_out[3] uo_out[2]
++ uo_out[1] ui_in[4] uo_out[7] ui_in[7] ui_in[6] uo_out[6] uo_out[5] uo_out[4]
++ ui_in[5] uio_out[6] uio_out[7] uio_out[5] uio_in[2] uio_in[3] uio_in[4]
++ uio_oe[4] uio_oe[3] uio_oe[0] uio_out[3] uio_out[4] uio_out[0] uio_out[2]
++ uio_oe[5] uio_oe[1] uio_oe[7] uio_oe[6] uio_oe[2] uio_out[1]
+X$172 VGND ua[2] uo_out[0] \$24 ua[1] VDPWR \$25 ua[3] ua[5] ua[4] ui_in[0]
++ neuron_row
+X$173 VGND ua[2] uo_out[1] \$I492 ua[1] VDPWR \$I520 ua[3] ua[5] ua[4] ui_in[1]
++ neuron_row
+X$174 VGND ua[2] uo_out[2] \$I483 ua[1] VDPWR \$I511 ua[3] ua[5] ua[4] ui_in[2]
++ neuron_row
+X$175 VGND ua[2] uo_out[3] \$I491 ua[1] VDPWR \$I519 ua[3] ua[5] ua[4] ui_in[3]
++ neuron_row
+X$176 VGND ua[2] uo_out[4] \$I484 ua[1] VDPWR \$I512 ua[3] ua[5] ua[4] ui_in[4]
++ neuron_row
+X$177 VGND ua[2] uo_out[5] \$I490 ua[1] VDPWR \$I518 ua[3] ua[5] ua[4] ui_in[5]
++ neuron_row
+X$178 VGND ua[2] uo_out[6] \$I485 ua[1] VDPWR \$I513 ua[3] ua[5] ua[4] ui_in[6]
++ neuron_row
+X$179 VGND ua[2] uo_out[7] \$I489 ua[1] VDPWR \$I517 ua[3] ua[5] ua[4] ui_in[7]
++ neuron_row
+X$180 VGND ua[2] uio_out[5] \$I486 ua[1] VDPWR \$I514 ua[3] ua[5] ua[4]
++ uio_in[2] neuron_row
+X$181 VGND ua[2] uio_out[6] \$I488 ua[1] VDPWR \$I516 ua[3] ua[5] ua[4]
++ uio_in[3] neuron_row
+X$182 VGND ua[2] uio_out[7] \$I487 ua[1] VDPWR \$I515 ua[3] ua[5] ua[4]
++ uio_in[4] neuron_row
+X$215 VGND \$11 \$24 ua[4] VDPWR analog_buffer
+X$216 VGND \$20 \$25 ua[4] VDPWR analog_buffer
+M$1 ua[0] uio_in[0] \$11 VGND sg13_lv_nmos L=0.15u W=8u AS=2.24p AD=2.24p
++ PS=13.48u PD=13.48u
+M$9 VGND VGND VGND VGND sg13_lv_nmos L=0.15u W=8u AS=3.92p AD=3.92p PS=23.84u
++ PD=23.84u
+M$10 ua[0] uio_in[1] \$20 VGND sg13_lv_nmos L=0.15u W=8u AS=2.24p AD=2.24p
++ PS=13.48u PD=13.48u
+M$21 VGND uio_in[1] \$I594 VGND sg13_lv_nmos L=0.15u W=1u AS=0.49p AD=0.49p
++ PS=2.98u PD=2.98u
+M$26 VGND uio_in[0] \$I595 VGND sg13_lv_nmos L=0.15u W=1u AS=0.49p AD=0.49p
++ PS=2.98u PD=2.98u
+M$27 VDPWR VDPWR VDPWR VDPWR sg13_lv_pmos L=0.15u W=8u AS=3.92p AD=3.92p
++ PS=23.84u PD=23.84u
+M$28 ua[0] \$I595 \$11 VDPWR sg13_lv_pmos L=0.15u W=8u AS=2.24p AD=2.24p
++ PS=13.48u PD=13.48u
+M$36 VDPWR uio_in[1] \$I594 VDPWR sg13_lv_pmos L=0.15u W=1u AS=0.49p AD=0.49p
++ PS=2.98u PD=2.98u
+M$37 ua[0] \$I594 \$20 VDPWR sg13_lv_pmos L=0.15u W=8u AS=2.24p AD=2.24p
++ PS=13.48u PD=13.48u
+M$49 VDPWR uio_in[0] \$I595 VDPWR sg13_lv_pmos L=0.15u W=1u AS=0.49p AD=0.49p
++ PS=2.98u PD=2.98u
+M$53 VGND \$I598 \$I597 VGND sg13_lv_nmos L=0.13u W=0.385u AS=0.305425p
++ AD=0.1309p PS=2.07u PD=1.45u
+M$54 VGND \$I596 uio_oe[4] VGND sg13_lv_nmos L=0.13u W=0.88u AS=0.305425p
++ AD=0.2992p PS=2.07u PD=2.44u
+M$55 VDPWR \$I598 \$I598 VDPWR sg13_lv_pmos L=0.13u W=0.3u AS=0.326925p
++ AD=0.102p PS=2.255u PD=1.28u
+M$56 VDPWR \$I597 \$I596 VDPWR sg13_lv_pmos L=0.13u W=1.045u AS=0.326925p
++ AD=0.3553p PS=2.255u PD=2.77u
+M$57 VGND \$I601 \$I600 VGND sg13_lv_nmos L=0.13u W=0.385u AS=0.305425p
++ AD=0.1309p PS=2.07u PD=1.45u
+M$58 VGND \$I599 uio_oe[3] VGND sg13_lv_nmos L=0.13u W=0.88u AS=0.305425p
++ AD=0.2992p PS=2.07u PD=2.44u
+M$59 VDPWR \$I601 \$I601 VDPWR sg13_lv_pmos L=0.13u W=0.3u AS=0.326925p
++ AD=0.102p PS=2.255u PD=1.28u
+M$60 VDPWR \$I600 \$I599 VDPWR sg13_lv_pmos L=0.13u W=1.045u AS=0.326925p
++ AD=0.3553p PS=2.255u PD=2.77u
+M$61 VGND \$I604 \$I603 VGND sg13_lv_nmos L=0.13u W=0.385u AS=0.305425p
++ AD=0.1309p PS=2.07u PD=1.45u
+M$62 VGND \$I602 uio_oe[2] VGND sg13_lv_nmos L=0.13u W=0.88u AS=0.305425p
++ AD=0.2992p PS=2.07u PD=2.44u
+M$63 VDPWR \$I604 \$I604 VDPWR sg13_lv_pmos L=0.13u W=0.3u AS=0.326925p
++ AD=0.102p PS=2.255u PD=1.28u
+M$64 VDPWR \$I603 \$I602 VDPWR sg13_lv_pmos L=0.13u W=1.045u AS=0.326925p
++ AD=0.3553p PS=2.255u PD=2.77u
+M$65 VGND \$I607 \$I606 VGND sg13_lv_nmos L=0.13u W=0.385u AS=0.305425p
++ AD=0.1309p PS=2.07u PD=1.45u
+M$66 VGND \$I605 uio_oe[1] VGND sg13_lv_nmos L=0.13u W=0.88u AS=0.305425p
++ AD=0.2992p PS=2.07u PD=2.44u
+M$67 VDPWR \$I607 \$I607 VDPWR sg13_lv_pmos L=0.13u W=0.3u AS=0.326925p
++ AD=0.102p PS=2.255u PD=1.28u
+M$68 VDPWR \$I606 \$I605 VDPWR sg13_lv_pmos L=0.13u W=1.045u AS=0.326925p
++ AD=0.3553p PS=2.255u PD=2.77u
+M$69 VGND \$I610 \$I609 VGND sg13_lv_nmos L=0.13u W=0.385u AS=0.305425p
++ AD=0.1309p PS=2.07u PD=1.45u
+M$70 VGND \$I608 uio_oe[0] VGND sg13_lv_nmos L=0.13u W=0.88u AS=0.305425p
++ AD=0.2992p PS=2.07u PD=2.44u
+M$71 VDPWR \$I610 \$I610 VDPWR sg13_lv_pmos L=0.13u W=0.3u AS=0.326925p
++ AD=0.102p PS=2.255u PD=1.28u
+M$72 VDPWR \$I609 \$I608 VDPWR sg13_lv_pmos L=0.13u W=1.045u AS=0.326925p
++ AD=0.3553p PS=2.255u PD=2.77u
+M$73 VGND \$I613 \$I612 VGND sg13_lv_nmos L=0.13u W=0.385u AS=0.305425p
++ AD=0.1309p PS=2.07u PD=1.45u
+M$74 VGND \$I611 uio_out[4] VGND sg13_lv_nmos L=0.13u W=0.88u AS=0.305425p
++ AD=0.2992p PS=2.07u PD=2.44u
+M$75 VDPWR \$I613 \$I613 VDPWR sg13_lv_pmos L=0.13u W=0.3u AS=0.326925p
++ AD=0.102p PS=2.255u PD=1.28u
+M$76 VDPWR \$I612 \$I611 VDPWR sg13_lv_pmos L=0.13u W=1.045u AS=0.326925p
++ AD=0.3553p PS=2.255u PD=2.77u
+M$77 VGND \$I616 \$I615 VGND sg13_lv_nmos L=0.13u W=0.385u AS=0.305425p
++ AD=0.1309p PS=2.07u PD=1.45u
+M$78 VGND \$I614 uio_out[3] VGND sg13_lv_nmos L=0.13u W=0.88u AS=0.305425p
++ AD=0.2992p PS=2.07u PD=2.44u
+M$79 VDPWR \$I616 \$I616 VDPWR sg13_lv_pmos L=0.13u W=0.3u AS=0.326925p
++ AD=0.102p PS=2.255u PD=1.28u
+M$80 VDPWR \$I615 \$I614 VDPWR sg13_lv_pmos L=0.13u W=1.045u AS=0.326925p
++ AD=0.3553p PS=2.255u PD=2.77u
+M$81 VGND \$I619 \$I618 VGND sg13_lv_nmos L=0.13u W=0.385u AS=0.305425p
++ AD=0.1309p PS=2.07u PD=1.45u
+M$82 VGND \$I617 uio_out[2] VGND sg13_lv_nmos L=0.13u W=0.88u AS=0.305425p
++ AD=0.2992p PS=2.07u PD=2.44u
+M$83 VDPWR \$I619 \$I619 VDPWR sg13_lv_pmos L=0.13u W=0.3u AS=0.326925p
++ AD=0.102p PS=2.255u PD=1.28u
+M$84 VDPWR \$I618 \$I617 VDPWR sg13_lv_pmos L=0.13u W=1.045u AS=0.326925p
++ AD=0.3553p PS=2.255u PD=2.77u
+M$85 VGND \$I622 \$I621 VGND sg13_lv_nmos L=0.13u W=0.385u AS=0.305425p
++ AD=0.1309p PS=2.07u PD=1.45u
+M$86 VGND \$I620 uio_out[1] VGND sg13_lv_nmos L=0.13u W=0.88u AS=0.305425p
++ AD=0.2992p PS=2.07u PD=2.44u
+M$87 VDPWR \$I622 \$I622 VDPWR sg13_lv_pmos L=0.13u W=0.3u AS=0.326925p
++ AD=0.102p PS=2.255u PD=1.28u
+M$88 VDPWR \$I621 \$I620 VDPWR sg13_lv_pmos L=0.13u W=1.045u AS=0.326925p
++ AD=0.3553p PS=2.255u PD=2.77u
+M$89 VGND \$I625 \$I624 VGND sg13_lv_nmos L=0.13u W=0.385u AS=0.305425p
++ AD=0.1309p PS=2.07u PD=1.45u
+M$90 VGND \$I623 uio_out[0] VGND sg13_lv_nmos L=0.13u W=0.88u AS=0.305425p
++ AD=0.2992p PS=2.07u PD=2.44u
+M$91 VDPWR \$I625 \$I625 VDPWR sg13_lv_pmos L=0.13u W=0.3u AS=0.326925p
++ AD=0.102p PS=2.255u PD=1.28u
+M$92 VDPWR \$I624 \$I623 VDPWR sg13_lv_pmos L=0.13u W=1.045u AS=0.326925p
++ AD=0.3553p PS=2.255u PD=2.77u
+M$93 VGND \$I628 \$I628 VGND sg13_lv_nmos L=0.13u W=0.3u AS=0.2043375p
++ AD=0.111p PS=1.585u PD=1.34u
+M$94 VGND \$I627 \$I626 VGND sg13_lv_nmos L=0.13u W=0.795u AS=0.2043375p
++ AD=0.274275p PS=1.585u PD=2.28u
+M$95 \$I627 \$I628 VDPWR VDPWR sg13_lv_pmos L=0.13u W=0.66u AS=0.2442p
++ AD=0.4657125p PS=2.06u PD=2.54u
+M$96 VDPWR \$I626 uio_oe[7] VDPWR sg13_lv_pmos L=0.13u W=1.155u AS=0.4657125p
++ AD=0.3927p PS=2.54u PD=2.99u
+M$97 VGND \$I631 \$I631 VGND sg13_lv_nmos L=0.13u W=0.3u AS=0.2043375p
++ AD=0.111p PS=1.585u PD=1.34u
+M$98 VGND \$I630 \$I629 VGND sg13_lv_nmos L=0.13u W=0.795u AS=0.2043375p
++ AD=0.274275p PS=1.585u PD=2.28u
+M$99 \$I630 \$I631 VDPWR VDPWR sg13_lv_pmos L=0.13u W=0.66u AS=0.2442p
++ AD=0.4657125p PS=2.06u PD=2.54u
+M$100 VDPWR \$I629 uio_oe[6] VDPWR sg13_lv_pmos L=0.13u W=1.155u AS=0.4657125p
++ AD=0.3927p PS=2.54u PD=2.99u
+M$101 VGND \$I634 \$I634 VGND sg13_lv_nmos L=0.13u W=0.3u AS=0.2043375p
++ AD=0.111p PS=1.585u PD=1.34u
+M$102 VGND \$I633 \$I632 VGND sg13_lv_nmos L=0.13u W=0.795u AS=0.2043375p
++ AD=0.274275p PS=1.585u PD=2.28u
+M$103 \$I633 \$I634 VDPWR VDPWR sg13_lv_pmos L=0.13u W=0.66u AS=0.2442p
++ AD=0.4657125p PS=2.06u PD=2.54u
+M$104 VDPWR \$I632 uio_oe[5] VDPWR sg13_lv_pmos L=0.13u W=1.155u AS=0.4657125p
++ AD=0.3927p PS=2.54u PD=2.99u
+C$105 VGND VDPWR cap_cmim w=30u l=34u A=1020p P=128u m=1
+C$106 VGND VDPWR cap_cmim w=30u l=75u A=2250p P=210u m=3
+C$109 VGND VDPWR cap_cmim w=75u l=34u A=2550p P=218u m=3
+C$112 VGND ua[2] cap_cmim w=75u l=75u A=5625p P=300u m=1
+C$113 VGND VDPWR cap_cmim w=75u l=75u A=5625p P=300u m=5
+C$115 VGND ua[4] cap_cmim w=75u l=75u A=5625p P=300u m=1
+C$118 VGND ua[3] cap_cmim w=75u l=75u A=5625p P=300u m=1
+C$120 VGND ua[1] cap_cmim w=75u l=75u A=5625p P=300u m=1
+.ENDS chip_top
+
+.SUBCKT analog_buffer GND out inp_cm Vbias VDD
+M$1 GND GND GND GND sg13_hv_nmos L=1u W=16u AS=3.64p AD=3.64p PS=23.64u
++ PD=23.64u
+M$3 GND Vm Vm GND sg13_hv_nmos L=1u W=16u AS=3.04p AD=3.04p PS=19.04u PD=19.04u
+M$5 GND Vm out GND sg13_hv_nmos L=1u W=16u AS=3.04p AD=3.04p PS=19.04u PD=19.04u
+M$25 Vb Vb Vb VDD sg13_hv_pmos L=1u W=16u AS=3.64p AD=3.64p PS=23.64u PD=23.64u
+M$27 Vb out out VDD sg13_hv_pmos L=1u W=16u AS=3.04p AD=3.04p PS=19.04u
++ PD=19.04u
+M$29 Vb inp_cm Vm VDD sg13_hv_pmos L=1u W=16u AS=3.04p AD=3.04p PS=19.04u
++ PD=19.04u
+M$49 VDD VDD VDD VDD sg13_hv_pmos L=1u W=80u AS=18.2p AD=18.2p PS=118.2u
++ PD=118.2u
+M$51 VDD Vbias Vb VDD sg13_hv_pmos L=1u W=160u AS=30.4p AD=30.4p PS=190.4u
++ PD=190.4u
+.ENDS analog_buffer
+
+.SUBCKT neuron_row GND|VSS V_lk REQ|out V_mem|v_mem v_ref VDD Vrefcap inn_cm
++ inp_cm Vbias ACK
+M$1 GND|VSS GND|VSS GND|VSS GND|VSS sg13_hv_nmos L=3u W=20u AS=5.3p AD=5.3p
++ PS=38.48u PD=38.48u
+M$2 GND|VSS GND|VSS GND|VSS GND|VSS sg13_hv_nmos L=4u W=8u AS=1.52p AD=1.52p
++ PS=14.08u PD=14.08u
+M$13 GND|VSS GND|VSS GND|VSS GND|VSS sg13_hv_nmos L=1u W=16u AS=3.64p AD=3.64p
++ PS=23.64u PD=23.64u
+M$15 GND|VSS Vm I_in|out GND|VSS sg13_hv_nmos L=1u W=16u AS=3.04p AD=3.04p
++ PS=19.04u PD=19.04u
+M$17 GND|VSS Vm Vm GND|VSS sg13_hv_nmos L=1u W=16u AS=3.04p AD=3.04p PS=19.04u
++ PD=19.04u
+M$25 GND|VSS GND|VSS GND|VSS GND|VSS sg13_hv_nmos L=2u W=14u AS=3.26p AD=2.96p
++ PS=24.52u PD=21.92u
+M$44 GND|VSS V_lk V_mem|v_mem GND|VSS sg13_hv_nmos L=4u W=16u AS=3.04p AD=3.04p
++ PS=19.04u PD=19.04u
+M$50 GND|VSS V_mem|v_mem \$19 GND|VSS sg13_hv_nmos L=2u W=2u AS=0.38p AD=0.38p
++ PS=2.76u PD=2.76u
+M$51 \$19 V_mem|v_mem \$20 GND|VSS sg13_hv_nmos L=2u W=2u AS=0.38p AD=0.38p
++ PS=2.76u PD=2.76u
+M$52 \$20 V_mem|v_mem \$21 GND|VSS sg13_hv_nmos L=2u W=2u AS=0.38p AD=0.38p
++ PS=2.76u PD=2.76u
+M$53 \$21 V_mem|v_mem Vfb|in|out GND|VSS sg13_hv_nmos L=2u W=2u AS=0.38p
++ AD=0.38p PS=2.76u PD=2.76u
+M$54 Vfb|in|out GND|VSS GND|VSS GND|VSS sg13_hv_nmos L=2u W=2u AS=0.38p
++ AD=0.68p PS=2.76u PD=5.36u
+M$55 GND|VSS Vfb|in|out in|out GND|VSS sg13_hv_nmos L=0.5u W=4u AS=1.36p
++ AD=1.36p PS=8.68u PD=8.68u
+M$56 GND|VSS in|out REQ|out GND|VSS sg13_hv_nmos L=0.5u W=4u AS=1.36p AD=1.36p
++ PS=8.68u PD=8.68u
+M$58 GND|VSS v_ref \$23 GND|VSS sg13_hv_nmos L=4u W=16u AS=3.04p AD=3.04p
++ PS=19.04u PD=19.04u
+M$99 GND|VSS Vrefcap V_mem|v_mem GND|VSS sg13_hv_nmos L=0.5u W=1u AS=0.34p
++ AD=0.34p PS=2.68u PD=2.68u
+M$100 \$23 REQ|out Vrefcap GND|VSS sg13_hv_nmos L=0.5u W=1u AS=0.34p AD=0.34p
++ PS=2.68u PD=2.68u
+M$101 Vb Vb Vb VDD sg13_hv_pmos L=1u W=16u AS=3.64p AD=3.64p PS=23.64u PD=23.64u
+M$103 Vb inn_cm I_in|out VDD sg13_hv_pmos L=1u W=16u AS=3.04p AD=3.04p
++ PS=19.04u PD=19.04u
+M$105 Vb inp_cm Vm VDD sg13_hv_pmos L=1u W=16u AS=3.04p AD=3.04p PS=19.04u
++ PD=19.04u
+M$113 VDD VDD VDD VDD sg13_hv_pmos L=2u W=25u AS=5.35p AD=5.5p PS=43.8u PD=45.1u
+M$141 VDD VDD I_in|out VDD sg13_hv_pmos L=2u W=8u AS=2.12p AD=2.12p PS=16.24u
++ PD=16.24u
+M$142 I_in|out V_lk GND|VSS VDD sg13_hv_pmos L=2u W=16u AS=3.04p AD=3.04p
++ PS=22.08u PD=22.08u
+M$144 I_in|out V_mem|v_mem V_mem|v_mem VDD sg13_hv_pmos L=2u W=16u AS=3.04p
++ AD=3.04p PS=22.08u PD=22.08u
+M$161 VDD VDD Vfb|in|out VDD sg13_hv_pmos L=2u W=2u AS=0.53p AD=0.53p PS=4.06u
++ PD=4.06u
+M$162 Vfb|in|out V_mem|v_mem \$100 VDD sg13_hv_pmos L=2u W=4u AS=0.76p AD=0.76p
++ PS=5.52u PD=5.52u
+M$167 VDD VDD VDD VDD sg13_hv_pmos L=1u W=14u AS=3.185p AD=3.185p PS=21.14u
++ PD=21.14u
+M$169 VDD Vbias I_in|out VDD sg13_hv_pmos L=1u W=12u AS=2.505p AD=2.505p
++ PS=16.84u PD=16.84u
+M$173 VDD Vbias Vb VDD sg13_hv_pmos L=1u W=16u AS=3.34p AD=3.34p PS=21.34u
++ PD=21.34u
+M$190 VDD \$100 \$100 VDD sg13_hv_pmos L=2u W=4u AS=0.76p AD=0.76p PS=5.52u
++ PD=5.52u
+M$195 VDD Vfb|in|out in|out VDD sg13_hv_pmos L=0.5u W=4u AS=1.36p AD=1.36p
++ PS=8.68u PD=8.68u
+M$196 VDD in|out REQ|out VDD sg13_hv_pmos L=0.5u W=4u AS=1.36p AD=1.36p
++ PS=8.68u PD=8.68u
+M$219 VDD VDD V_mem|v_mem VDD sg13_hv_pmos L=2u W=1u AS=0.34p AD=0.19p PS=2.68u
++ PD=1.38u
+M$220 V_mem|v_mem \$100 \$129 VDD sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p
++ PS=1.38u PD=1.38u
+M$221 \$129 \$100 \$130 VDD sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p PS=1.38u
++ PD=1.38u
+M$222 \$130 \$100 \$131 VDD sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p PS=1.38u
++ PD=1.38u
+M$223 \$131 \$100 VDD VDD sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p PS=1.38u
++ PD=1.38u
+M$231 Vrefcap REQ|out \$114 VDD sg13_hv_pmos L=0.5u W=1u AS=0.34p AD=0.19p
++ PS=2.68u PD=1.38u
+M$232 \$114 ACK VDD VDD sg13_hv_pmos L=0.5u W=1u AS=0.19p AD=0.34p PS=1.38u
++ PD=2.68u
+C$243 GND|VSS Vrefcap cap_cmim w=22.1u l=15u A=331.5p P=74.2u m=1
+C$244 GND|VSS V_mem|v_mem cap_cmim w=44.4u l=15u A=666p P=118.8u m=1
+.ENDS neuron_row

@@ -1,0 +1,212 @@
+timestamp 1602627157
+version 8.3
+tech ihp-sg13g2
+style ngspice()
+scale 1000 1 0.5
+resistclasses 3000000 67000 110 88 88 88 88 18 11 7000 260000 1360000
+parameters sg13_hv_nmos l=l w=w a1=as p1=ps a2=ad p2=pd
+parameters sg13_hv_pmos l=l w=w a1=as p1=ps a2=ad p2=pd
+port "out" 5 4411 1414 4554 1554 m3
+port "inp_cm" 7 735 9328 875 9468 m4
+port "Vbias" 6 438 9328 578 9468 m4
+port "VDD" 4 4362 9227 4557 9427 m3
+port "VDD" 4 4362 7903 4557 8103 m3
+port "VDD" 4 4362 5274 4557 5474 m3
+port "VDD" 4 4349 3900 4557 4100 m3
+port "VDD" 4 4364 6597 4557 6797 m3
+port "well" 2 296 1524 456 9124 nw
+port "well" 2 531 3919 4031 4079 nw
+port "well" 2 304 9264 4244 9424 nw
+port "well" 2 4106 1524 4266 9124 nw
+port "GND" 3 0 -100 204 100 m3
+node "Vm" 36 8661.49 1236 151 p 0 0 0 0 235070 14106 229880 11804 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "out" 39 2450.46 4411 1414 m3 0 0 0 0 294212 16438 529770 15890 892840 13044 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "inp_cm" 15 1064.36 735 9328 m4 0 0 0 0 67990 3610 257841 4822 365540 5502 1339782 19420 0 0 0 0 0 0 0 0 0 0 0 0
+node "Vb" 159 151.023 621 1590 hvpdif 0 0 0 0 1400114 78206 621552 33314 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+node "Vbias" 39 1523.3 438 9328 m4 0 0 0 0 652112 24516 133140 3302 1268522 19522 1339520 19416 0 0 0 0 0 0 0 0 0 0 0 0
+node "VDD" 234 0 4364 6597 m3 0 0 0 0 3989702 143152 1372955 71814 4557000 47570 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+equiv "VDD" "well"
+substrate "GND" 0 0 0 -100 m3 0 0 0 0 918462 39556 195673 10474 911400 9514 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+cap "out" "Vbias" 79.53
+cap "out" "VDD" 3427.03
+cap "out" "Vm" 3728.72
+cap "Vb" "Vbias" 11483.1
+cap "Vb" "VDD" 19092.1
+cap "Vm" "Vb" 694.049
+cap "inp_cm" "Vbias" 4175.24
+cap "inp_cm" "VDD" 4339.35
+cap "inp_cm" "Vm" 1500.83
+cap "out" "Vb" 4204.65
+cap "out" "inp_cm" 3346.93
+cap "Vbias" "VDD" 36965.2
+cap "Vm" "Vbias" 13.1161
+cap "Vm" "VDD" 381.784
+cap "inp_cm" "Vb" 1788.96
+device msubckt sg13_hv_nmos 3720 187 3721 188 l=200 w=400 "GND" "GND" 400 0 "GND" 0 0 "GND" 800 15200,476
+device msubckt sg13_hv_nmos 3444 187 3445 188 l=200 w=400 "GND" "GND" 400 0 "GND" 0 0 "GND" 800 15200,476
+device msubckt sg13_hv_nmos 3168 187 3169 188 l=200 w=400 "GND" "Vm" 400 0 "Vm" 400 15200,476 "GND" 400 15200,476
+device msubckt sg13_hv_nmos 2892 187 2893 188 l=200 w=400 "GND" "Vm" 400 0 "GND" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_nmos 2616 187 2617 188 l=200 w=400 "GND" "Vm" 400 0 "out" 400 15200,476 "GND" 400 15200,476
+device msubckt sg13_hv_nmos 2340 187 2341 188 l=200 w=400 "GND" "Vm" 400 0 "GND" 400 15200,476 "out" 400 15200,476
+device msubckt sg13_hv_nmos 2064 187 2065 188 l=200 w=400 "GND" "Vm" 400 0 "Vm" 400 15200,476 "GND" 400 15200,476
+device msubckt sg13_hv_nmos 1788 187 1789 188 l=200 w=400 "GND" "Vm" 400 0 "GND" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_nmos 1512 187 1513 188 l=200 w=400 "GND" "Vm" 400 0 "out" 400 15200,476 "GND" 400 15200,476
+device msubckt sg13_hv_nmos 1236 187 1237 188 l=200 w=400 "GND" "Vm" 400 0 "GND" 400 15200,476 "out" 400 15200,476
+device msubckt sg13_hv_nmos 960 187 961 188 l=200 w=400 "GND" "GND" 400 0 "GND" 0 0 "GND" 800 15200,476
+device msubckt sg13_hv_nmos 684 187 685 188 l=200 w=400 "GND" "GND" 400 0 "GND" 0 0 "GND" 800 27200,936
+device msubckt sg13_hv_nmos 3720 643 3721 644 l=200 w=400 "GND" "GND" 400 0 "GND" 0 0 "GND" 800 15200,476
+device msubckt sg13_hv_nmos 3444 643 3445 644 l=200 w=400 "GND" "GND" 400 0 "GND" 0 0 "GND" 800 15200,476
+device msubckt sg13_hv_nmos 3168 643 3169 644 l=200 w=400 "GND" "Vm" 400 0 "out" 400 15200,476 "GND" 400 15200,476
+device msubckt sg13_hv_nmos 2892 643 2893 644 l=200 w=400 "GND" "Vm" 400 0 "GND" 400 15200,476 "out" 400 15200,476
+device msubckt sg13_hv_nmos 2616 643 2617 644 l=200 w=400 "GND" "Vm" 400 0 "Vm" 400 15200,476 "GND" 400 15200,476
+device msubckt sg13_hv_nmos 2340 643 2341 644 l=200 w=400 "GND" "Vm" 400 0 "GND" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_nmos 2064 643 2065 644 l=200 w=400 "GND" "Vm" 400 0 "out" 400 15200,476 "GND" 400 15200,476
+device msubckt sg13_hv_nmos 1788 643 1789 644 l=200 w=400 "GND" "Vm" 400 0 "GND" 400 15200,476 "out" 400 15200,476
+device msubckt sg13_hv_nmos 1512 643 1513 644 l=200 w=400 "GND" "Vm" 400 0 "Vm" 400 15200,476 "GND" 400 15200,476
+device msubckt sg13_hv_nmos 1236 643 1237 644 l=200 w=400 "GND" "Vm" 400 0 "GND" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_nmos 960 643 961 644 l=200 w=400 "GND" "GND" 400 0 "GND" 0 0 "GND" 800 15200,476
+device msubckt sg13_hv_nmos 684 643 685 644 l=200 w=400 "GND" "GND" 400 0 "GND" 0 0 "GND" 800 27200,936
+device msubckt sg13_hv_pmos 3725 1590 3726 1591 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 3449 1590 3450 1591 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 3173 1590 3174 1591 l=200 w=400 "VDD" "inp_cm" 400 0 "Vm" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2897 1590 2898 1591 l=200 w=400 "VDD" "inp_cm" 400 0 "Vb" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_pmos 2621 1590 2622 1591 l=200 w=400 "VDD" "out" 400 0 "out" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2345 1590 2346 1591 l=200 w=400 "VDD" "out" 400 0 "Vb" 400 15200,476 "out" 400 15200,476
+device msubckt sg13_hv_pmos 2069 1590 2070 1591 l=200 w=400 "VDD" "inp_cm" 400 0 "Vm" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1793 1590 1794 1591 l=200 w=400 "VDD" "inp_cm" 400 0 "Vb" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_pmos 1517 1590 1518 1591 l=200 w=400 "VDD" "out" 400 0 "out" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1241 1590 1242 1591 l=200 w=400 "VDD" "out" 400 0 "Vb" 400 15200,476 "out" 400 15200,476
+device msubckt sg13_hv_pmos 965 1590 966 1591 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 689 1590 690 1591 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 27200,936
+device msubckt sg13_hv_pmos 3725 2212 3726 2213 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 3449 2212 3450 2213 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 3173 2212 3174 2213 l=200 w=400 "VDD" "out" 400 0 "out" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2897 2212 2898 2213 l=200 w=400 "VDD" "out" 400 0 "Vb" 400 15200,476 "out" 400 15200,476
+device msubckt sg13_hv_pmos 2621 2212 2622 2213 l=200 w=400 "VDD" "inp_cm" 400 0 "Vm" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2345 2212 2346 2213 l=200 w=400 "VDD" "inp_cm" 400 0 "Vb" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_pmos 2069 2212 2070 2213 l=200 w=400 "VDD" "out" 400 0 "out" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1793 2212 1794 2213 l=200 w=400 "VDD" "out" 400 0 "Vb" 400 15200,476 "out" 400 15200,476
+device msubckt sg13_hv_pmos 1517 2212 1518 2213 l=200 w=400 "VDD" "inp_cm" 400 0 "Vm" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1241 2212 1242 2213 l=200 w=400 "VDD" "inp_cm" 400 0 "Vb" 400 15200,476 "Vm" 400 15200,476
+device msubckt sg13_hv_pmos 965 2212 966 2213 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 15200,476
+device msubckt sg13_hv_pmos 689 2212 690 2213 l=200 w=400 "VDD" "Vb" 400 0 "Vb" 0 0 "Vb" 800 27200,936
+device msubckt sg13_hv_pmos 3706 2921 3707 2922 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3430 2921 3431 2922 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3154 2921 3155 2922 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2878 2921 2879 2922 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2602 2921 2603 2922 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2326 2921 2327 2922 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2050 2921 2051 2922 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1774 2921 1775 2922 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1498 2921 1499 2922 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1222 2921 1223 2922 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 946 2921 947 2922 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 670 2921 671 2922 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 27200,936
+device msubckt sg13_hv_pmos 3706 3371 3707 3372 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3430 3371 3431 3372 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3154 3371 3155 3372 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2878 3371 2879 3372 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2602 3371 2603 3372 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2326 3371 2327 3372 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2050 3371 2051 3372 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1774 3371 1775 3372 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1498 3371 1499 3372 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1222 3371 1223 3372 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 946 3371 947 3372 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 670 3371 671 3372 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 27200,936
+device msubckt sg13_hv_pmos 3706 4286 3707 4287 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3430 4286 3431 4287 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3154 4286 3155 4287 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2878 4286 2879 4287 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2602 4286 2603 4287 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2326 4286 2327 4287 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2050 4286 2051 4287 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1774 4286 1775 4287 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1498 4286 1499 4287 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1222 4286 1223 4287 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 946 4286 947 4287 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 670 4286 671 4287 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 27200,936
+device msubckt sg13_hv_pmos 3706 4736 3707 4737 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3430 4736 3431 4737 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3154 4736 3155 4737 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2878 4736 2879 4737 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2602 4736 2603 4737 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2326 4736 2327 4737 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2050 4736 2051 4737 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1774 4736 1775 4737 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1498 4736 1499 4737 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1222 4736 1223 4737 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 946 4736 947 4737 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 670 4736 671 4737 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 27200,936
+device msubckt sg13_hv_pmos 3706 5610 3707 5611 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3430 5610 3431 5611 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3154 5610 3155 5611 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2878 5610 2879 5611 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2602 5610 2603 5611 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2326 5610 2327 5611 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2050 5610 2051 5611 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1774 5610 1775 5611 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1498 5610 1499 5611 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1222 5610 1223 5611 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 946 5610 947 5611 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 670 5610 671 5611 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 27200,936
+device msubckt sg13_hv_pmos 3706 6060 3707 6061 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3430 6060 3431 6061 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3154 6060 3155 6061 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2878 6060 2879 6061 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2602 6060 2603 6061 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2326 6060 2327 6061 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2050 6060 2051 6061 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1774 6060 1775 6061 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1498 6060 1499 6061 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1222 6060 1223 6061 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 946 6060 947 6061 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 670 6060 671 6061 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 27200,936
+device msubckt sg13_hv_pmos 3706 6915 3707 6916 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3430 6915 3431 6916 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3154 6915 3155 6916 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2878 6915 2879 6916 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2602 6915 2603 6916 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2326 6915 2327 6916 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2050 6915 2051 6916 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1774 6915 1775 6916 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1498 6915 1499 6916 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1222 6915 1223 6916 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 946 6915 947 6916 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 670 6915 671 6916 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 27200,936
+device msubckt sg13_hv_pmos 3706 7365 3707 7366 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3430 7365 3431 7366 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3154 7365 3155 7366 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2878 7365 2879 7366 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2602 7365 2603 7366 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2326 7365 2327 7366 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2050 7365 2051 7366 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1774 7365 1775 7366 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1498 7365 1499 7366 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1222 7365 1223 7366 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 946 7365 947 7366 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 670 7365 671 7366 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 27200,936
+device msubckt sg13_hv_pmos 3706 8239 3707 8240 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3430 8239 3431 8240 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3154 8239 3155 8240 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2878 8239 2879 8240 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2602 8239 2603 8240 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2326 8239 2327 8240 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2050 8239 2051 8240 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1774 8239 1775 8240 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1498 8239 1499 8240 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1222 8239 1223 8240 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 946 8239 947 8240 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 670 8239 671 8240 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 27200,936
+device msubckt sg13_hv_pmos 3706 8689 3707 8690 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3430 8689 3431 8690 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 3154 8689 3155 8690 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2878 8689 2879 8690 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2602 8689 2603 8690 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 2326 8689 2327 8690 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 2050 8689 2051 8690 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1774 8689 1775 8690 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 1498 8689 1499 8690 l=200 w=400 "VDD" "Vbias" 400 0 "Vb" 400 15200,476 "VDD" 400 15200,476
+device msubckt sg13_hv_pmos 1222 8689 1223 8690 l=200 w=400 "VDD" "Vbias" 400 0 "VDD" 400 15200,476 "Vb" 400 15200,476
+device msubckt sg13_hv_pmos 946 8689 947 8690 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 15200,476
+device msubckt sg13_hv_pmos 670 8689 671 8690 l=200 w=400 "VDD" "VDD" 400 0 "VDD" 0 0 "VDD" 800 27200,936
