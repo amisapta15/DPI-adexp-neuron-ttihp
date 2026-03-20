@@ -1,0 +1,50 @@
+"
+.param temp=27
+
+.ic V(NN_req_VABO[10])=1.2 V(NN_req_VABO[9])=1.2 V(NN_req_VABO[8])=1.2
++V(NN_req_VABO[7])=1.2 V(NN_req_VABO[6])=1.2 V(NN_req_VABO[5])=1.2
++V(NN_req_VABO[4])=1.2 V(NN_req_VABO[3])=1.2 V(NN_req_VABO[2])=1.2
++V(NN_req_VABO[1])=1.2 V(NN_req_VABO[0])=1.2
+.ic V(NN_ack_VABI[10])=1.2 V(NN_ack_VABI[9])=1.2 V(NN_ack_VABI[8])=1.2
++V(NN_ack_VABI[7])=1.2 V(NN_ack_VABI[6])=1.2 V(NN_ack_VABI[5])=1.2
++V(NN_ack_VABI[4])=1.2 V(NN_ack_VABI[3])=1.2 V(NN_ack_VABI[2])=1.2
++V(NN_ack_VABI[1])=1.2 V(NN_ack_VABI[0])=1.2
+.ic V(xchip.NN_mem_VNT[10])=0 V(xchip.NN_mem_VNT[9])=0 V(xchip.NN_mem_VNT[8])=0
++V(xchip.NN_mem_VNT[7])=0 V(xchip.NN_mem_VNT[6])=0 V(xchip.NN_mem_VNT[5])=0
++V(xchip.NN_mem_VNT[4])=0 V(xchip.NN_mem_VNT[3])=0 V(xchip.NN_mem_VNT[2])=0
++V(xchip.NN_mem_VNT[1])=0 V(xchip.NN_mem_VNT[0])=0
+.ic V(xchip.NN_refcap_VT[10])=0 V(xchip.NN_refcap_VT[9])=0 V(xchip.NN_refcap_VT[8])=0
++V(xchip.NN_refcap_VT[7])=0 V(xchip.NN_refcap_VT[6])=0 V(xchip.NN_refcap_VT[5])=0
++V(xchip.NN_refcap_VT[4])=0 V(xchip.NN_refcap_VT[3])=0 V(xchip.NN_refcap_VT[2])=0
++V(xchip.NN_refcap_VT[1])=0 V(xchip.NN_refcap_VT[0])=0
+
+.options gmin=1e-13
+.options method=gear
+.control
+
+save V(NN_req_VABO[10]) V(NN_req_VABO[9]) V(NN_req_VABO[8])
++V(NN_req_VABO[7]) V(NN_req_VABO[6]) V(NN_req_VABO[5])
++V(NN_req_VABO[4]) V(NN_req_VABO[3]) V(NN_req_VABO[2])
++V(NN_req_VABO[1]) V(NN_req_VABO[0])
+save V(NN_ack_VABI[10]) V(NN_ack_VABI[9]) V(NN_ack_VABI[8])
++V(NN_ack_VABI[7]) V(NN_ack_VABI[6]) V(NN_ack_VABI[5])
++V(NN_ack_VABI[4]) V(NN_ack_VABI[3]) V(NN_ack_VABI[2])
++V(NN_ack_VABI[1]) V(NN_ack_VABI[0])
+save V(BUF_prob_VX1O) V(xchip.buf2mux_VTX1[1]) V(xchip.buf2mux_VTX1[0])
+save V(xchip.NN_mem_VNT[10]) V(xchip.NN_mem_VNT[9]) V(xchip.NN_mem_VNT[8])
++V(xchip.NN_mem_VNT[7]) V(xchip.NN_mem_VNT[6]) V(xchip.NN_mem_VNT[5])
++V(xchip.NN_mem_VNT[4]) V(xchip.NN_mem_VNT[3]) V(xchip.NN_mem_VNT[2])
++V(xchip.NN_mem_VNT[1]) V(xchip.NN_mem_VNT[0])
+save V(xchip.NN_refcap_VT[10]) V(xchip.NN_refcap_VT[9]) V(xchip.NN_refcap_VT[8])
++V(xchip.NN_refcap_VT[7]) V(xchip.NN_refcap_VT[6]) V(xchip.NN_refcap_VT[5])
++V(xchip.NN_refcap_VT[4]) V(xchip.NN_refcap_VT[3]) V(xchip.NN_refcap_VT[2])
++V(xchip.NN_refcap_VT[1]) V(xchip.NN_refcap_VT[0])
+save V(IO_config_VS[7]) V(IO_config_VS[6]) V(IO_config_VS[5]) V(IO_config_VS[4])
++V(IO_config_VS[3]) V(IO_config_VS[2]) V(IO_config_VS[1]) V(IO_config_VS[0])
+
+
+tran 50n 100m
+write chip_top_tb.raw
+.endc
+
+"

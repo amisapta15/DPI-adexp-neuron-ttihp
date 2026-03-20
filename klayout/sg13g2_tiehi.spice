@@ -1,0 +1,8 @@
+** sch_path: /foss/designs/adex_neuron/chenxi_working/ttihp26a-adex-neuron-ncs/xschem/sg13g2_tiehi.sch
+.subckt sg13g2_tiehi VDD VSS L_HI
+*.PININFO VSS:B VDD:B L_HI:O
+MN1 net1 net1 VSS VSS sg13_lv_nmos w=0.3u l=0.13u ng=1
+MP1 net2 net1 VDD VDD sg13_lv_pmos w=0.66u l=0.13u ng=1
+MN2 net3 net2 VSS VSS sg13_lv_nmos w=0.795u l=0.13u ng=1
+MP2 L_HI net3 VDD VDD sg13_lv_pmos w=1.155u l=0.13u ng=1
+.ends

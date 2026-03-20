@@ -1,0 +1,24 @@
+* Extracted by KLayout with SG13G2 LVS runset on : 20/03/2026 16:38
+
+.SUBCKT mux21 VSS SEL1 OUT IN1 VDD SEL0 IN0
+M$1 VSS VSS VSS VSS sg13_lv_nmos L=0.15u W=8u AS=3.92p AD=3.92p PS=23.84u
++ PD=23.84u
+M$2 VSS SEL1 \$6 VSS sg13_lv_nmos L=0.15u W=1u AS=0.49p AD=0.49p PS=2.98u
++ PD=2.98u
+M$5 OUT SEL1 IN1 VSS sg13_lv_nmos L=0.15u W=8u AS=2.24p AD=2.24p PS=13.48u
++ PD=13.48u
+M$15 VSS SEL0 \$8 VSS sg13_lv_nmos L=0.15u W=1u AS=0.49p AD=0.49p PS=2.98u
++ PD=2.98u
+M$18 OUT SEL0 IN0 VSS sg13_lv_nmos L=0.15u W=8u AS=2.24p AD=2.24p PS=13.48u
++ PD=13.48u
+M$27 VDD VDD VDD VDD sg13_lv_pmos L=0.15u W=8u AS=3.92p AD=3.92p PS=23.84u
++ PD=23.84u
+M$28 VDD SEL1 \$6 VDD sg13_lv_pmos L=0.15u W=1u AS=0.49p AD=0.49p PS=2.98u
++ PD=2.98u
+M$31 OUT \$6 IN1 VDD sg13_lv_pmos L=0.15u W=8u AS=2.24p AD=2.24p PS=13.48u
++ PD=13.48u
+M$41 VDD SEL0 \$8 VDD sg13_lv_pmos L=0.15u W=1u AS=0.49p AD=0.49p PS=2.98u
++ PD=2.98u
+M$44 OUT \$8 IN0 VDD sg13_lv_pmos L=0.15u W=8u AS=2.24p AD=2.24p PS=13.48u
++ PD=13.48u
+.ENDS mux21

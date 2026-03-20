@@ -1,0 +1,83 @@
+* Extracted by KLayout with SG13G2 LVS runset on : 20/03/2026 17:10
+
+.SUBCKT neuron_row GND|VSS I_in|out Vm in|out REQ|out V_mem|v_mem Vfb|in|out
++ V_lk v_ref VDD Vb inn_cm Vrefcap inp_cm Vbias ACK
+M$1 GND|VSS GND|VSS GND|VSS GND|VSS sg13_hv_nmos L=3u W=20u AS=5.3p AD=5.3p
++ PS=38.48u PD=38.48u
+M$2 GND|VSS GND|VSS GND|VSS GND|VSS sg13_hv_nmos L=4u W=8u AS=1.52p AD=1.52p
++ PS=14.08u PD=14.08u
+M$13 GND|VSS GND|VSS GND|VSS GND|VSS sg13_hv_nmos L=1u W=16u AS=3.64p AD=3.64p
++ PS=23.64u PD=23.64u
+M$15 GND|VSS Vm I_in|out GND|VSS sg13_hv_nmos L=1u W=16u AS=3.04p AD=3.04p
++ PS=19.04u PD=19.04u
+M$17 GND|VSS Vm Vm GND|VSS sg13_hv_nmos L=1u W=16u AS=3.04p AD=3.04p PS=19.04u
++ PD=19.04u
+M$25 GND|VSS GND|VSS GND|VSS GND|VSS sg13_hv_nmos L=2u W=14u AS=3.26p AD=2.96p
++ PS=24.52u PD=21.92u
+M$44 GND|VSS V_lk V_mem|v_mem GND|VSS sg13_hv_nmos L=4u W=16u AS=3.04p AD=3.04p
++ PS=19.04u PD=19.04u
+M$50 GND|VSS V_mem|v_mem \$21 GND|VSS sg13_hv_nmos L=2u W=2u AS=0.38p AD=0.38p
++ PS=2.76u PD=2.76u
+M$51 \$21 V_mem|v_mem \$22 GND|VSS sg13_hv_nmos L=2u W=2u AS=0.38p AD=0.38p
++ PS=2.76u PD=2.76u
+M$52 \$22 V_mem|v_mem \$23 GND|VSS sg13_hv_nmos L=2u W=2u AS=0.38p AD=0.38p
++ PS=2.76u PD=2.76u
+M$53 \$23 V_mem|v_mem Vfb|in|out GND|VSS sg13_hv_nmos L=2u W=2u AS=0.38p
++ AD=0.38p PS=2.76u PD=2.76u
+M$54 Vfb|in|out GND|VSS GND|VSS GND|VSS sg13_hv_nmos L=2u W=2u AS=0.38p
++ AD=0.68p PS=2.76u PD=5.36u
+M$55 GND|VSS Vfb|in|out in|out GND|VSS sg13_hv_nmos L=0.5u W=4u AS=1.36p
++ AD=1.36p PS=8.68u PD=8.68u
+M$56 GND|VSS in|out REQ|out GND|VSS sg13_hv_nmos L=0.5u W=4u AS=1.36p AD=1.36p
++ PS=8.68u PD=8.68u
+M$58 GND|VSS v_ref \$14 GND|VSS sg13_hv_nmos L=4u W=16u AS=3.04p AD=3.04p
++ PS=19.04u PD=19.04u
+M$99 GND|VSS Vrefcap V_mem|v_mem GND|VSS sg13_hv_nmos L=0.5u W=1u AS=0.34p
++ AD=0.34p PS=2.68u PD=2.68u
+M$100 \$14 REQ|out Vrefcap GND|VSS sg13_hv_nmos L=0.5u W=1u AS=0.34p AD=0.34p
++ PS=2.68u PD=2.68u
+M$101 Vb Vb Vb VDD sg13_hv_pmos L=1u W=16u AS=3.64p AD=3.64p PS=23.64u PD=23.64u
+M$103 Vb inn_cm I_in|out VDD sg13_hv_pmos L=1u W=16u AS=3.04p AD=3.04p
++ PS=19.04u PD=19.04u
+M$105 Vb inp_cm Vm VDD sg13_hv_pmos L=1u W=16u AS=3.04p AD=3.04p PS=19.04u
++ PD=19.04u
+M$113 VDD VDD VDD VDD sg13_hv_pmos L=2u W=25u AS=5.35p AD=5.5p PS=43.8u PD=45.1u
+M$141 VDD VDD I_in|out VDD sg13_hv_pmos L=2u W=8u AS=2.12p AD=2.12p PS=16.24u
++ PD=16.24u
+M$142 I_in|out V_mem|v_mem V_mem|v_mem VDD sg13_hv_pmos L=2u W=16u AS=3.04p
++ AD=3.04p PS=22.08u PD=22.08u
+M$144 I_in|out V_lk GND|VSS VDD sg13_hv_pmos L=2u W=16u AS=3.04p AD=3.04p
++ PS=22.08u PD=22.08u
+M$161 VDD VDD Vfb|in|out VDD sg13_hv_pmos L=2u W=2u AS=0.53p AD=0.53p PS=4.06u
++ PD=4.06u
+M$162 Vfb|in|out V_mem|v_mem \$110 VDD sg13_hv_pmos L=2u W=4u AS=0.76p AD=0.76p
++ PS=5.52u PD=5.52u
+M$167 VDD VDD VDD VDD sg13_hv_pmos L=1u W=14u AS=3.185p AD=3.185p PS=21.14u
++ PD=21.14u
+M$169 VDD Vbias I_in|out VDD sg13_hv_pmos L=1u W=12u AS=2.505p AD=2.505p
++ PS=16.84u PD=16.84u
+M$173 VDD Vbias Vb VDD sg13_hv_pmos L=1u W=16u AS=3.34p AD=3.34p PS=21.34u
++ PD=21.34u
+M$190 VDD \$110 \$110 VDD sg13_hv_pmos L=2u W=4u AS=0.76p AD=0.76p PS=5.52u
++ PD=5.52u
+M$195 VDD Vfb|in|out in|out VDD sg13_hv_pmos L=0.5u W=4u AS=1.36p AD=1.36p
++ PS=8.68u PD=8.68u
+M$196 VDD in|out REQ|out VDD sg13_hv_pmos L=0.5u W=4u AS=1.36p AD=1.36p
++ PS=8.68u PD=8.68u
+M$219 VDD VDD V_mem|v_mem VDD sg13_hv_pmos L=2u W=1u AS=0.34p AD=0.19p PS=2.68u
++ PD=1.38u
+M$220 V_mem|v_mem \$110 \$124 VDD sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p
++ PS=1.38u PD=1.38u
+M$221 \$124 \$110 \$125 VDD sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p PS=1.38u
++ PD=1.38u
+M$222 \$125 \$110 \$126 VDD sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p PS=1.38u
++ PD=1.38u
+M$223 \$126 \$110 VDD VDD sg13_hv_pmos L=2u W=1u AS=0.19p AD=0.19p PS=1.38u
++ PD=1.38u
+M$231 Vrefcap REQ|out \$111 VDD sg13_hv_pmos L=0.5u W=1u AS=0.34p AD=0.19p
++ PS=2.68u PD=1.38u
+M$232 \$111 ACK VDD VDD sg13_hv_pmos L=0.5u W=1u AS=0.19p AD=0.34p PS=1.38u
++ PD=2.68u
+C$243 GND|VSS V_mem|v_mem cap_cmim w=44.4u l=15u A=666p P=118.8u m=1
+C$244 GND|VSS Vrefcap cap_cmim w=22.1u l=15u A=331.5p P=74.2u m=1
+.ENDS neuron_row

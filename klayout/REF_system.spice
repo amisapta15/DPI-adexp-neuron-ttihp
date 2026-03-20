@@ -1,0 +1,14 @@
+** sch_path: /foss/designs/adex_neuron/chenxi_working/ttihp26a-adex-neuron-ncs/xschem/REF_system.sch
+.subckt REF_system ACK V_mem REQ Vrefcap GND V_ref VDD nwell psub
+*.PININFO VDD:B GND:B V_ref:I REQ:I ACK:I V_mem:I Vrefcap:O psub:B nwell:B
+M10 Vrefcap REQ net2 nwell sg13_hv_pmos w=1u l=0.5u ng=1
+M11 Vrefcap REQ net1 psub sg13_hv_nmos w=1u l=0.5u ng=1
+M12 net2 ACK VDD nwell sg13_hv_pmos w=1u l=0.5u ng=1
+M13 V_mem Vrefcap GND psub sg13_hv_nmos w=1u l=0.5u ng=1
+M14 net1 V_ref GND psub sg13_hv_nmos w=4u l=4u ng=2 m=4
+Mdum3 GND GND GND psub sg13_hv_nmos w=2u l=4u ng=4 m=2
+Mdum4 GND GND GND psub sg13_hv_nmos w=0.5u l=3u ng=1 m=4
+Mdum5 GND GND GND psub sg13_hv_nmos w=2u l=3u ng=1 m=4
+R4 GND psub ptap1 A=2.046e-11 P=0.0001364
+R1 VDD nwell ntap1 A=1.824e-11 P=0.0001216
+.ends

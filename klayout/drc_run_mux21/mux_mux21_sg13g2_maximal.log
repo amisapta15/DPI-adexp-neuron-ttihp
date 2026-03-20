@@ -1,0 +1,9 @@
+# Logfile created on 2026-03-19 18:29:29 +0100 by logger.rb/v1.5.3
+2026-03-19 18:29:29 +0100: Memory Usage (435412K) : Starting running IHP-SG13G2 Klayout DRC maximum runset on /foss/designs/adex_neuron/chenxi_working/ttihp26a-adex-neuron-ncs/klayout/mux.gds
+2026-03-19 18:29:29 +0100: Memory Usage (435412K) : Ruby Version for klayout: 3.2.3
+2026-03-19 18:29:29 +0100: Memory Usage (436436K) : Loading database to memory is complete.
+2026-03-19 18:29:29 +0100: Memory Usage (436436K) : IHP-SG13G2 Klayout DRC maximum runset output at: /foss/designs/adex_neuron/chenxi_working/ttihp26a-adex-neuron-ncs/klayout/drc_run_mux21/mux_mux21_sg13g2_maximal.lyrdb
+2026-03-19 18:29:29 +0100: Memory Usage (436564K) : Evaluate switches.
+2026-03-19 18:29:29 +0100: Memory Usage (436564K) : Klayout will use  thread(s)
+2026-03-19 18:29:29 +0100: Memory Usage (436564K) : deep mode is enabled for sg13g2_maximal runset.
+2026-03-19 18:29:31 +0100: Memory Usage (475860K) : KLayout DRC run for maximum ruleSet completed in 1.98 seconds

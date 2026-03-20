@@ -1,0 +1,14 @@
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/pulse_extender.sch
+**.subckt pulse_extender VDD GND out_VABO in_VABI
+*.ipin in_VABI
+*.opin out_VABO
+*.iopin VDD
+*.iopin GND
+XMstarve net1 net1 VDD VDD sg13_hv_pmos w=1u l=4u ng=2 m=4
+XMp Vcap in_VABI net1 VDD sg13_hv_pmos w=1u l=4u ng=2 m=4
+XMn Vcap in_VABI GND GND sg13_hv_nmos w=1u l=1u ng=1
+C1 Vcap GND 200f
+XMp1 out_VABO Vcap VDD VDD sg13_hv_pmos w=1u l=1u ng=1
+XMn1 out_VABO Vcap GND GND sg13_hv_nmos w=1u l=1u ng=1
+**.ends
+.end

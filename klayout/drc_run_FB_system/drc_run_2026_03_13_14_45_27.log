@@ -1,0 +1,9 @@
+13-Mar-2026 15:45:27 | INFO    | KLayout version detected: 0.30.6
+13-Mar-2026 15:45:27 | INFO    | Using DRC JSON file: /foss/pdks/ihp-sg13g2/libs.tech/klayout/python/sg13g2_pycell_lib/sg13g2_tech_mod.json
+13-Mar-2026 15:45:27 | INFO    | Running IHP-SG13G2 main checks on design /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/klayout/FB_system.gds, topcell: FB_system
+13-Mar-2026 15:45:29 | INFO    | Running IHP-SG13G2 sg13g2_maximal checks on design /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/klayout/FB_system.gds, topcell: FB_system
+13-Mar-2026 15:45:32 | INFO    | Completed running Sg13g2_maximal checks.
+13-Mar-2026 15:45:32 | INFO    | =====================================================================================
+13-Mar-2026 15:45:32 | INFO    | ✅ --- KLayout DRC Check Passed: No DRC violations detected in the layout. --- ✅
+13-Mar-2026 15:45:32 | INFO    | =====================================================================================
+13-Mar-2026 15:45:32 | INFO    | Total DRC Run time: 5.03 seconds (including execution, analysis, and reporting)

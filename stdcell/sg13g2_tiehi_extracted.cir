@@ -1,0 +1,12 @@
+* Extracted by KLayout with SG13G2 LVS runset on : 17/03/2026 23:52
+
+.SUBCKT sg13g2_tiehi
+M$1 VSS \$4 \$4 VSS sg13_lv_nmos L=0.13u W=0.3u AS=0.2043375p AD=0.111p
++ PS=1.585u PD=1.34u
+M$2 VSS \$5 \$3 VSS sg13_lv_nmos L=0.13u W=0.795u AS=0.2043375p AD=0.274275p
++ PS=1.585u PD=2.28u
+M$3 \$5 \$4 VDD VDD sg13_lv_pmos L=0.13u W=0.66u AS=0.2442p AD=0.4657125p
++ PS=2.06u PD=2.54u
+M$4 VDD \$3 L_HI VDD sg13_lv_pmos L=0.13u W=1.155u AS=0.4657125p AD=0.3927p
++ PS=2.54u PD=2.99u
+.ENDS sg13g2_tiehi
