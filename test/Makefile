@@ -5,7 +5,11 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
+<<<<<<< HEAD
+PROJECT_SOURCES = project.v adex_neuron_system_tt_lut32.v
+=======
 PROJECT_SOURCES = project.v
+>>>>>>> template/main
 
 ifneq ($(GATES),yes)
 

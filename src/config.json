@@ -13,7 +13,11 @@
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
   "//": "Users have reported that values up to 80 worked well for them.",
+<<<<<<< HEAD
+  "PL_TARGET_DENSITY_PCT": 78,
+=======
   "PL_TARGET_DENSITY_PCT": 60,
+>>>>>>> template/main
 
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz.",
@@ -31,7 +35,11 @@
   "//": "https://tinytapeout.com/faq/#how-can-i-map-an-additional-external-clock-to-one-of-the-gpios",
   "CLOCK_PORT": "clk",
 
+<<<<<<< HEAD
+  "//": "Configuration docs: https://openlane.readthedocs.io/en/latest/reference/configuration.html",
+=======
   "//": "Configuration docs: https://librelane.readthedocs.io/en/latest/reference/configuration.html",
+>>>>>>> template/main
 
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
   "//": "!!! DO NOT CHANGE ANYTHING BELOW THIS POINT !!!",
@@ -41,6 +49,12 @@
   "RUN_KLAYOUT_XOR": 0,
   "RUN_KLAYOUT_DRC": 0,
 
+<<<<<<< HEAD
+  "//": "Exclude standard cells with issues",
+  "EXTRA_EXCLUDED_CELLS": ["sg13g2_sdfbbp_1"],
+
+=======
+>>>>>>> template/main
   "//": "Don't put clock buffers on the outputs",
   "DESIGN_REPAIR_BUFFER_OUTPUT_PORTS": 0,
 
@@ -63,8 +77,14 @@
   "//": "Clock",
   "RUN_CTS": 1,
 
+<<<<<<< HEAD
+  "//": "Don't use power rings or TopMetal layers",
+  "FP_PDN_MULTILAYER": 0,
+  "RT_MAX_LAYER": "Metal5",
+=======
   "//": "Don't generate power rings",
   "FP_PDN_MULTILAYER": 0,
+>>>>>>> template/main
 
   "//": "MAGIC_DEF_LABELS may cause issues with LVS",
   "MAGIC_DEF_LABELS": 0,

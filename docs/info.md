@@ -9,8 +9,8 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-This is a DPi circuit based Mixed Signal Adaptive Exponential Neuron. 
+Just a test
 
 ## How to test
 
-This neuron is controlled by analog biases controlled by an SPI register. 
+Just a test

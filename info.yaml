@@ -11,10 +11,10 @@ project:
   tiles: "2x2"          # Valid values for analog projects: 1x2, 2x2
 
   # How many analog pins does your project use?
-  analog_pins: 6        # Valid values: 0 to 6
+  analog_pins: 5        # Valid values: 0 to 6
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
-  top_module:  "tt_um_adex_neuron_ncs"
+  top_module:  "tt_um_adex-neuron-ncs"
 
   # List your project's source files here. Source files must be in ./src and you must list each source file separately, one per line:
   source_files:        
@@ -24,42 +24,42 @@ project:
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs
-  ui[0]: "NN_ack_VABI[0]"
-  ui[1]: "NN_ack_VABI[1]"
-  ui[2]: "NN_ack_VABI[2]"
-  ui[3]: "NN_ack_VABI[3]"
-  ui[4]: "NN_ack_VABI[4]"
-  ui[5]: "NN_ack_VABI[5]"
-  ui[6]: "NN_ack_VABI[6]"
-  ui[7]: "NN_ack_VABI[7]"
+  ui[0]: ""
+  ui[1]: ""
+  ui[2]: ""
+  ui[3]: ""
+  ui[4]: ""
+  ui[5]: ""
+  ui[6]: ""
+  ui[7]: ""
 
   # Outputs
-  uo[0]: "NN_req_VABO[0]"
-  uo[1]: "NN_req_VABO[1]"
-  uo[2]: "NN_req_VABO[2]"
-  uo[3]: "NN_req_VABO[3]"
-  uo[4]: "NN_req_VABO[4]"
-  uo[5]: "NN_req_VABO[5]"
-  uo[6]: "NN_req_VABO[6]"
-  uo[7]: "NN_req_VABO[7]"
+  uo[0]: ""
+  uo[1]: ""
+  uo[2]: ""
+  uo[3]: ""
+  uo[4]: ""
+  uo[5]: ""
+  uo[6]: ""
+  uo[7]: ""
 
   # Bidirectional pins
-  uio[0]: "MUX_sel0_VSI"
-  uio[1]: "MUX_sel1_VSI"
-  uio[2]: "NN_ack_VABI[8]"
-  uio[3]: "NN_ack_VABI[9]"
-  uio[4]: "NN_ack_VABI[10]"
-  uio[5]: "NN_req_VABO[8]"
-  uio[6]: "NN_req_VABO[9]"
-  uio[7]: "NN_req_VABO[10]"
+  uio[0]: ""
+  uio[1]: ""
+  uio[2]: ""
+  uio[3]: ""
+  uio[4]: ""
+  uio[5]: ""
+  uio[6]: ""
+  uio[7]: ""
 
   # Analog pins - make sure to also set "analog_pins" above, else the pins won't be connected
-  ua[0]: "BUF_prob_VX1O"
-  ua[1]: "NN_ref_VNI"
-  ua[2]: "NN_tau_VNI"
-  ua[3]: "V2I_cm_VI"
-  ua[4]: "V2I_bias_VPI"
-  ua[5]: "V2I_in_VI"
+  ua[0]: "Input"
+  ua[1]: "Probe_Vmem"
+  ua[2]: "Probe_Vadap"
+  ua[3]: ""
+  ua[4]: ""
+  ua[5]: ""
 
 # Do not change!
 yaml_version: 6
