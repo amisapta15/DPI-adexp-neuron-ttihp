@@ -1,0 +1,21 @@
+"
+.param temp=27
+.param Iin_amp=4n
+
+.ic V(vmem)=0 V(vrefcap)=0 V(REQ)=1.2 V(ACK)=1.2
+
+.options gmin=1e-13
+.options method=gear
+.control
+
+save V(V_lk) V(V_in) V(V_ref)
+save V(ACK) V(REQ) V(vmem) V(vmem_buf) V(vrefcap)
+save V(V_in) V(V_cm)
+save V(xbuffer.vb)
+
+
+tran 50n 20m
+write neuron_noahp_tb.raw
+.endc
+
+"

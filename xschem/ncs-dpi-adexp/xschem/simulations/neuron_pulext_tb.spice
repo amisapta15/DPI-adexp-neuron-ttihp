@@ -1,0 +1,301 @@
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/neuron_pulext_tb.sch
+**.subckt neuron_pulext_tb
+Xneuron VDD I_in I_thr I_lk vmem REQ I_adapt I_thrahp CapAdap ACK I_lkahp Iref GND neuron
+Ithr VDD I_thr 1p
+Ilk VDD I_lk 4p
+Iahp I_adapt GND 0n
+Iin VDD I_in dc 0 ac 0 pulse(0 Iin_amp 0 20n 20n 1 1)
+VDD1 VDD net1 1.2
+Iref VDD Iref 200p
+Vidd net1 GND 0
+.save i(vidd)
+Ilkahp VDD I_lkahp 1p
+Ithrahp VDD I_thrahp 4p
+XM26 I_thr I_thr GND GND sg13_hv_nmos w=1u l=8u ng=2 m=8
+XM27 I_lk I_lk GND GND sg13_hv_nmos w=4u l=10u ng=2 m=4
+XM15 Iref Iref GND GND sg13_hv_nmos w=4u l=4u ng=2 m=4
+XM22 I_adapt I_adapt VDD VDD sg13_hv_pmos w=4u l=4u ng=1 m=4
+XM31 I_thrahp I_thrahp GND GND sg13_hv_nmos w=4u l=4u ng=1 m=4
+XM32 I_lkahp I_lkahp GND GND sg13_hv_nmos w=4u l=10u ng=2 m=4
+Xinv3 VDD Vext net2 GND inv
+Xinv4 VDD net2 ACK GND inv
+C1 I_thr GND 2p
+C2 I_lk GND 2p
+C3 Iref GND 2p
+C4 I_adapt GND 2p
+C5 I_thrahp GND 2p
+C6 I_lkahp GND 2p
+xext VDD GND Vext REQ pulse_extender
+**** begin user architecture code
+
+
+
+.param temp=27
+.param Iin_amp=200p
+
+.ic V(vmem)=0 V(xneuron.xref.vref)=0 V(REQ)=0 V(ACK)=0 V(CapAdap)=0
+
+.options gmin=1e-13
+.control
+
+
+
+* ======================================================
+*  Iin sweep - measure firing rate of V(REQ) vs Iin
+* ======================================================
+*  For each DC value of Iin a transient simulation is run.
+*  Rising-edge crossings of V(REQ) through a threshold
+*  are counted after a settling window and the firing
+*  frequency is computed.  Results go to neuron_iin_sweep.raw
+* ======================================================
+
+* --- Sweep parameters (Amps) - edit as needed ---
+let iin_start = 0
+let iin_stop  = 4000e-12
+let iin_step  = 200e-12
+
+* --- Compute number of sweep points ---
+let num_pts = (iin_stop - iin_start) / iin_step + 1
+
+* --- Create a new plot to hold the accumulated results ---
+setplot new
+set resplot = $curplot
+let iin_values   = unitvec(num_pts)
+let firing_rates = unitvec(num_pts)
+let sweep_idx = 0
+set t_sim = 50m
+
+* --- Main sweep loop ---
+dowhile sweep_idx < num_pts
+
+  * Compute cur_iin fresh each iteration to avoid float drift
+  let cur_iin = iin_start + sweep_idx * iin_step
+
+  echo
+  echo ============================================
+  echo   Sweep point: Iin = $&cur_iin A
+  echo ============================================
+
+  * Save cur_iin to a shell variable before tran changes the plot context
+  set cur_iin_val = $&cur_iin
+
+  * Set the Iin_amp parameter to the current sweep value.
+  alterparam Iin_amp = $cur_iin_val
+  reset
+
+  save V(REQ)
+
+  * Run transient analysis with adaptive time
+  echo   t_sim = $t_sim
+  tran 50n $t_sim
+
+  * --- Measure firing frequency using meas tran ---
+  * Skip 1st spike (startup glitch), use 2nd-4th spikes
+  let t_rise2 = 0
+  let t_rise3 = 0
+  let t_rise4 = 0
+  meas tran t_rise2 WHEN v(REQ)=0.6 RISE=2
+  meas tran t_rise3 WHEN v(REQ)=0.6 RISE=3
+  meas tran t_rise4 WHEN v(REQ)=0.6 RISE=4
+
+  * Use best available data for frequency
+  if t_rise4 > 0
+    * 4+ spikes: use 3rd-4th ISI
+    let f_rate = 1.0 / (t_rise4 - t_rise3)
+  else
+    if t_rise3 > 0
+      * 3 spikes: use 2nd-3rd ISI
+      let f_rate = 1.0 / (t_rise3 - t_rise2)
+    else
+      if t_rise2 > 0
+        * 2 spikes: estimate rate from time to 2nd spike
+        let f_rate = 1.0 / t_rise2
+      else
+        * No real spikes (only glitch or none)
+        let f_rate = 0
+      end
+    end
+  end
+
+  echo   freq = $&f_rate Hz
+
+  * --- Update t_sim for next sweep point ---
+  * Need ~5 spikes worth of time, clamp to [1ms, 50ms]
+  if f_rate > 0
+    let t_next = 5.0 / f_rate
+    if t_next < 1e-3
+      let t_next = 1e-3
+    end
+    if t_next > 50e-3
+      let t_next = 50e-3
+    end
+    set t_sim = $&t_next
+  end
+
+  * --- Store this point's results in the result plot ---
+  set save_freq = $&f_rate
+  setplot $resplot
+  let iin_values[sweep_idx]   = $cur_iin_val
+  let firing_rates[sweep_idx] = $save_freq
+  let sweep_idx = sweep_idx + 1
+
+end
+
+* --- Write the result vectors to a .raw file ---
+setplot $resplot
+write neuron_iin_sweep.raw iin_values firing_rates
+
+echo
+echo ============================================
+echo   Iin sweep complete!
+echo   Results saved to:  neuron_iin_sweep.raw
+echo   Vectors:
+echo     iin_values   (A)  - input current
+echo     firing_rates (Hz) - neuron firing rate
+echo ============================================
+
+.endc
+
+
+
+
+
+
+.lib cornerMOSlv.lib mos_tt
+.lib cornerMOShv.lib mos_tt
+
+**** end user architecture code
+**.ends
+
+* expanding   symbol:  neuron.sym # of pins=13
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/neuron.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/neuron.sch
+.subckt neuron VDD I_in V_th V_lk Vmem REQ V_adapt V_thrahp CapAdap ACK V_lkahp V_ref GND
+*.ipin V_ref
+*.iopin GND
+*.iopin VDD
+*.opin REQ
+*.ipin ACK
+*.ipin I_in
+*.ipin V_th
+*.ipin V_lk
+*.ipin V_adapt
+*.ipin V_thrahp
+*.ipin V_lkahp
+*.opin CapAdap
+*.opin Vmem
+Xinv1 VDD Vfb net1 GND inv
+Xinv2 VDD net1 REQ GND inv
+Xdpi1 I_in VDD V_th Vmem V_lk GND DPI
+Xfb VDD Vfb Vmem GND FB_system
+Xadap VDD REQ CapAdap V_adapt I_in V_thrahp V_lkahp GND ADAP_system
+Xref VDD ACK Vmem REQ V_ref GND REF_system
+Cmem Vmem GND 1p
+.ends
+
+
+* expanding   symbol:  inv.sym # of pins=4
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/inv.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/inv.sch
+.subckt inv VDD in out GND
+*.ipin in
+*.iopin VDD
+*.iopin GND
+*.opin out
+XM1 out in VDD VDD sg13_hv_pmos w=1u l=0.5u ng=1
+XM2 out in GND GND sg13_hv_nmos w=1u l=0.5u ng=1
+.ends
+
+
+* expanding   symbol:  pulse_extender.sym # of pins=4
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/pulse_extender.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/pulse_extender.sch
+.subckt pulse_extender VDD GND out_VABO in_VABI
+*.ipin in_VABI
+*.opin out_VABO
+*.iopin VDD
+*.iopin GND
+XMstarve net1 net1 VDD VDD sg13_hv_pmos w=1u l=4u ng=2 m=4
+XMp Vcap in_VABI net1 VDD sg13_hv_pmos w=1u l=4u ng=2 m=4
+XMn Vcap in_VABI GND GND sg13_hv_nmos w=1u l=1u ng=1
+C1 Vcap GND 200f
+XMp1 out_VABO Vcap VDD VDD sg13_hv_pmos w=1u l=1u ng=1
+XMn1 out_VABO Vcap GND GND sg13_hv_nmos w=1u l=1u ng=1
+.ends
+
+
+* expanding   symbol:  DPI.sym # of pins=6
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/DPI.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/DPI.sch
+.subckt DPI I_in VDD V_th V_mem V_lk GND
+*.opin V_mem
+*.ipin V_lk
+*.ipin V_th
+*.ipin I_in
+*.iopin VDD
+*.iopin GND
+XMdifl GND V_th I_in VDD sg13_hv_pmos w=4u l=8u ng=4 m=4
+XMdifr V_mem V_mem I_in VDD sg13_hv_pmos w=4u l=8u ng=4 m=4
+XMtau net1 V_lk GND GND sg13_hv_nmos w=4u l=10u ng=2 m=4
+Vilk V_mem net1 0
+.save i(vilk)
+.ends
+
+
+* expanding   symbol:  FB_system.sym # of pins=4
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/FB_system.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/FB_system.sch
+.subckt FB_system VDD out V_mem GND
+*.opin out
+*.iopin V_mem
+*.iopin VDD
+*.iopin GND
+XM3 Vmir Vmir VDD VDD sg13_hv_pmos w=1u l=2u ng=2 m=4
+XM20 V_mem out net1 VDD sg13_hv_pmos w=1u l=0.5u ng=2
+XM2 net1 Vmir VDD VDD sg13_hv_pmos w=1u l=8u ng=2
+XM23 out V_mem Vmir VDD sg13_hv_pmos w=1u l=2u ng=2 m=4
+XM4 out V_mem GND GND sg13_hv_nmos w=1u l=8u ng=2 m=2
+.ends
+
+
+* expanding   symbol:  ADAP_system.sym # of pins=8
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/ADAP_system.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/ADAP_system.sch
+.subckt ADAP_system VDD REQ CapAdap V_adapt I_in V_thrahp V_lkahp GND
+*.iopin VDD
+*.iopin GND
+*.ipin REQ
+*.ipin V_adapt
+*.ipin V_thrahp
+*.ipin V_lkahp
+*.ipin I_in
+*.opin CapAdap
+XM19 net2 REQ VDD VDD sg13_hv_pmos w=1u l=0.5u ng=1
+XM21 net1 V_adapt net2 VDD sg13_hv_pmos w=4u l=4u ng=2 m=4
+XM18 I_in CapAdap GND GND sg13_hv_nmos w=4u l=4u ng=2 m=4
+Cmem2 CapAdap GND 2p
+Xdpi2 net1 VDD V_thrahp CapAdap V_lkahp GND DPI
+.ends
+
+
+* expanding   symbol:  REF_system.sym # of pins=6
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/REF_system.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/REF_system.sch
+.subckt REF_system VDD ACK V_mem REQ V_ref GND
+*.iopin VDD
+*.iopin GND
+*.ipin V_ref
+*.ipin REQ
+*.ipin ACK
+*.ipin V_mem
+Cr Vref GND 0.5p
+XM10 Vref REQ net2 VDD sg13_hv_pmos w=1u l=0.5u ng=1
+XM11 Vref REQ net1 GND sg13_hv_nmos w=1u l=0.5u ng=1
+XM12 net2 ACK VDD VDD sg13_hv_pmos w=1u l=0.5u ng=1
+XM13 V_mem Vref GND GND sg13_hv_nmos w=1u l=0.5u ng=1
+XM14 net1 V_ref GND GND sg13_hv_nmos w=4u l=4u ng=2 m=4
+.ends
+
+.GLOBAL GND
+.GLOBAL VDD
+.end

@@ -1,0 +1,252 @@
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/neuron_row_tb.sch
+**.subckt neuron_row_tb
+Ilk VDD V_lk 4p
+Iin VDD GND dc 0 ac 0 pulse(0 Iin_amp 0 20n 20n 1 1)
+VDD1 VDD net1 1.2
+Iref VDD V_ref 100p
+Vidd net1 GND 0
+.save i(vidd)
+XM27 V_lk V_lk GND GND sg13_hv_nmos w=4u l=4u ng=2 m=4
+C2 V_lk GND 2p
+XM1 V_ref V_ref GND GND sg13_hv_nmos w=4u l=4u ng=2 m=4
+C1 V_ref GND 2p
+XM3 V_bias V_bias VDD VDD sg13_hv_pmos w=4u l=1u ng=1 m=4
+C3 VDD V_bias 2p
+Ilk1 V_bias GND 4n
+Vcm V_cm GND 0.4
+Vin V_in GND sine(0.4 50m 10)
+xbuffer Vmem VDD V_bias vmem_buf GND buffer_final
+C4 vmem_buf GND 20p
+xrow VDD GND net2 net3 V_bias V_in Vmem V_cm V_lk REQ V_ref Vrefcap ACK neuron_row
+Xinv3 VDD REQ net4 GND inv
+Xinv4 VDD net4 ACK GND inv
+**** begin user architecture code
+
+
+
+.param temp=27
+.param Iin_amp=4n
+
+.ic V(vmem)=0 V(vrefcap)=0 V(REQ)=1.2 V(ACK)=1.2
+
+.options gmin=1e-13
+.options method=gear
+.control
+
+save V(V_lk) V(V_in) V(V_ref)
+save V(ACK) V(REQ) V(vmem) V(vmem_buf) V(vrefcap)
+save V(V_in) V(V_cm)
+save V(xbuffer.vb)
+
+
+tran 50n 100m
+write neuron_noahp_tb.raw
+.endc
+
+
+
+
+
+
+.lib cornerMOSlv.lib mos_tt
+.lib cornerMOShv.lib mos_tt
+.lib cornerCAP.lib cap_typ
+.lib cornerRES.lib res_typ
+
+**** end user architecture code
+**.ends
+
+* expanding   symbol:  buffer_final.sym # of pins=5
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/buffer_final.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/buffer_final.sch
+.subckt buffer_final inp_cm VDD Vbias out GND
+*.ipin inp_cm
+*.opin out
+*.iopin VDD
+*.iopin GND
+*.ipin Vbias
+XM2 Vm inp_cm Vb nwell sg13_hv_pmos w=4u l=1u ng=1 m=4
+XM5 Vm Vm GND psub sg13_hv_nmos w=4u l=1u ng=1 m=4
+XM13 Vb Vbias VDD nwell sg13_hv_pmos w=4u l=1u ng=1 m=40
+XM3 out out Vb nwell sg13_hv_pmos w=4u l=1u ng=1 m=4
+XM1 out Vm GND psub sg13_hv_nmos w=4u l=1u ng=1 m=4
+XR1 GND psub ptap1 R=262.8 w=0.78e-6 l=0.78e-6
+XR2 VDD nwell ntap1 R=262.8 w=0.78e-6 l=0.78e-6
+XMDBIAS VDD VDD VDD nwell sg13_hv_pmos w=4u l=1u ng=2 m=4
+XMDdiffINP Vb Vb Vb nwell sg13_hv_pmos w=4u l=1u ng=2 m=2
+XMDdiffINN Vb Vb Vb nwell sg13_hv_pmos w=4u l=1u ng=2 m=2
+XMDNMIRA GND GND GND psub sg13_hv_nmos w=4u l=1u ng=2 m=2
+XMDNMIRB GND GND GND psub sg13_hv_nmos w=4u l=1u ng=2 m=2
+.ends
+
+
+* expanding   symbol:  neuron_row.sym # of pins=13
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/neuron_row.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/neuron_row.sch
+.subckt neuron_row VDD GND nwell psub bias_VPI in_VI mem_VNTO cm_VI tau_VNI req_VABO ref_VNI refcap_VTO ack_VABI
+*.ipin in_VI
+*.ipin cm_VI
+*.ipin bias_VPI
+*.iopin VDD
+*.iopin GND
+*.iopin nwell
+*.iopin psub
+*.opin mem_VNTO
+*.opin req_VABO
+*.opin refcap_VTO
+*.ipin tau_VNI
+*.ipin ref_VNI
+*.ipin ack_VABI
+Xneuron VDD I_in tau_VNI mem_VNTO req_VABO ack_VABI ref_VNI GND refcap_VTO psub nwell neuron_noahp
+xv2i VDD bias_VPI cm_VI in_VI I_in GND V2I_shift_final
+.ends
+
+
+* expanding   symbol:  inv.sym # of pins=4
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/inv.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/inv.sch
+.subckt inv VDD in out GND
+*.ipin in
+*.iopin VDD
+*.iopin GND
+*.opin out
+XM1 out in VDD nwell sg13_hv_pmos w=4u l=0.5u ng=1
+XM2 out in GND psub sg13_hv_nmos w=4u l=0.5u ng=1
+XR1 GND psub ptap1 R=95.61 w=2.75e-6 l=1e-6
+XR2 VDD nwell ntap1 R=95.61 w=2.75e-6 l=1e-6
+.ends
+
+
+* expanding   symbol:  neuron_noahp.sym # of pins=11
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/neuron_noahp.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/neuron_noahp.sch
+.subckt neuron_noahp VDD I_in V_lk Vmem REQ ACK V_ref GND Vrefcap psub nwell
+*.ipin V_ref
+*.iopin GND
+*.iopin VDD
+*.opin REQ
+*.ipin ACK
+*.ipin I_in
+*.ipin V_lk
+*.opin Vmem
+*.opin Vrefcap
+*.iopin psub
+*.iopin nwell
+Xinv1 VDD Vfb net1 GND inv
+Xinv2 VDD net1 REQ GND inv
+Xdpi1 I_in VDD Vmem V_lk GND nwell psub DPI
+Xfb VDD Vfb Vmem GND nwell psub FB_system
+Xref ACK Vmem REQ Vrefcap GND V_ref VDD nwell psub REF_system
+XCmem Vmem GND cap_cmim w=44.4e-6 l=15e-6
+XCref Vrefcap GND cap_cmim w=22.1e-6 l=15e-6
+.ends
+
+
+* expanding   symbol:  V2I_shift_final.sym # of pins=6
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/V2I_shift_final.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/V2I_shift_final.sch
+.subckt V2I_shift_final VDD Vbias inn_cm inp_cm out GND
+*.ipin inn_cm
+*.ipin inp_cm
+*.opin out
+*.ipin Vbias
+*.iopin VDD
+*.iopin GND
+XMIRA Vm Vm GND psub sg13_hv_nmos w=4u l=1u ng=2 m=4
+XMBIAS Vb Vbias VDD nwell sg13_hv_pmos w=4u l=1u ng=2 m=4
+XMIRB out Vm GND psub sg13_hv_nmos w=4u l=1u ng=2 m=4
+XMdiffINN out inn_cm Vb nwell sg13_hv_pmos w=4u l=1u ng=2 m=4
+XR1 GND psub ptap1 R=262.8 w=0.78e-6 l=0.78e-6
+XR2 VDD nwell ntap1 R=262.8 w=0.78e-6 l=0.78e-6
+XMDBIAS VDD VDD VDD nwell sg13_hv_pmos w=4u l=1u ng=2 m=2
+XMIDC out Vbias VDD nwell sg13_hv_pmos w=3u l=1u ng=2 m=4
+XMDIDC VDD VDD VDD nwell sg13_hv_pmos w=3u l=1u ng=2 m=2
+XMdiffINP Vm inp_cm Vb nwell sg13_hv_pmos w=4u l=1u ng=2 m=4
+XMDdiffINP Vb Vb Vb nwell sg13_hv_pmos w=4u l=1u ng=2 m=2
+XMDdiffINN Vb Vb Vb nwell sg13_hv_pmos w=4u l=1u ng=2 m=2
+XMDNMIRA GND GND GND psub sg13_hv_nmos w=4u l=1u ng=2 m=2
+XMDNMIRB GND GND GND psub sg13_hv_nmos w=4u l=1u ng=2 m=2
+.ends
+
+
+* expanding   symbol:  DPI.sym # of pins=7
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/DPI.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/DPI.sch
+.subckt DPI I_in VDD V_mem V_lk GND nwell psub
+*.opin V_mem
+*.ipin V_lk
+*.ipin I_in
+*.iopin VDD
+*.iopin GND
+*.iopin nwell
+*.iopin psub
+XMdifl GND V_lk I_in nwell sg13_hv_pmos w=2u l=2u ng=2 m=8
+XMdifr V_mem V_mem I_in nwell sg13_hv_pmos w=2u l=2u ng=2 m=8
+XMtau V_mem V_lk GND psub sg13_hv_nmos w=4u l=4u ng=2 m=4
+XR1 VDD nwell ntap1 R=16.73 w=25.2e-6 l=0.3e-6
+XR2 VDD nwell ntap1 R=46.01 w=0.3e-6 l=9e-6
+XR3 VDD nwell ntap1 R=46.01 w=0.3e-6 l=9e-6
+XR4 GND psub ptap1 R=3.342 w=25.7e-6 l=9e-6 rw=0.3e-6
+XMdum1 VDD VDD VDD nwell sg13_hv_pmos w=5u l=2u ng=10 m=2
+XMdum2 I_in VDD VDD nwell sg13_hv_pmos w=1u l=2u ng=1 m=8
+XMdum3 GND GND GND psub sg13_hv_nmos w=2u l=4u ng=4 m=2
+XMdum4 GND GND GND psub sg13_hv_nmos w=0.5u l=3u ng=1 m=4
+XMdum5 GND GND GND psub sg13_hv_nmos w=2u l=3u ng=1 m=4
+.ends
+
+
+* expanding   symbol:  FB_system.sym # of pins=6
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/FB_system.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/FB_system.sch
+.subckt FB_system VDD out V_mem GND nwell psub
+*.opin out
+*.iopin V_mem
+*.iopin VDD
+*.iopin GND
+*.iopin nwell
+*.iopin psub
+XMmirr Vmir Vmir VDD nwell sg13_hv_pmos w=4u l=2u ng=4
+XMmirl4 V_mem Vmir net1 nwell sg13_hv_pmos w=1u l=2u ng=1
+XMthr out V_mem Vmir nwell sg13_hv_pmos w=4u l=2u ng=4
+XMmem1 out V_mem net2 psub sg13_hv_nmos w=1u l=2u ng=1 m=2
+XMmirl3 net1 Vmir net3 nwell sg13_hv_pmos w=1u l=2u ng=1
+XMmirl2 net3 Vmir net4 nwell sg13_hv_pmos w=1u l=2u ng=1
+XMmirl1 net4 Vmir VDD nwell sg13_hv_pmos w=1u l=2u ng=1
+XMmem2 net2 V_mem net5 psub sg13_hv_nmos w=1u l=2u ng=1 m=2
+XMmem3 net5 V_mem net6 psub sg13_hv_nmos w=1u l=2u ng=1 m=2
+XMmem4 net6 V_mem GND psub sg13_hv_nmos w=1u l=2u ng=1 m=2
+XMdum1 GND GND GND psub sg13_hv_nmos w=6u l=2u ng=6 m=2
+XMdum2 GND GND GND psub sg13_hv_nmos w=1u l=2u ng=1 m=2
+XMdum3 out GND GND psub sg13_hv_nmos w=1u l=2u ng=1 m=2
+XMdum4 VDD VDD VDD nwell sg13_hv_pmos w=6u l=2u ng=6 m=2
+XMdum5 VDD VDD VDD nwell sg13_hv_pmos w=1u l=2u ng=1 m=3
+XMdum6 out VDD VDD nwell sg13_hv_pmos w=1u l=2u ng=1 m=2
+XMdum7 V_mem VDD VDD nwell sg13_hv_pmos w=1u l=2u ng=1
+XR1 VDD nwell ntap1 R=4.4 w=16e-6 l=10.5e-6 rw=0.3e-6
+XR2 GND psub ptap1 R=4.829 w=16e-6 l=8.2e-6 rw=0.3e-6
+.ends
+
+
+* expanding   symbol:  REF_system.sym # of pins=9
+** sym_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/REF_system.sym
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/REF_system.sch
+.subckt REF_system ACK V_mem REQ Vrefcap GND V_ref VDD nwell psub
+*.iopin VDD
+*.iopin GND
+*.ipin V_ref
+*.ipin REQ
+*.ipin ACK
+*.ipin V_mem
+*.opin Vrefcap
+*.iopin nwell
+*.iopin psub
+XM10 Vrefcap REQ net2 nwell sg13_hv_pmos w=1u l=0.5u ng=1
+XM11 Vrefcap REQ net1 psub sg13_hv_nmos w=1u l=0.5u ng=1
+XM12 net2 ACK VDD nwell sg13_hv_pmos w=1u l=0.5u ng=1
+XM13 V_mem Vrefcap GND psub sg13_hv_nmos w=1u l=0.5u ng=1
+XM14 net1 V_ref GND psub sg13_hv_nmos w=4u l=4u ng=2 m=4
+.ends
+
+.GLOBAL GND
+.GLOBAL VDD
+.end

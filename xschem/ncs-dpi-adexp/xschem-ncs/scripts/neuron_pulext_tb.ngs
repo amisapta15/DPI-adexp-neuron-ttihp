@@ -1,0 +1,143 @@
+"
+.param temp=27
+.param Iin_amp=200p
+
+.ic V(vmem)=0 V(xneuron.xref.vref)=0 V(REQ)=1.2 V(ACK)=1.2
+
+.options gmin=1e-13
+.options method=gear
+.control
+
+
+
+* ======================================================
+*  Iin sweep - measure firing rate of V(REQ) vs Iin
+* ======================================================
+*  For each DC value of Iin a transient simulation is run.
+*  Rising-edge crossings of V(REQ) through a threshold
+*  are counted after a settling window and the firing
+*  frequency is computed.  Results go to neuron_iin_sweep.raw
+* ======================================================
+
+* --- Sweep parameters (Amps) - edit as needed ---
+let iin_start = 0
+let iin_stop  = 4000e-12
+let iin_step  = 200e-12
+
+* --- Compute number of sweep points ---
+let num_pts = (iin_stop - iin_start) / iin_step + 1
+
+* --- Create a new plot to hold the accumulated results ---
+setplot new
+set resplot = $curplot
+let iin_values   = unitvec(num_pts)
+let firing_rates = unitvec(num_pts)
+let sweep_idx = 0
+set t_sim = 50m
+
+* --- Main sweep loop ---
+dowhile sweep_idx < num_pts
+
+  * Compute cur_iin fresh each iteration to avoid float drift
+  let cur_iin = iin_start + sweep_idx * iin_step
+
+  echo
+  echo ============================================
+  echo   Sweep point: Iin = $&cur_iin A
+  echo ============================================
+
+  * Save cur_iin to a shell variable before tran changes the plot context
+  set cur_iin_val = $&cur_iin
+
+  * Set the Iin_amp parameter to the current sweep value.
+  alterparam Iin_amp = $cur_iin_val
+  reset
+
+  save V(REQ)
+
+  * Run transient analysis with adaptive time
+  echo   t_sim = $t_sim
+  tran 50n $t_sim
+
+  * --- Measure firing frequency using meas tran ---
+  * Skip 1st spike (different freq from resting), use 2nd-4th spikes
+  let t_fall1 = 0
+  let t_fall2 = 0
+  let t_fall3 = 0
+  let t_fall4 = 0
+  meas tran t_fall1 WHEN v(REQ)=0.6 FALL=1
+  meas tran t_fall2 WHEN v(REQ)=0.6 FALL=2
+  meas tran t_fall3 WHEN v(REQ)=0.6 FALL=3
+  meas tran t_fall4 WHEN v(REQ)=0.6 FALL=4
+
+  * Use best available data for frequency
+  * More than 1 spike: f = (N-1) / (t_last - t_first)
+  * Exactly 1 spike:   f = 1 / t_first
+  if t_fall4 > 0
+    * 4 spikes: use span from 1st to 4th
+    let f_rate = 3.0 / (t_fall4 - t_fall1)
+  else
+    if t_fall3 > 0
+      * 3 spikes: use span from 1st to 3rd
+      let f_rate = 2.0 / (t_fall3 - t_fall1)
+    else
+      if t_fall2 > 0
+        * 2 spikes: use span from 1st to 2nd
+        let f_rate = 1.0 / (t_fall2 - t_fall1)
+      else
+        if t_fall1 > 0
+          * 1 spike: estimate from time to 1st spike
+          let f_rate = 1.0 / t_fall1
+        else
+          * No spikes
+          let f_rate = 0
+        end
+      end
+    end
+  end
+
+  echo   freq = $&f_rate Hz
+  echo   Spike times:
+  echo     t_fall1 = $&t_fall1 s
+  echo     t_fall2 = $&t_fall2 s
+  echo     t_fall3 = $&t_fall3 s
+  echo     t_fall4 = $&t_fall4 s
+
+  * --- Update t_sim for next sweep point ---
+  * Need ~5 spikes worth of time, clamp to [1ms, 50ms]
+  if f_rate > 0
+    let t_next = 5.0 / f_rate
+    if t_next < 1e-3
+      let t_next = 1e-3
+    end
+    if t_next > 50e-3
+      let t_next = 50e-3
+    end
+    set t_sim = $&t_next
+  end
+
+  * --- Store this point's results in the result plot ---
+  set save_freq = $&f_rate
+  setplot $resplot
+  let iin_values[sweep_idx]   = $cur_iin_val
+  let firing_rates[sweep_idx] = $save_freq
+  let sweep_idx = sweep_idx + 1
+
+end
+
+* --- Write the result vectors to a .raw file ---
+setplot $resplot
+write neuron_iin_sweep.raw iin_values firing_rates
+
+echo
+echo ============================================
+echo   Iin sweep complete!
+echo   Results saved to:  neuron_iin_sweep.raw
+echo   Vectors:
+echo     iin_values   (A)  - input current
+echo     firing_rates (Hz) - neuron firing rate
+echo ============================================
+
+.endc
+
+"

@@ -1,0 +1,26 @@
+** sch_path: /foss/designs/adex_neuron/ttihp26a-adex-neuron-ncs/xschem/analog_buffer.sch
+**.subckt analog_buffer inp_cm VDD Vbias out GND nwell psub
+*.ipin inp_cm
+*.opin out
+*.iopin VDD
+*.iopin GND
+*.ipin Vbias
+*.iopin psub
+*.iopin nwell
+XM2 Vm inp_cm Vb nwell sg13_hv_pmos w=4u l=1u ng=1 m=4
+XM5 Vm Vm GND psub sg13_hv_nmos w=4u l=1u ng=1 m=4
+XM13 Vb Vbias VDD nwell sg13_hv_pmos w=4u l=1u ng=1 m=40
+XM3 out out Vb nwell sg13_hv_pmos w=4u l=1u ng=1 m=4
+XM1 out Vm GND psub sg13_hv_nmos w=4u l=1u ng=1 m=4
+XR2 VDD nwell ntap1 R=17.27 w=0.8e-6 l=19.7e-6
+XMDBIAS VDD VDD VDD nwell sg13_hv_pmos w=4u l=1u ng=2 m=20
+XMDdiffINP Vb Vb Vb nwell sg13_hv_pmos w=4u l=1u ng=2 m=2
+XMDdiffINN Vb Vb Vb nwell sg13_hv_pmos w=4u l=1u ng=2 m=2
+XMDNMIRA GND GND GND psub sg13_hv_nmos w=4u l=1u ng=2 m=2
+XMDNMIRB GND GND GND psub sg13_hv_nmos w=4u l=1u ng=2 m=2
+XR3 VDD nwell ntap1 R=9.074 w=0.8e-6 l=38e-6
+XR4 VDD nwell ntap1 R=9.074 w=0.8e-6 l=38e-6
+XR5 GND psub ptap1 R=4.709 w=18.5e-6 l=6.3e-6 rw=0.3e-6
+XR1 VDD nwell ntap1 R=19.37 w=0.8e-6 l=17.5e-6
+**.ends
+.end
