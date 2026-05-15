@@ -1,8 +1,9 @@
-v {xschem version=3.4.7 file_version=1.2}
+v {xschem version=3.4.8RC file_version=1.3}
 G {}
 K {}
 V {}
 S {}
+F {}
 E {}
 B 2 40 -760 840 -360 {flags=graph,unlocked
 ypos1=0
@@ -26,8 +27,8 @@ vlk
 vthr"
 rainbow=1
 y1=0
-x1=7.1808361e-08
-x2=1.0871808e-05
+x1=-4.6819162e-07
+x2=1.0331808e-05
 y2=1}
 B 2 40 -1170 840 -770 {flags=graph
 ypos1=0
@@ -205,7 +206,7 @@ value="
 C {devices/code_shown.sym} -640 -1040 0 0 {name=NGSPICE only_toplevel=true 
 value="
 .options savecurrents
-.include neuron_buff_test.save
+.include neuron2_final.save
 .param temp=27
 .control
 set wr_singlescale
@@ -436,11 +437,9 @@ spiceprefix=X
 C {lab_pin.sym} 1480 -120 0 1 {name=p41 sig_type=std_logic lab=VDD}
 C {vdd.sym} 1480 -150 0 0 {name=l15 lab=VDD}
 C {lab_pin.sym} 1420 200 0 0 {name=p42 sig_type=std_logic lab=VREF}
-C {buff.sym} 1440 -350 0 0 {name=xbuff2}
 C {vdd.sym} 1480 -370 0 0 {name=l27 lab=VDD}
 C {lab_wire.sym} 1740 -320 2 0 {name=p43 sig_type=std_logic lab=OUT}
 C {devices/gnd.sym} 1590 -240 0 0 {name=l28 lab=GND}
-C {inv.sym} 1570 -320 0 0 {name=xinv2}
 C {vdd.sym} 1590 -370 0 0 {name=l29 lab=VDD}
 C {lab_wire.sym} 1380 -80 2 0 {name=p44 sig_type=std_logic lab=REQ}
 C {noconn.sym} 1740 -290 2 0 {name=l33}
@@ -522,3 +521,5 @@ C {lab_pin.sym} 2110 -40 0 1 {name=p23 sig_type=std_logic lab=VDD}
 C {vdd.sym} 2110 -90 0 0 {name=l13 lab=VDD}
 C {devices/gnd.sym} 2110 170 0 0 {name=l14 lab=GND}
 C {devices/gnd.sym} 1480 -260 0 0 {name=l16 lab=GND}
+C {dpi_adexp_neuron/design_data/xschem/dev/buff.sym} 1440 -350 0 0 {name=xbuff1}
+C {dpi_adexp_neuron/design_data/xschem/dev/inv.sym} 1570 -320 0 0 {name=xinv1}

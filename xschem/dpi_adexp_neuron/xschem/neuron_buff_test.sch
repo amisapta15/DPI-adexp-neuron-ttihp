@@ -1,8 +1,9 @@
-v {xschem version=3.4.8RC file_version=1.2}
+v {xschem version=3.4.8RC file_version=1.3}
 G {}
 K {}
 V {}
 S {}
+F {}
 E {}
 B 2 40 -760 840 -360 {flags=graph,unlocked
 ypos1=0
@@ -518,7 +519,6 @@ C {vdd.sym} 1480 -150 0 0 {name=l15 lab=VDD}
 C {lab_pin.sym} 1420 200 0 0 {name=p42 sig_type=std_logic lab=VREF}
 C {vdd.sym} 1620 -520 0 0 {name=l27 lab=VDD}
 C {devices/gnd.sym} 1490 -280 0 0 {name=l28 lab=GND}
-C {inv.sym} 1600 -470 0 0 {name=xinv2}
 C {vdd.sym} 1490 -360 0 0 {name=l29 lab=VDD}
 C {lab_wire.sym} 1380 -80 2 0 {name=p44 sig_type=std_logic lab=REQ}
 C {noconn.sym} 2030 -330 2 0 {name=l33}
@@ -611,14 +611,10 @@ m=10
 model=sg13_lv_pmos
 spiceprefix=X
 }
-C {inv.sym} 1470 -320 0 0 {name=xinv1}
-C {inv.sym} 1780 -470 0 0 {name=xinv3}
 C {devices/gnd.sym} 1800 -400 0 0 {name=l19 lab=GND}
 C {vdd.sym} 1640 -300 0 0 {name=l20 lab=VDD}
-C {inv.sym} 1620 -250 0 0 {name=xinv4}
 C {devices/gnd.sym} 1640 -180 0 0 {name=l21 lab=GND}
 C {vdd.sym} 1800 -310 0 0 {name=l22 lab=VDD}
-C {inv.sym} 1780 -260 0 0 {name=xinv5}
 C {devices/gnd.sym} 1800 -190 0 0 {name=l30 lab=GND}
 C {lab_pin.sym} 1850 -1050 2 1 {name=p47 sig_type=std_logic lab=DB0}
 C {devices/gnd.sym} 1950 -880 0 0 {name=l41 lab=GND}
@@ -632,7 +628,6 @@ C {devices/gnd.sym} 1990 -1240 0 0 {name=l44 lab=GND}
 C {vsource.sym} 2060 -1280 0 0 {name=Ven9 value=0
 "}
 C {devices/gnd.sym} 2060 -1230 0 0 {name=l45 lab=GND}
-C {trimmer.sym} 1950 -980 0 0 {name=x2}
 C {lab_pin.sym} 1850 -1020 2 1 {name=p48 sig_type=std_logic lab=DB1}
 C {lab_pin.sym} 1850 -990 2 1 {name=p49 sig_type=std_logic lab=DB2}
 C {lab_pin.sym} 1850 -960 2 1 {name=p50 sig_type=std_logic lab=DB3}
@@ -752,3 +747,9 @@ C {noconn.sym} 400 140 2 0 {name=l36}
 C {lab_pin.sym} 390 140 1 0 {name=p33 sig_type=std_logic lab=ob1}
 C {lab_pin.sym} 210 140 1 0 {name=p24 sig_type=std_logic lab=VREF}
 C {lab_wire.sym} 50 120 1 0 {name=p5 sig_type=std_logic lab=VTHR}
+C {dpi_adexp_neuron/xschem/trimmer.sym} 1950 -980 0 0 {name=x1}
+C {dpi_adexp_neuron/xschem/inv.sym} 1620 -250 0 0 {name=xinv6}
+C {dpi_adexp_neuron/xschem/inv.sym} 1470 -320 0 0 {name=xinv1}
+C {dpi_adexp_neuron/xschem/inv.sym} 1600 -470 0 0 {name=xinv2}
+C {dpi_adexp_neuron/xschem/inv.sym} 1780 -470 0 0 {name=xinv3}
+C {dpi_adexp_neuron/xschem/inv.sym} 1780 -260 0 0 {name=xinv4}
