@@ -1,0 +1,13 @@
+tEDAx v1
+begin netlist v1 neuron_buff_test
+#subcircuit buff xbuff2
+#map VDD -> VDD
+#map in -> REQ
+#map out -> net7
+#map VSS -> GND
+#subcircuit inv xinv2
+#map VDD -> VDD
+#map in -> net7
+#map out -> OUT
+#map VSS -> GND
+end netlist

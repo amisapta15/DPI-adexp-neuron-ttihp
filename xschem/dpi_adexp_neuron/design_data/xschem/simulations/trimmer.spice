@@ -1,0 +1,65 @@
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/trimmer.sch
+**.subckt trimmer VDD D0 D1 D2 D3 VSS en out
+*.ipin en
+*.ipin D0
+*.ipin D1
+*.ipin D2
+*.ipin D3
+*.opin out
+*.iopin VDD
+*.iopin VSS
+XMP1 net1 net1 net12 VDD sg13_lv_pmos w=0.28u l=8.0u ng=1 m=1
+XMP2 vstart vstart net1 VDD sg13_lv_pmos w=0.28u l=8.0u ng=1 m=1
+XMN2 net3 vstart GND GND sg13_lv_nmos w=0.28u l=8.0u ng=1 m=1
+XMN1 vstart vstart GND GND sg13_lv_nmos w=0.28u l=8.0u ng=1 m=1
+XMP3 net2 vbp net11 VDD sg13_lv_pmos w=2.0u l=2.0u ng=2 m=1
+XMP4 net3 vbp_casc net2 VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=2
+XMP5 net4 vbp net10 VDD sg13_lv_pmos w=2.0u l=2.0u ng=1 m=2
+XMP6 net6 vbp_casc net4 VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=2
+XMP7 net5 vbp net9 VDD sg13_lv_pmos w=2.0u l=2.0u ng=1 m=2
+XMP8 vbp vbp_casc net5 VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=2
+XMP9 net6 net3 VDD VDD sg13_lv_pmos w=0.28u l=8.0u ng=1 m=1
+XMN3 net6 net6 GND GND sg13_lv_nmos w=2.0u l=2.0u ng=1 m=1
+XMN4 vbp_casc net6 net7 GND sg13_lv_nmos w=2.0u l=2.0u ng=1 m=4
+XR1 vbp_casc vbp rppd w=0.5e-6 l=389e-6 m=1 b=0
+XR2 GND net7 rhigh w=0.5e-6 l=152.5e-6 m=1 b=0
+XMP10 net13 vbp net14 VDD sg13_lv_pmos w=2.0u l=2.0u ng=1 m=2
+XMP11 out vbp_casc net13 VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=2
+XMP16 vbp_casc enMon VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=1
+XMP17 net9 net8 VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=2
+XMP18 net10 net8 VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=2
+XMP19 net12 net8 VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=1
+XMP20 net11 net8 VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=1
+XMN5 vstart net8 GND GND sg13_lv_nmos w=2u l=0.28u ng=1 m=1
+XMN6 net6 net8 GND GND sg13_lv_nmos w=2u l=0.28u ng=1 m=1
+xinv2 VDD net8 enMon GND inv
+XMP12 net14 net15 VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=2
+XMP13 net16 vbp net17 VDD sg13_lv_pmos w=2.0u l=2.0u ng=1 m=4
+XMP14 out vbp_casc net16 VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=4
+XMP15 net17 net18 VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=2
+XMP21 net19 vbp net20 VDD sg13_lv_pmos w=2.0u l=2.0u ng=1 m=8
+XMP22 out vbp_casc net19 VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=8
+XMP23 net20 net21 VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=2
+XMP24 net22 vbp net23 VDD sg13_lv_pmos w=2.0u l=2.0u ng=1 m=16
+XMP25 out vbp_casc net22 VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=16
+XMP26 net23 net24 VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=2
+xinv6 VDD en net8 GND inv
+xinv3 VDD D0 net15 GND inv
+xinv7 VDD D1 net18 GND inv
+xinv8 VDD D2 net21 GND inv
+xinv9 VDD D3 net24 GND inv
+**.ends
+
+* expanding   symbol:  inv.sym # of pins=4
+** sym_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/inv.sym
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/inv.sch
+.subckt inv VDD in out VSS
+*.iopin VDD
+*.ipin in
+*.iopin VSS
+*.opin out
+XM1 out in VSS VSS sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM2 out in VDD VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+.ends
+
+.end

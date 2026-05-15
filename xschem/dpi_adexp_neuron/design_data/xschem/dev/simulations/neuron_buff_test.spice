@@ -1,0 +1,115 @@
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/neuron_buff_test.sch
+**.subckt neuron_buff_test
+Iin VDD vn1 0.6u
+XM3 vmem VLK GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+XM1 GND VTHR vn1 VDD sg13_lv_pmos w=1.2u l=0.75u ng=1 m=1
+XM4 vmem vmem vn1 VDD sg13_lv_pmos w=1.2u l=0.75u ng=1 m=1
+Vdd1 VDD GND 1.8
+XM23 VLK VLK GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+ILK VDD VLK 3n
+XM24 VREF VREF GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+IVREF VDD VREF 700nA
+XM5 vmem RST GND GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM6 net2 net1 VDD VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM8 vmem REQ net2 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM9 net1 net1 VDD VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM10 REQ vmem net1 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM11 REQ vmem net3 GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM25 net3 net3 GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+XM26 net4 REQ net6 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM27 net4 REQ net5 GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM28 net5 VREF GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+XM29 net6 net6 net7 VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM30 net7 REQ VDD VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+xbuff2 VDD REQ net8 GND buff
+xinv2 VDD net8 OUT GND inv
+XM2 VTHR VTHR GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+ITHR VDD VTHR 300n
+XM7 net9 net4 net10 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM12 net9 net4 GND GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM14 net10 net10 VDD VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM13 RST net9 net11 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM15 RST net9 GND GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM16 net11 net11 VDD VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM17 GND vmem GND GND sg13_lv_pmos w=5.0u l=10.0u ng=6 m=10
+XM18 GND RST GND GND sg13_lv_pmos w=5.0u l=10.0u ng=6 m=10
+* noconn OUT
+**** begin user architecture code
+
+.include diodes.lib
+.include sg13g2_bondpad.lib
+
+
+
+.options savecurrents
+.include neuron_buff_test.save
+.param temp=27
+.control
+set wr_singlescale
+set noaskquit
+*set appendwrite
+set hcopypscolor=1
+
+*Save node voltages and device currents if desired
+save all
+
+*Baseline operating point at current deck values
+op
+write tran_neuron.raw
+
+*alter Vdd1 dc 1.7
+*alter Vthr dc 0.9
+*alter Vlk dc 0.3
+*alter vahp1 dc 1.0
+tran 10n 10u
+write tran_neuron.raw
+*Example plots (uncomment inside ngspice if you want autoplots)
+plot vmem vn1 Vthr Vlk
+plot vmem out
+*quit
+.endc
+
+
+
+
+
+.lib cornerMOSlv.lib mos_tt
+.lib cornerMOShv.lib mos_tt
+.lib cornerHBT.lib hbt_typ
+.lib cornerRES.lib res_typ
+.lib cornerCAP.lib cap_typ
+
+
+**** end user architecture code
+**.ends
+
+* expanding   symbol:  buff.sym # of pins=4
+** sym_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/dev/buff.sym
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/dev/buff.sch
+.subckt buff VDD in out VSS
+*.iopin VDD
+*.ipin in
+*.iopin VSS
+*.opin out
+XM1 net1 in VSS VSS sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM2 net1 in VDD VDD sg13_lv_pmos w=2.4u l=0.28u ng=2 m=1
+XM4 out net1 VSS VSS sg13_lv_nmos w=3.0u l=0.28u ng=4 m=1
+XM5 out net1 VDD VDD sg13_lv_pmos w=6.0u l=0.28u ng=4 m=1
+.ends
+
+
+* expanding   symbol:  inv.sym # of pins=4
+** sym_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/dev/inv.sym
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/dev/inv.sch
+.subckt inv VDD in out VSS
+*.iopin VDD
+*.ipin in
+*.iopin VSS
+*.opin out
+XM1 out in VSS VSS sg13_lv_nmos w=2.0u l=0.28u ng=1 m=1
+XM2 out in VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=1
+.ends
+
+.GLOBAL GND
+.GLOBAL VDD
+.end

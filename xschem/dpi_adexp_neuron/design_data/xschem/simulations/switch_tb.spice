@@ -1,0 +1,65 @@
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/switch_tb.sch
+**.subckt switch_tb
+xtg1 net3 in net1 rstn GND tgf
+Vdd net1 GND 1.8
+Vin in GND dc 0 ac 0 pulse(0, 1.8, 0, 100p, 100p, 2n, 4n )
+* noconn rstn
+xinv1 net1 in out1 GND inv
+xtg2 net4 out1 net2 rst GND tgf
+Vc net2 GND 0.2
+* noconn rst
+**** begin user architecture code
+
+
+.param temp=27
+
+.control
+save all
+tran 50p 20n
+
+* plot waveforms
+plot v(in) v(out1)
+plot v(in) v(rst)
+plot v(in) v(rstn)
+
+write tran_tgf_test.raw
+.endc
+
+
+
+ .lib /foss/pdks/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib mos_tt
+.lib /foss/pdks/ihp-sg13g2/libs.tech/ngspice/models/cornerRES.lib res_typ_stat
+
+**** end user architecture code
+**.ends
+
+* expanding   symbol:  tgf.sym # of pins=5
+** sym_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/tgf.sym
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/tgf.sch
+.subckt tgf VDD C A B VSS
+*.ipin A
+*.opin B
+*.ipin C
+*.iopin VDD
+*.iopin VSS
+XM1 net1 C VSS VSS sg13_lv_nmos w=2.0u l=0.28u ng=1 m=1
+XM2 net1 C VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=1
+XM3 A net1 B VSS sg13_lv_nmos w=2.0u l=0.28u ng=1 m=1
+XM4 A C B VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=1
+.ends
+
+
+* expanding   symbol:  inv.sym # of pins=4
+** sym_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/inv.sym
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/inv.sch
+.subckt inv VDD in out VSS
+*.iopin VDD
+*.ipin in
+*.iopin VSS
+*.opin out
+XM1 out in VSS VSS sg13_lv_nmos w=2.0u l=0.28u ng=1 m=1
+XM2 out in VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=1
+.ends
+
+.GLOBAL GND
+.end

@@ -1,0 +1,39 @@
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/Csource.sch
+**.subckt Csource
+XM6 net1 vg VDD VDD sg13_lv_pmos w=1.0u l=0.45u ng=1 m=1
+Vdd VDD GND 1.2
+VDS net1 net2 0
+.save i(vds)
+VT VDD vg 0.060068
+VT1 VDD net2 0
+**** begin user architecture code
+
+
+
+.options savecurrents
+.include Csource.save
+
+.param temp=27
+.control
+save all
+
+op
+
+write Csourceraw
+set appendwrite
+
+dc VT 0 0.5 0.01 VT1 0 3.3 0.1
+
+plot i(VDS)
+
+write Csource.raw
+.endc
+
+
+ .lib cornerMOSlv.lib mos_tt
+
+**** end user architecture code
+**.ends
+.GLOBAL VDD
+.GLOBAL GND
+.end

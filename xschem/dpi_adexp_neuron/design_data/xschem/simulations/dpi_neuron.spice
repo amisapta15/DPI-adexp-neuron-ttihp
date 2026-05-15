@@ -1,0 +1,57 @@
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/dpi_neuron.sch
+**.subckt dpi_neuron SpikeO REQ VDD VSS INC Vmem Vgain Vrefrac Vleak RST
+*.iopin VDD
+*.iopin VSS
+*.ipin Vgain
+*.ipin Vleak
+*.opin Vmem
+*.opin REQ
+*.opin SpikeO
+*.opin RST
+*.ipin Vrefrac
+*.ipin INC
+xinv2 VDD REQ net2 GND inv
+xinv1 VDD net2 net1 GND inv
+xinv3 VDD net2 net3 GND inv
+xinv4 VDD net1 out GND inv
+xinv5 VDD net3 out GND inv
+XM3 vmem VLK GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+XM1 GND VTHR vn1 VDD sg13_lv_pmos w=1.2u l=0.75u ng=1 m=1
+XM4 vmem vmem vn1 VDD sg13_lv_pmos w=1.2u l=0.75u ng=1 m=1
+XM5 vmem RST GND GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM6 net5 net4 VDD VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM8 vmem REQ net5 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM9 net4 net4 VDD VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM10 REQ vmem net4 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM11 REQ vmem net6 GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM25 net6 net6 GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+XM26 net7 REQ net9 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM27 net7 REQ net8 GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM28 net8 VREF GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+XM29 net9 net9 net10 VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM30 net10 REQ VDD VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM7 net11 net7 net12 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM12 net11 net7 GND GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM14 net12 net12 VDD VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM13 RST net11 net13 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM15 RST net11 GND GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM16 net13 net13 VDD VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM17 GND vmem GND GND sg13_lv_pmos w=5.0u l=10.0u ng=6 m=10
+XM18 GND RST GND GND sg13_lv_pmos w=5.0u l=10.0u ng=6 m=10
+**.ends
+
+* expanding   symbol:  inv.sym # of pins=4
+** sym_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/inv.sym
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/inv.sch
+.subckt inv VDD in out VSS
+*.iopin VDD
+*.ipin in
+*.iopin VSS
+*.opin out
+XM1 out in VSS VSS sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM2 out in VDD VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+.ends
+
+.GLOBAL VDD
+.GLOBAL GND
+.end

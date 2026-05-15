@@ -1,0 +1,13 @@
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/sbcm.sch
+**.subckt sbcm VDD GND IREF ICOPY
+*.iopin VDD
+*.iopin GND
+*.iopin IREF
+*.iopin ICOPY
+XM6 net2 net1 VDD VDD sg13_lv_pmos w=15.0u l=0.5u ng=5 m=1
+XM9 net3 net1 VDD VDD sg13_lv_pmos w=15.0u l=0.5u ng=5 m=10
+XM1 ICOPY IREF net2 VDD sg13_lv_pmos w=15.0u l=0.5u ng=5 m=1
+XM2 net1 IREF net3 VDD sg13_lv_pmos w=15.0u l=0.5u ng=5 m=10
+XM23 net1 VDD IREF GND sg13_lv_nmos w=21.0u l=0.5u ng=7 m=10
+**.ends
+.end

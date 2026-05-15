@@ -1,0 +1,125 @@
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/neuron2_buff_test_somewhat_working.sch
+**.subckt neuron2_buff_test_somewhat_working
+Iin VDD vn1 0.8u
+XM3 vmem VLK GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+XM1 GND VTHR vn1 VDD sg13_lv_pmos w=1.2u l=0.75u ng=1 m=1
+XM4 vmem vmem vn1 VDD sg13_lv_pmos w=1.2u l=0.75u ng=1 m=1
+XM2 vmem RST GND GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM5 net11 vp GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+XM6 vp VLKAHP GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+XM8 vp vp net1 VDD sg13_lv_pmos w=1.2u l=0.75u ng=1 m=1
+XM9 GND VTHRAHP net1 VDD sg13_lv_pmos w=1.2u l=0.75u ng=1 m=1
+XM10 net1 VAHP net2 VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM11 net2 REQ VDD VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM13 net4 net3 VDD VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM14 vmem REQ net4 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM15 net3 net3 VDD VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM16 REQ vmem net3 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM17 REQ vmem net5 GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM18 net5 net5 GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+XM7 RST REQ net7 VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+XM12 RST REQ net6 GND sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM19 net6 VREF GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+XM20 net7 net7 net8 VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+XM21 net8 REQ VDD VDD sg13_lv_pmos w=2.4u l=0.28u ng=1 m=1
+xbuff1 VDD REQ net9 GND buff
+xinv1 VDD net9 OUT GND inv
+Vdd1 VDD GND 1.8
+XM23 VLK VLK GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+ILK VDD VLK 0.1u
+XM24 VREF VREF GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+IVREF VDD VREF 5u
+XM25 VLKAHP VLKAHP GND GND sg13_lv_nmos w=1.2u l=3.0u ng=1 m=1
+ILKAHP VDD VLKAHP 5p
+XM26 VTHRAHP VTHRAHP VDD VDD sg13_lv_pmos w=2.4u l=0.75u ng=1 m=1
+ITHAHP VTHRAHP GND 390u
+XM27 VAHP VAHP VDD VDD sg13_lv_pmos w=2.4u l=3.0u ng=1 m=1
+IAHP VAHP GND 5n
+XM22 VTHR VTHR VDD VDD sg13_lv_pmos w=1.2u l=0.75u ng=1 m=1
+ITHR VTHR GND 500.0u
+XC5 vmem GND cap_cmim w=10.0e-6 l=10.0e-6 m=8
+XC1 RST GND cap_cmim w=10.0e-6 l=10.0e-6 m=8
+XC2 vp GND cap_cmim w=10.0e-6 l=10.0e-6 m=8
+xinv2 VDD enNeuAHP net10 GND inv
+XM28 net11 net10 vmem VDD sg13_lv_pmos w=1.2u l=0.75u ng=1 m=1
+Vdd2 enNeuAHP GND 1.8
+* noconn OUT
+* noconn GND
+**** begin user architecture code
+
+.include diodes.lib
+.include sg13g2_bondpad.lib
+
+
+
+.options savecurrents
+.include neuron_buff_test.save
+.param temp=27
+.control
+set wr_singlescale
+set noaskquit
+*set appendwrite
+set hcopypscolor=1
+
+*Save node voltages and device currents if desired
+save all
+
+*Baseline operating point at current deck values
+op
+write tran_neuron.raw
+
+*alter Vdd1 dc 1.7
+*alter Vthr dc 0.9
+*alter Vlk dc 0.3
+*alter vahp1 dc 1.0
+tran 500p 2u
+write tran_neuron.raw
+*Example plots (uncomment inside ngspice if you want autoplots)
+plot vmem vn1 Vthr Vlk
+plot vmem out
+.endc
+
+
+
+
+
+.lib cornerMOSlv.lib mos_tt
+.lib cornerMOShv.lib mos_tt
+.lib cornerHBT.lib hbt_typ
+.lib cornerRES.lib res_typ
+.lib cornerCAP.lib cap_typ
+
+
+**** end user architecture code
+**.ends
+
+* expanding   symbol:  buff.sym # of pins=4
+** sym_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/buff.sym
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/buff.sch
+.subckt buff VDD in out VSS
+*.iopin VDD
+*.ipin in
+*.iopin VSS
+*.opin out
+XM1 net1 in VSS VSS sg13_lv_nmos w=1.2u l=0.28u ng=1 m=1
+XM2 net1 in VDD VDD sg13_lv_pmos w=2.4u l=0.28u ng=2 m=1
+XM4 out net1 VSS VSS sg13_lv_nmos w=3.0u l=0.28u ng=4 m=1
+XM5 out net1 VDD VDD sg13_lv_pmos w=6.0u l=0.28u ng=4 m=1
+.ends
+
+
+* expanding   symbol:  inv.sym # of pins=4
+** sym_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/inv.sym
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/inv.sch
+.subckt inv VDD in out VSS
+*.iopin VDD
+*.ipin in
+*.iopin VSS
+*.opin out
+XM1 out in VSS VSS sg13_lv_nmos w=2.0u l=0.28u ng=1 m=1
+XM2 out in VDD VDD sg13_lv_pmos w=2.0u l=0.28u ng=1 m=1
+.ends
+
+.GLOBAL GND
+.GLOBAL VDD
+.end

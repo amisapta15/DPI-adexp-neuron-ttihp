@@ -1,0 +1,66 @@
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/neuron.sch
+**.subckt neuron
+I0 VDD vn1 0.2u
+XM3 vmem VLK GND GND sg13_lv_nmos w=0.6u l=0.15u ng=1 m=1
+XM1 GND VTHR vn1 VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+XM4 vmem vmem vn1 VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+C1 vmem GND 0.5p m=1
+Vdd VDD GND 1.65
+Vlk VLK GND 0.25
+Vthr VTHR GND 0.75
+XM2 vmem RST GND GND sg13_lv_nmos w=0.6u l=0.15u ng=1 m=1
+XM5 vmem vp GND GND sg13_lv_nmos w=0.6u l=0.15u ng=1 m=1
+C2 vp GND 0.1p m=1
+XM6 vp VLKAHP GND GND sg13_lv_nmos w=0.6u l=0.15u ng=1 m=1
+XM8 vp vp net1 VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+XM9 GND VTHRAHP net1 VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+XM10 net1 VAHP net2 VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+XM11 net2 REQ VDD VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+XM13 net4 net3 VDD VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+XM14 vmem REQ net4 VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+XM15 net3 net3 VDD VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+XM16 REQ vmem net3 VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+XM17 REQ vmem net5 GND sg13_lv_nmos w=0.6u l=0.15u ng=1 m=1
+XM18 net5 net5 GND GND sg13_lv_nmos w=0.6u l=0.15u ng=1 m=1
+Vlkahp VLKAHP GND 0.06
+Vthrahp1 VTHRAHP GND 0.16
+Vahp VAHP GND 1.45
+XM7 RST REQ net7 VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+XM12 RST REQ net6 GND sg13_lv_nmos w=0.6u l=0.15u ng=1 m=1
+XM19 net6 VREF GND GND sg13_lv_nmos w=0.6u l=0.15u ng=1 m=1
+C3 RST GND 0.5p m=1
+XM20 net7 net7 net8 VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+XM21 net8 ACK VDD VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+Vahp1 VREF GND 1
+Vahp2 ACK GND PULSE(0 1.65 0 1ns 1ns 50ns 1s)
+**** begin user architecture code
+
+.include diodes.lib
+.include sg13g2_bondpad.lib
+
+
+
+.param temp=127
+.control
+save all
+tran 500p 2000n
+write tran_neuron.raw
+plot vp VLK
+plot REQ RST ACK vmem
+.endc
+
+
+
+
+
+.lib cornerMOSlv.lib mos_tt
+.lib cornerMOShv.lib mos_tt
+.lib cornerHBT.lib hbt_typ
+.lib cornerRES.lib res_typ
+
+
+**** end user architecture code
+**.ends
+.GLOBAL GND
+.GLOBAL VDD
+.end

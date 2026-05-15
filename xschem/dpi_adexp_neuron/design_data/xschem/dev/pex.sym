@@ -1,0 +1,23 @@
+v {xschem version=3.4.7 file_version=1.2}
+G {}
+K {type=subcircuit
+format="@name @pinlist @symname"
+template="name=xbuff1"
+}
+V {}
+S {}
+E {}
+L 4 0 30 20 30 {}
+L 4 60 30 80 30 {}
+L 7 40 0 40 20 {}
+L 7 40 40 40 60 {}
+B 5 37.5 -2.5 42.5 2.5 {name=VDD dir=inout}
+B 5 -2.5 27.5 2.5 32.5 {name=in dir=in}
+B 5 77.5 27.5 82.5 32.5 {name=out dir=out}
+B 5 37.5 57.5 42.5 62.5 {name=VSS dir=inout}
+P 4 5 80 0 0 0 0 60 80 60 80 0 {}
+T {@name} 45 -12 0 0 0.2 0.2 {}
+T {VDD} 26 5 3 1 0.2 0.2 {}
+T {in} 5 16 0 0 0.2 0.2 {}
+T {out} 75 16 0 1 0.2 0.2 {}
+T {VSS} 54 55 1 1 0.2 0.2 {}

@@ -1,0 +1,44 @@
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/block_2_input.sch
+**.subckt block_2_input
+XM6 GND vg net1 VDD sg13_lv_pmos w=1.0u l=0.45u ng=1 m=1
+XM7 vmem vmem net1 VDD sg13_lv_pmos w=1.0u l=0.45u ng=1 m=1
+XM5 net2 vt GND GND sg13_lv_nmos w=0.15u l=0.13u ng=1 m=1
+Vdd VDD GND 1.2
+Icop vmem net2 0
+.save i(icop)
+VT vt GND 0.060068
+VG vg GND 0.6
+I0 net1 GND DC
+**** begin user architecture code
+
+
+
+.options savecurrents
+.include block_1_input.save
+
+.param temp=27
+.control
+save all
+
+op
+
+write block_1_input.raw
+set appendwrite
+
+dc VIn 0 1.2 0.01
+
+let Iin_current = i(VIin#branch)
+let Icop_current = i(VIcop#branch)
+plot Iin_current Icop_current
+
+write block_1_input.raw
+.endc
+
+
+ .lib cornerMOSlv.lib mos_tt
+
+**** end user architecture code
+**.ends
+.GLOBAL VDD
+.GLOBAL GND
+.end

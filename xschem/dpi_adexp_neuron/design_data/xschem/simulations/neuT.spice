@@ -1,0 +1,41 @@
+** sch_path: /foss/designs/gLayout-IHP130/blocks/composite/dpi_adexp_neuron/design_data/xschem/neuT.sch
+**.subckt neuT
+Vdd1 VDD GND 1.8
+XM2 Vthr Vthr VDD VDD sg13_lv_pmos w=1.2u l=0.15u ng=1 m=1
+I0 Vthr net1 2.5u
+* noconn Vthr
+**** begin user architecture code
+
+.include diodes.lib
+.include sg13g2_bondpad.lib
+
+
+
+.options savecurrents
+.include neuT.save
+.param temp=27
+.control
+save all
+op
+write neuT.raw
+*dc I0 100u 110u 10n
+tran 500p 1u
+write neuT.raw
+plot v(vthr)
+.endc
+
+
+
+
+
+.lib cornerMOSlv.lib mos_tt
+.lib cornerMOShv.lib mos_tt
+.lib cornerHBT.lib hbt_typ
+.lib cornerRES.lib res_typ
+
+
+**** end user architecture code
+**.ends
+.GLOBAL GND
+.GLOBAL VDD
+.end
