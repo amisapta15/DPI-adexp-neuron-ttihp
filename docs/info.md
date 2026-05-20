@@ -8,138 +8,172 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## 🧠 AdEx Spiking Neuron Core
 
-This project is a digital hardware implementation of the Adaptive Exponential (AdEx) Integrate-and-Fire neuron model. It's designed to run on an ASIC, simulating the behavior of a biological neuron, including its membrane potential and adaptation mechanisms. The core is highly configurable, allowing it to model various neural firing patterns like regular spiking, bursting, and fast spiking.
+This project is a digital hardware implementation of the Adaptive Exponential (AdEx) Integrate-and-Fire neuron model, targeting the Tiny Tapeout ASIC shuttle. A single datapath solves two coupled ordinary differential equations — one for the membrane potential and one for the adaptation current — using forward-Euler integration on every clock cycle. The exponential nonlinearity is approximated by a 32-entry lookup table. The core is configurable via 8 run-time parameters, allowing it to reproduce regular spiking, bursting, and fast spiking firing patterns.
 
 ## How it works ⚙️
 
-The system operates based on two primary components: the **Neuron Core** and the **Parameter Loader**.
+The system has two functional blocks inside a single module: a **Nibble Loader** for parameter configuration and a **Neuron Datapath** for real-time ODE integration.
 
-### 1. The Neuron Core
+### 1. Arithmetic Format
 
-The core solves two coupled differential equations in real-time using Q4.12 fixed-point arithmetic. These equations govern the neuron's two main state variables:
+All state variables and parameters use **Q8.7 signed fixed-point** arithmetic (15-bit signed: 1 sign + 7 integer + 7 fractional bits).
 
-*   **V:** The membrane potential, which simulates the voltage across the neuron's cell membrane.
-*   **w:** The adaptation current, which models cellular fatigue and is responsible for spike-frequency adaptation.
+| Property         | Value                          |
+| :---             | :---                           |
+| Word width       | 15-bit signed (`[14:0]`)       |
+| Format           | Q8.7                           |
+| Scale factor     | 1.0 → 128                      |
+| Range            | −128.0 to +127.9921875         |
+| Intermediates    | 32-bit signed for multiply/divide |
 
-The behavior is defined by the following equations, which are a direct representation of the hardware's operation:
+### 2. Exponential LUT
+
+The exponential term `exp((V − V_T) / Δ_T)` is evaluated via a 32-entry lookup table.
+
+| Property       | Value                                    |
+| :---           | :---                                     |
+| Entries        | 32                                       |
+| Format         | Q8.7 (15-bit signed)                     |
+| Domain         | [−4.5, +4.5] (Q8.7: [−576, +576])       |
+| Sampling       | `linspace(-4.5, 4.5, 32)` — inclusive endpoints, step = 9/31 |
+| Max entry      | 11 522 (e^4.5 × 128) — fits 15-bit signed (max 16 383) |
+| Clamping       | Inputs outside domain map to `lut[0]` or `lut[31]` |
+
+### 3. The Neuron Datapath
+
+A single `always @(posedge clk)` block solves two coupled differential equations using forward-Euler integration:
 
 ```math
-\frac{dV}{dt} = \frac{-g_L(V - E_L) + g_L\Delta_T\exp\left(\frac{V - V_T}{\Delta_T}\right) - w + I}{C} 
+\frac{dV}{dt} = \frac{-g_L(V - E_L) + g_L\Delta_T\exp\left(\frac{V - V_T}{\Delta_T}\right) - w + I}{C}
 ```
 ```math
 \frac{dw}{dt} = \frac{a(V - E_L) - w}{\tau_w}
 ```
 
-When the membrane potential `V` crosses a threshold `VT`, the core outputs a digital **spike** ⚡. After a spike, `V` is reset to `Vreset` and the adaptation current `w` is increased by a value `b`.
+When the membrane potential `V` exceeds the threshold `VT`, the core:
+1. Outputs a digital **spike** on `uo_out[0]` ⚡
+2. Resets `V` to `Vreset`
+3. Increments `w` by `b` (spike-triggered adaptation)
 
-### 2. The Parameter Loader 📥
+Hard-coded constants (not user-configurable):
+*   `E_L` = −70 (leak reversal), Q8.7 value = −8960
+*   `g_L` = 10 (leak conductance), Q8.7 value = 1280
 
-The neuron's specific behavior is defined by 8 distinct user-configurable parameters. To configure the core, these parameters must be loaded serially via a simple 4-bit interface.
+### 4. The Parameter Loader 📥
 
-The parameters are loaded in the following order:
+Eight user-configurable parameters are loaded serially via a 4-bit nibble interface. **No footer nibble is required** — parameters commit immediately as each byte is assembled.
 
-| Index | Parameter | Symbol in Equation | Description                               |
-| :---: | :-------: | :---:              | :---------------------------------------- |
-|   0   | `DeltaT`  | `ΔT`               | Sharpness of the spike initiation         |
-|   1   |  `TauW`   | `τw`               | Adaptation time constant                  |
-|   2   |    `a`    | `a`                | Subthreshold adaptation level             |
-|   3   |    `b`    | `b`                | Spike-triggered adaptation increment      |
-|   4   | `Vreset`  | `Vreset`           | Voltage to reset to after a spike         |
-|   5   |   `VT`    | `VT`               | Firing threshold voltage                  |
-|   6   |  `Ibias`  | `I`                | Constant input current                    |
-|   7   |     `C`     | `C`                | Membrane capacitance                      |
+The parameters are loaded in order:
 
+| Index | Parameter | Type     | Encoding                              |
+| :---: | :-------: | :---:    | :---                                  |
+|   0   | `DeltaT`  | signed   | `(real_value + 128) & 0xFF`           |
+|   1   |  `TauW`   | unsigned | `real_value & 0xFF`                   |
+|   2   |    `a`    | unsigned | `real_value & 0xFF`                   |
+|   3   |    `b`    | unsigned | `real_value & 0xFF`                   |
+|   4   | `Vreset`  | signed   | `(real_value + 128) & 0xFF`           |
+|   5   |   `VT`    | signed   | `(real_value + 128) & 0xFF`           |
+|   6   |  `Ibias`  | signed   | `(real_value + 128) & 0xFF`           |
+|   7   |    `C`    | unsigned | `real_value & 0xFF`                   |
 
-The loading process is controlled by the `ui_in` pins:
-*   `ui_in[4]` (`load_mode`): Must be high to enable loading.
-*   `ui_in[3]` (`load_enable`): A rising edge on this pin latches the 4-bit value present on `uio_in[3:0]`.
-
-Each 8-bit parameter is sent as two 4-bit nibbles (high nibble first). After all **16 nibbles** have been sent, a special **footer nibble (`0xF`)** must be sent to commit the new parameters to the core.
+Loading protocol:
+1.  Assert `ui_in[4]` (load\_mode) high.
+2.  Place the **high nibble** of a parameter byte on `uio_in[3:0]`, then pulse `ui_in[3]` (load\_strobe) high for one clock cycle.
+3.  Place the **low nibble** on `uio_in[3:0]`, then pulse `ui_in[3]` high again. The full byte is written to `params[index]` and `index` auto-increments.
+4.  Repeat for all 8 parameters (16 strobes total).
+5.  De-assert `ui_in[4]` to exit load mode (resets the nibble FSM for next use).
 
 ### Inputs and Outputs
 
 *   **Inputs**:
-    *   `ui_in[6]` (`clk`): Main clock signal.
-    *   `ui_in[5]` (`reset`): Active-high reset.
-    *   `ui_in[4]` (`load_mode`): Set to `1` to enable the parameter loader.
-    *   `ui_in[3]` (`load_enable`): Pulse high to load a 4-bit nibble from `uio_in`.
-    *   `ui_in[2]` (`enable_core`): Set to `1` to run the neuron simulation.
-    *   `ui_in[1]` (`debug_mode`): Selects the debug output on `uo_out[6:1]`.
-    *   `uio_in[3:0]`: 4-bit data bus for loading parameter nibbles.
+    *   `clk`: Main clock signal (active rising edge).
+    *   `rst_n`: Active-low reset. Initialises V = −65 (Q8.7: −8320), w = 0, outputs = 0.
+    *   `ui_in[4]` (`load_mode`): Hold high during parameter loading.
+    *   `ui_in[3]` (`load_strobe`): Pulse high to latch a 4-bit nibble from `uio_in[3:0]`.
+    *   `ui_in[2]` (`enable`): Set high to run the neuron simulation.
+    *   `uio_in[3:0]`: 4-bit nibble data bus.
 *   **Outputs**:
-    *   `uo_out[0]` (**`spike`**): The primary output. Pulses high for one clock cycle when the neuron fires.
-    *   `uo_out[6:1]`: A 6-bit debug bus showing the most significant bits of either `V` (if `debug_mode=0`) or `w` (if `debug_mode=1`).
+    *   `uo_out[0]` (**`spike`**): High for one clock cycle when the neuron fires.
+    *   `uo_out[7:1]`: Unused (driven to 0).
 
 ## Firing Modes and How to Trigger Them 🧠⚡️
 
-The AdEx model's strength is its ability to reproduce different neural behaviors. The firing pattern is primarily determined by the interplay between the adaptation parameters (`a`, `b`, `τw`), input current (`I`), and membrane capacitance (`C`). By loading different parameter sets, you can make the neuron behave in specific ways.
+The AdEx model reproduces multiple neural firing patterns by varying `a`, `b`, `τ_w`, `I`, `Vreset`, and `C`.
 
-*Note: The 8-bit encoded value is what you need to send to the hardware. For signed values (`Vreset`, `VT`, `Ibias`), the encoding is `Real Value + 128`. For unsigned values, the encoding is just the `Real Value`. For the firing mode examples below, the `C` parameter should be loaded with its default value of `200` (Hex `0xC8`).*
+*Note: For signed parameters (`DeltaT`, `Vreset`, `VT`, `Ibias`), the 8-bit encoding is `real_value + 128`. For unsigned parameters (`TauW`, `a`, `b`, `C`), the encoding is the raw value.*
 
 ---
 ### 📈 Regular Spiking (Adapting)
-This is the "default" behavior for many excitatory neurons. The firing rate is initially high and then slows down as the adaptation current `w` builds up.
+The firing rate is initially high and slows as the adaptation current `w` accumulates.
 
-*   **Mechanism**: A non-zero spike-triggered adaptation (`b`) increases `w` with every spike, making it harder for the neuron to reach its firing threshold again.
+*   **Mechanism**: Non-zero spike-triggered adaptation (`b`) increases `w` with each spike.
 
 *   **Parameter Values**:
 | Parameter | Real-World Value | 8-bit Encoded Value | Hex Value |
 | :---      | :---             | :---                | :---      |
-| `a`       | 2 nS             | `2`                 | `0x02`    |
-| `b`       | 40 pA            | `40`                | `0x28`    |
+| `DeltaT`  | 5                | `133`               | `0x85`    |
+| `TauW`    | 200              | `200`               | `0xC8`    |
+| `a`       | 1                | `1`                 | `0x01`    |
+| `b`       | 2                | `2`                 | `0x02`    |
 | `Vreset`  | -65 mV           | `63`                | `0x3F`    |
-| `Ibias`   | 50 pA            | `178`               | `0xB2`    |
+| `VT`      | -55 mV           | `73`                | `0x49`    |
+| `Ibias`   | 122 (strong)     | `250`               | `0xFA`    |
+| `C`       | 10               | `10`                | `0x0A`    |
 
 ---
 ### 💥 Bursting
-This behavior is characterized by clusters of high-frequency spikes separated by periods of silence (hyperpolarization).
+Clusters of high-frequency spikes separated by silent intervals.
 
-*   **Mechanism**: Strong subthreshold adaptation (`a`) and a less-negative reset potential (`Vreset`) are key. The adaptation current `w` builds up slowly, eventually stopping the burst. As `w` decays, the membrane potential depolarizes again, initiating the next burst.
+*   **Mechanism**: Strong subthreshold adaptation (`a`) and a less-negative `Vreset` allow w to build up and suppress firing, then decay permits the next burst.
 
 *   **Parameter Values**:
 | Parameter | Real-World Value | 8-bit Encoded Value | Hex Value |
 | :---      | :---             | :---                | :---      |
-| `a`       | 4 nS             | `4`                 | `0x04`    |
-| `b`       | 0 pA             | `0`                 | `0x00`    |
+| `DeltaT`  | 2                | `130`               | `0x82`    |
+| `TauW`    | 150              | `150`               | `0x96`    |
+| `a`       | 4                | `4`                 | `0x04`    |
+| `b`       | 0                | `0`                 | `0x00`    |
 | `Vreset`  | -50 mV           | `78`                | `0x4E`    |
-| `Ibias`   | 25 pA            | `153`               | `0x99`    |
+| `VT`      | -50 mV           | `78`                | `0x4E`    |
+| `Ibias`   | 122 (strong)     | `250`               | `0xFA`    |
+| `C`       | 10               | `10`                | `0x0A`    |
 
 ---
 ### 💨 Fast Spiking
-Typical of inhibitory interneurons, this mode involves sustained high-frequency firing with little to no adaptation or slowdown.
+Sustained high-frequency firing with no adaptation.
 
-*   **Mechanism**: This is achieved by simply turning off all adaptation mechanisms (`a` and `b` are zero). The neuron behaves like a simple leaky integrate-and-fire model, with its firing rate determined solely by the input current.
+*   **Mechanism**: Both adaptation terms (`a`, `b`) are zero, so w stays constant.
 
 *   **Parameter Values**:
 | Parameter | Real-World Value | 8-bit Encoded Value | Hex Value |
 | :---      | :---             | :---                | :---      |
-| `a`       | 0 nS             | `0`                 | `0x00`    |
-| `b`       | 0 pA             | `0`                 | `0x00`    |
+| `DeltaT`  | 5                | `133`               | `0x85`    |
+| `TauW`    | 200              | `200`               | `0xC8`    |
+| `a`       | 0                | `0`                 | `0x00`    |
+| `b`       | 0                | `0`                 | `0x00`    |
 | `Vreset`  | -65 mV           | `63`                | `0x3F`    |
-| `Ibias`   | 80 pA            | `208`               | `0xD0`    |
+| `VT`      | -55 mV           | `73`                | `0x49`    |
+| `Ibias`   | 80               | `208`               | `0xD0`    |
+| `C`       | 10               | `10`                | `0x0A`    |
 
 ---
 
 ## How to test 🧪
 
-The recommended test procedure verifies the core's functionality by loading parameters to induce spiking and then observing the output.
+The cocotb testbench (`test/test.py`) with Verilog wrapper (`test/tb.v`) verifies three firing modes:
 
-The test procedure is as follows:
+1.  **Reset**: Assert `rst_n` low for 10 clock cycles to initialise.
+2.  **Load Parameters**: Enter load mode (`ui_in[4]=1`), send 16 nibbles (8 parameters × 2 nibbles each), then exit load mode (`ui_in[4]=0`).
+3.  **Enable & Monitor**: Assert `ui_in[2]` to start simulation, then monitor `uo_out[0]` for spike pulses.
 
-1.  **Reset**: The chip is held in reset for 10 clock cycles to initialize all internal states.
+### Test 1 — Basic Spiking
+Loads regular-spiking parameters and asserts at least one spike within 12 000 cycles.
 
-2.  **Load Parameters**: To provoke a spike, the test injects a strong, constant positive input current (`Ibias`) and sets the membrane capacitance (`C`).
-    *   The test enters `load_mode`.
-    *   It sends 12 dummy nibbles for the first 6 parameters.
-    *   It sends the two nibbles for `Ibias` (a value of `200`, which is a strong supra-threshold current).
-    *   It sends the two nibbles for `C` (a value of `200`, the default).
-    *   It sends the `0xF` footer nibble to commit all 8 parameters.
-    *   The test exits `load_mode`.
+### Test 2 — Bursting Detection
+Loads bursting parameters and verifies clustered spike groups separated by silent intervals.
 
-3.  **Run and Verify**:
-    *   The test asserts `enable_core` to start the neuron simulation.
-    *   It then monitors the `uo_out[0]` (spike) pin on every clock cycle.
-    *   A successful test requires a spike to be detected within a set time limit (e.g., 1000 cycles).
+### Test 3 — Spike-Frequency Adaptation
+Loads adaptation parameters with non-zero `b` and verifies that inter-spike intervals increase over time.
 
 ## External hardware
 

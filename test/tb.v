@@ -1,8 +1,9 @@
 `default_nettype none
 `timescale 1ns / 1ps
 
-/* This testbench instantiates the DUT and connects wires for cocotb.
-*/
+/* Cocotb testbench wrapper for AdEx Neuron System (LUT32).
+ * Instantiates tt_um_dpi_adexp and dumps all signals to VCD.
+ */
 module tb ();
 
   // Dump signals to a VCD file for debugging with gtkwave.
@@ -22,15 +23,14 @@ module tb ();
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
 
-  // IMPORTANT: Replace 'tt_um_your_github_username_adexp_neuron' with the
-  // exact name of your top-level Verilog module.
+  // Instantiate the TT wrapper which contains the AdEx core
   tt_um_dpi_adexp user_project (
       .ui_in  (ui_in),    // Dedicated inputs
       .uo_out (uo_out),   // Dedicated outputs
       .uio_in (uio_in),   // IOs: Input path
       .uio_out(uio_out),  // IOs: Output path
       .uio_oe (uio_oe),   // IOs: Enable path (active high: 0=input, 1=output)
-      .ena    (ena),      // enable
+      .ena    (ena),      // enable (active high)
       .clk    (clk),      // clock
       .rst_n  (rst_n)     // not reset
   );

@@ -1,10 +1,12 @@
 // ============================================================================
 // Adaptive Exponential (AdEx) Neuron System with LUT32 Exponential Approximation
-// Cleaned and Lint-Safe Version (Q8.7 arithmetic)
+// Cleaned and Lint-Safe Version (Q8.7 arithmetic, 15-bit signed)
 // ----------------------------------------------------------------------------
+// - Single datapath solving two coupled ODEs (membrane V, adaptation w)
 // - Ports match wrapper: clk, rst_n, ui_in[7:0], uo_out[7:0], uio_in[7:0]
 // - Active-low reset (rst_n)
-// - Exponential LUT is Q8.7, domain clamped to ±4.5 so all entries fit 15-bit
+// - 32-entry exponential LUT in Q8.7 (15-bit signed), domain ±4.5
+//   sampled at linspace(-4.5, 4.5, 32) — inclusive endpoints, step = 9/31
 // - All helper functions are 'automatic' and use 32-bit intermediates
 // - No inline initializations inside functions
 // - Known outputs on reset; no X propagation
@@ -120,6 +122,7 @@ module adex_neuron_system_tt_lut32 (
 
     // Exponential approximation: exp(x), where x is Q8.7
     // LUT32 over [-4.5, +4.5] (Q8.7: [-576, +576]), entries are Q8.7 of e^x
+    // Sampled at 32 points: x_i = -4.5 + i*(9/31), i = 0..31 (linspace inclusive)
     function automatic signed [14:0] exp_q_optimized(input signed [14:0] arg_in);
         integer idx;
         reg signed [14:0] RANGE_MIN;
@@ -130,7 +133,7 @@ module adex_neuron_system_tt_lut32 (
             RANGE_MIN = -15'sd576;  // -4.5 * 128
             RANGE_MAX =  15'sd576;  // +4.5 * 128
 
-            // e^x * 128 for x ∈ [-4.5, +4.5], 32 uniform steps
+            // e^x * 128 for x ∈ [-4.5, +4.5], 32 points (linspace inclusive)
             // (All values fit in signed 15-bit)
             lut[0]  = 15'sd1;     lut[1]  = 15'sd2;     lut[2]  = 15'sd3;     lut[3]  = 15'sd3;
             lut[4]  = 15'sd5;     lut[5]  = 15'sd6;     lut[6]  = 15'sd8;     lut[7]  = 15'sd11;
@@ -146,7 +149,7 @@ module adex_neuron_system_tt_lut32 (
             end else if (arg_in >= RANGE_MAX) begin
                 exp_q_optimized = lut[31];
             end else begin
-                num = ($signed(arg_in) - $signed(RANGE_MIN)) * 32;
+                num = ($signed(arg_in) - $signed(RANGE_MIN)) * 31;
                 den = ($signed(RANGE_MAX) - $signed(RANGE_MIN)); // 1152
                 idx = num / den; // 0..31
                 if (idx < 0) idx = 0; else if (idx > 31) idx = 31;
