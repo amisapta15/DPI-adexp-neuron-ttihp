@@ -169,6 +169,15 @@ module adex_neuron_system_tt_lut32 (
             nibble_hi    <= 4'd0;
             nibble_phase <= 1'b0;
             param_index  <= 3'd0;
+            // Safe defaults: quiescent neuron (Ibias=0), no adaptation
+            params[0] <= 8'd133; // DeltaT = 5 (signed: 5+128)
+            params[1] <= 8'd100; // TauW   = 100
+            params[2] <= 8'd0;   // a      = 0
+            params[3] <= 8'd0;   // b      = 0
+            params[4] <= 8'd63;  // Vreset = -65 (signed: -65+128)
+            params[5] <= 8'd73;  // VT     = -55 (signed: -55+128)
+            params[6] <= 8'd128; // Ibias  = 0  (signed: 0+128)
+            params[7] <= 8'd10;  // C      = 10
         end else begin
             if (ui_in[4]) begin
                 if (ui_in[3]) begin
