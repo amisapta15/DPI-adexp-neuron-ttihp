@@ -120,6 +120,18 @@ module adex_neuron_system_tt_lut32 (
         end
     endfunction
 
+    // Saturate 32-bit signed to Q8.7 (15-bit signed) range
+    function automatic signed [14:0] sat32_to_q(input signed [31:0] x);
+        begin
+            if (x > 32'sd16383)
+                sat32_to_q = 15'sd16383;
+            else if (x < -32'sd16384)
+                sat32_to_q = -15'sd16384;
+            else
+                sat32_to_q = x[14:0];
+        end
+    endfunction
+
     // Exponential approximation: exp(x), where x is Q8.7
     // LUT32 over [-4.5, +4.5] (Q8.7: [-576, +576]), entries are Q8.7 of e^x
     // Sampled at 32 points: x_i = -4.5 + i*(9/31), i = 0..31 (linspace inclusive)
@@ -221,19 +233,22 @@ module adex_neuron_system_tt_lut32 (
 
             if (ui_in[2]) begin
                 if (spike) begin
-                    // Reset & spike-triggered adaptation
+                    // Reset & spike-triggered adaptation (saturating)
                     v_q <= Vreset_q;
-                    w_q <= w_q + b_q;
+                    adap32 = $signed(w_q) + $signed({1'b0, b_q});
+                    w_q <= sat32_to_q(adap32);
                 end else begin
-                    // Compute dV
+                    // Compute dV (saturate drive before dividing by C)
                     leak32 = qmul_eff(gL_q, (EL_q - v_q));                       // Q8.7
                     exp32  = qmul_eff(gL_q, qmul_eff(DeltaT_q, exp_term));       // Q8.7
                     drive32= $signed(leak32) + $signed(exp32) - $signed(w_q) + $signed(Ibias_q);
-                    v_q    <= v_q + qdiv_eff(drive32[14:0], C_q);
+                    exp32  = $signed(v_q) + $signed(qdiv_eff(sat32_to_q(drive32), C_q));
+                    v_q    <= sat32_to_q(exp32);
 
-                    // Compute dW
+                    // Compute dW (saturating addition)
                     adap32 = qdiv_eff( qmul_eff(a_q, (v_q - EL_q)) - w_q, TauW_q );
-                    w_q    <= w_q + adap32[14:0];
+                    leak32 = $signed(w_q) + $signed(adap32);
+                    w_q    <= sat32_to_q(leak32);
                 end
             end
         end

@@ -112,7 +112,7 @@ The firing rate is initially high and slows as the adaptation current `w` accumu
 | Parameter | Real-World Value | 8-bit Encoded Value | Hex Value |
 | :---      | :---             | :---                | :---      |
 | `DeltaT`  | 5                | `133`               | `0x85`    |
-| `TauW`    | 200              | `200`               | `0xC8`    |
+| `TauW`    | 100              | `100`               | `0x64`    |
 | `a`       | 1                | `1`                 | `0x01`    |
 | `b`       | 2                | `2`                 | `0x02`    |
 | `Vreset`  | -65 mV           | `63`                | `0x3F`    |
@@ -130,7 +130,7 @@ Clusters of high-frequency spikes separated by silent intervals.
 | Parameter | Real-World Value | 8-bit Encoded Value | Hex Value |
 | :---      | :---             | :---                | :---      |
 | `DeltaT`  | 2                | `130`               | `0x82`    |
-| `TauW`    | 150              | `150`               | `0x96`    |
+| `TauW`    | 120              | `120`               | `0x78`    |
 | `a`       | 4                | `4`                 | `0x04`    |
 | `b`       | 0                | `0`                 | `0x00`    |
 | `Vreset`  | -50 mV           | `78`                | `0x4E`    |
@@ -148,7 +148,7 @@ Sustained high-frequency firing with no adaptation.
 | Parameter | Real-World Value | 8-bit Encoded Value | Hex Value |
 | :---      | :---             | :---                | :---      |
 | `DeltaT`  | 5                | `133`               | `0x85`    |
-| `TauW`    | 200              | `200`               | `0xC8`    |
+| `TauW`    | 100              | `100`               | `0x64`    |
 | `a`       | 0                | `0`                 | `0x00`    |
 | `b`       | 0                | `0`                 | `0x00`    |
 | `Vreset`  | -65 mV           | `63`                | `0x3F`    |

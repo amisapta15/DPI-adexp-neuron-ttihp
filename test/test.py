@@ -118,7 +118,7 @@ async def test_basic_spiking(dut):
 
     params = {
         "DeltaT": encode_signed(5),       # moderate exponential sharpness
-        "TauW":   encode_unsigned(200),    # slow adaptation time constant
+        "TauW":   encode_unsigned(100),    # slow adaptation time constant
         "a":      encode_unsigned(1),      # small subthreshold adaptation
         "b":      encode_unsigned(2),      # small spike-triggered adaptation
         "Vreset": encode_signed(-65),      # deep reset
@@ -158,7 +158,7 @@ async def test_bursting(dut):
     #   - Less-negative Vreset keeps V closer to threshold
     params = {
         "DeltaT": encode_signed(2),
-        "TauW":   encode_unsigned(150),
+        "TauW":   encode_unsigned(120),
         "a":      encode_unsigned(4),
         "b":      encode_unsigned(0),
         "Vreset": encode_signed(-50),
@@ -216,7 +216,7 @@ async def test_spike_adaptation(dut):
 
     params = {
         "DeltaT": encode_signed(2),
-        "TauW":   encode_unsigned(150),
+        "TauW":   encode_unsigned(120),
         "a":      encode_unsigned(2),
         "b":      encode_unsigned(8),      # spike-triggered adaptation
         "Vreset": encode_signed(-65),
