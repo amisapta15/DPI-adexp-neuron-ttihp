@@ -14,6 +14,12 @@
 //   W_i' = W_i - (W_i >> KS_i) + (V > VTH ? WBUMP_i : 0)
 // On V > VTH: V' = V - VSTEP (subtractive reset) and the slow units bump.
 //
+// Every operand is explicitly sign-extended to its expression's context width
+// (the f0_16 / v_20 / ... wires below) so the widths are self-documenting and
+// lint tools have no WIDTHEXPAND to complain about. Next-state values are
+// combinational wires; the clocked block only samples them, so there are no
+// blocking assignments in sequential logic (BLKSEQ-clean).
+//
 // All behavioural constants are parameters: the values below are initial
 // defaults to be tuned at M1 (regime matching), not frozen numbers.
 // ============================================================================
@@ -71,15 +77,55 @@ module adex_block #(
     wire spike_now = (v > VTH_Q);
     wire trig_now  = (v > VTRIG_Q);
 
-    wire signed [15:0] fast_drive = 16'sd0 + (f0 >>> FSH0) + (f1 >>> FSH1);
-    wire signed [15:0] slow_drive = 16'sd0 + (w0 >>> SSH0) + (w1 >>> SSH1) + (w2 >>> SSH2);
-    wire signed [15:0] inh_amt    = 16'sd4096 >>> INH_SHIFT;
-    wire signed [15:0] exc_amt    = 16'sd4096 >>> EXC_SHIFT;
+    wire signed [15:0] inh_amt = 16'sd4096 >>> INH_SHIFT;
+    wire signed [15:0] exc_amt = 16'sd4096 >>> EXC_SHIFT;
 
-    // ---------------- Update temps ----------------
-    reg signed [19:0] v_sum;
-    reg signed [11:0] f0_next, f1_next;
-    reg signed [13:0] w0_next, w1_next, w2_next;
+    // Explicit sign-extension to each context width (lint-clean).
+    wire signed [15:0] f0_16 = $signed({{6{f0[9]}}, f0});
+    wire signed [15:0] f1_16 = $signed({{6{f1[9]}}, f1});
+    wire signed [15:0] w0_16 = $signed({{4{w0[11]}}, w0});
+    wire signed [15:0] w1_16 = $signed({{4{w1[11]}}, w1});
+    wire signed [15:0] w2_16 = $signed({{4{w2[11]}}, w2});
+
+    // Drive contributions (all 16-bit signed context)
+    wire signed [15:0] fast_drive = 16'sd0 + (f0_16 >>> FSH0) + (f1_16 >>> FSH1);
+    wire signed [15:0] slow_drive = 16'sd0 + (w0_16 >>> SSH0) + (w1_16 >>> SSH1) + (w2_16 >>> SSH2);
+
+    wire signed [19:0] v_20      = $signed({{4{v[15]}}, v});
+    wire signed [19:0] vstep_20  = $signed({{4{VSTEP_Q[15]}}, VSTEP_Q});
+    wire signed [19:0] iext_20   = $signed({{4{IEXT_Q[15]}}, IEXT_Q});
+    wire signed [19:0] inh_20    = $signed({{4{inh_amt[15]}}, inh_amt});
+    wire signed [19:0] exc_20    = $signed({{4{exc_amt[15]}}, exc_amt});
+    wire signed [19:0] fast_20   = $signed({{4{fast_drive[15]}}, fast_drive});
+    wire signed [19:0] slow_20   = $signed({{4{slow_drive[15]}}, slow_drive});
+    wire signed [11:0] f0_12     = $signed({{2{f0[9]}}, f0});
+    wire signed [11:0] f1_12     = $signed({{2{f1[9]}}, f1});
+    wire signed [11:0] finc0_12  = $signed({{2{FINC0[9]}}, FINC0});
+    wire signed [11:0] finc1_12  = $signed({{2{FINC1[9]}}, FINC1});
+    wire signed [13:0] w0_14     = $signed({{2{w0[11]}}, w0});
+    wire signed [13:0] w1_14     = $signed({{2{w1[11]}}, w1});
+    wire signed [13:0] w2_14     = $signed({{2{w2[11]}}, w2});
+    wire signed [13:0] wbump0_14 = $signed({{2{WBUMP0[11]}}, WBUMP0});
+    wire signed [13:0] wbump1_14 = $signed({{2{WBUMP1[11]}}, WBUMP1});
+    wire signed [13:0] wbump2_14 = $signed({{2{WBUMP2[11]}}, WBUMP2});
+
+    // ---------------- Next-state (combinational) ----------------
+    wire signed [19:0] v_spk_sum = 20'sd0 + v_20 - vstep_20;   // subtractive reset
+    wire signed [19:0] v_dyn_sum = 20'sd0 + v_20 - (v_20 >>> KV)   // leak
+                                 + fast_20 - slow_20               // units
+                                 + (ext_drive ? iext_20 : 20'sd0)  // external current
+                                 - (inh_in    ? inh_20  : 20'sd0)  // reciprocal inhibition
+                                 + (exc_in    ? exc_20  : 20'sd0); // ring excitation
+    wire signed [19:0] v_sum = spike_now ? v_spk_sum : v_dyn_sum;
+
+    // Fast-positive: decay always, accumulate while V near threshold
+    wire signed [11:0] f0_next = 12'sd0 + f0_12 - (f0_12 >>> KF0) + (trig_now ? finc0_12 : 12'sd0);
+    wire signed [11:0] f1_next = 12'sd0 + f1_12 - (f1_12 >>> KF1) + (trig_now ? finc1_12 : 12'sd0);
+
+    // Slow-negative: decay always, bump on the block's own spike
+    wire signed [13:0] w0_next = 14'sd0 + w0_14 - (w0_14 >>> KS0) + (spike_now ? wbump0_14 : 14'sd0);
+    wire signed [13:0] w1_next = 14'sd0 + w1_14 - (w1_14 >>> KS1) + (spike_now ? wbump1_14 : 14'sd0);
+    wire signed [13:0] w2_next = 14'sd0 + w2_14 - (w2_14 >>> KS2) + (spike_now ? wbump2_14 : 14'sd0);
 
     // ---------------- Saturating helpers ----------------
     function automatic signed [15:0] sat16(input signed [19:0] x);
@@ -118,33 +164,12 @@ module adex_block #(
             spike <= 1'b0;
         end else begin
             spike <= spike_now;
-
-            // Prime update
-            if (spike_now) begin
-                v_sum = 20'sd0 + v - VSTEP_Q;            // subtractive reset
-            end else begin
-                v_sum = 20'sd0 + v - (v >>> KV)          // leak
-                      + fast_drive                       // fast-positive upstroke
-                      - slow_drive                       // slow-negative adaptation
-                      + (ext_drive ? IEXT_Q : 16'sd0)    // external current
-                      - (inh_in    ? inh_amt : 16'sd0)   // reciprocal inhibition
-                      + (exc_in    ? exc_amt : 16'sd0);  // ring excitation
-            end
-            v <= sat16(v_sum);
-
-            // Fast-positive units: decay always, accumulate while V near threshold
-            f0_next = 12'sd0 + f0 - (f0 >>> KF0) + (trig_now ? FINC0 : 10'sd0);
-            f1_next = 12'sd0 + f1 - (f1 >>> KF1) + (trig_now ? FINC1 : 10'sd0);
-            f0 <= sat10(f0_next);
-            f1 <= sat10(f1_next);
-
-            // Slow-negative units: decay always, bump on the block's own spike
-            w0_next = 14'sd0 + w0 - (w0 >>> KS0) + (spike_now ? WBUMP0 : 12'sd0);
-            w1_next = 14'sd0 + w1 - (w1 >>> KS1) + (spike_now ? WBUMP1 : 12'sd0);
-            w2_next = 14'sd0 + w2 - (w2 >>> KS2) + (spike_now ? WBUMP2 : 12'sd0);
-            w0 <= sat12(w0_next);
-            w1 <= sat12(w1_next);
-            w2 <= sat12(w2_next);
+            v     <= sat16(v_sum);
+            f0    <= sat10(f0_next);
+            f1    <= sat10(f1_next);
+            w0    <= sat12(w0_next);
+            w1    <= sat12(w1_next);
+            w2    <= sat12(w2_next);
         end
     end
 

@@ -1,42 +1,51 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
-# Tiny Tapeout Verilog Project Template
-TTIHP-26b submission
+# tt_um_dpi_adexp — AdExp DPI Neuron Network (TTIHP-26b)
 
-- [Read the documentation for project](docs/info.md)
+A digital spiking-neuron network for the IHP SG13G2 shuttle: AdEx (adaptive
+exponential integrate-and-fire) dynamics with DPI (differential-pair
+integrator) style synapses, implemented with **shift/add/subtract arithmetic
+only** — no multipliers, no dividers, no LUTs.
 
-## What is Tiny Tapeout?
+Baseline: four neuron blocks forming two E/I pairs with reciprocal inhibition.
+Each block is a population primitive with one membrane prime plus two
+fast-positive and three slow-negative adaptation units on coprime power-of-two
+time constants. A three-pair stretch with an excitatory ring (E0→E1→E2→E0) is
+parameterisable (`N_PAIRS=3`).
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
+- [Full project documentation / datasheet](docs/info.md)
+- [Implementation plan (spec)](src/implementation_plan.md)
+- Author: Saptarshi Ghosh
 
-To learn more and get started, visit https://tinytapeout.com.
+## Pin map (baseline)
 
-## Set up your Verilog project
+- `ui_in[0..3]` — PWM input currents for E0, I0, E1, I1
+- `uo_out[0..3]` — spikes E0, I0, E1, I1 (one-cycle pulses)
+- `uo_out[4]` — any-spike aggregate
+- `clk` / `rst_n` — clock and active-low reset; `uio` and `ui_in[7:4]` unused (tie low)
 
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Adapt the testbench to your design. See [test/README.md](test/README.md) for more information.
+## Bring-up in one minute
 
-The GitHub action will automatically build the ASIC files using [OpenLane](https://www.zerotoasiccourse.com/terminology/openlane/).
+1. Release `rst_n` after ≥5 clock cycles.
+2. Drive `ui_in[3:0]` high (constant PWM = constant input current).
+3. Watch `uo_out[4]`: it pulses whenever any block fires. E blocks fire faster
+   than I blocks; E0's inter-spike interval grows over time (adaptation).
 
-## Enable GitHub actions to build the results page
+## Source layout
 
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
+```
+src/project.v          top wrapper (tt_um_dpi_adexp), baseline pin map
+src/adex_network.v     two-pair baseline / three-pair stretch, E-ring
+src/adex_pair.v        one E/I pair, reciprocal inhibition
+src/adex_block.v       population primitive: 1 prime + 2 fast + 3 slow units
+src/adex_neuron_system_tt_lut32.v   deprecated LUT core, kept for reference
+test/                  cocotb suite (8 tests, green: `make -B` in test/)
+```
 
-## Resources
+## Verification status (2026-08-08)
 
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
-
-## What next?
-
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
+Block arithmetic exact-checked against an independent Python fixed-point
+reference; old-vs-new block differential equivalence 5016/5016 states
+bit-identical; cocotb 8/8 PASS at RTL and the pin-level behavioural tests pass
+on the gate-level netlist. See `docs/info.md` for details and measured
+behavioural numbers.

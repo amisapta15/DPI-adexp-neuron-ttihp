@@ -37,6 +37,8 @@ module tt_um_dpi_adexp (
     //   uo_out[4] any-spike aggregate (debug)
     // Stretch (M4): set N_PAIRS to 3; pins occupy [0..5].
     // ----------------------------------------------------
+    wire [3:0] spikes;
+
     adex_network #(
         .N_PAIRS   (2),
         .INH_SHIFT (4'd3)
@@ -44,10 +46,13 @@ module tt_um_dpi_adexp (
         .clk       (clk),
         .rst_n     (rst_n),
         .ext_drive ({ui_in[3], ui_in[2], ui_in[1], ui_in[0]}),
-        .spike     ({uo_out[3], uo_out[2], uo_out[1], uo_out[0]})
+        .spike     (spikes)
     );
 
-    assign uo_out[4]   = (uo_out[0] | uo_out[1] | uo_out[2] | uo_out[3]);
+    // Aggregate computed from the internal spike bus, not from uo_out bits:
+    // Verilator flags a bus whose bits feed other bits as a circular path.
+    assign uo_out[3:0] = spikes;
+    assign uo_out[4]   = (spikes != 4'b0);
     assign uo_out[7:5] = 3'b0;
 
 endmodule

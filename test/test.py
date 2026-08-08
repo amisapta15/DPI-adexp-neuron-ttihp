@@ -140,6 +140,15 @@ async def collect_spikes_dual(dut, bits, cycles):
 # Tests
 # ----------------------------------------------------------------------------
 
+def _block(dut):
+    """pair0's E block handle, or None if the internal hierarchy is not
+    reachable (the gate-level netlist flattens it away)."""
+    try:
+        return dut.net.pair0.e_block
+    except AttributeError:
+        return None
+
+
 @cocotb.test()
 async def test_reset_state(dut):
     """Internal state is exactly VINIT / 0 and outputs are 0 while in reset."""
@@ -148,10 +157,13 @@ async def test_reset_state(dut):
     dut.ui_in.value = 0
     await ClockCycles(dut.clk, 5)
 
-    b = dut.net.pair0.e_block
-    assert signed_of(b.v) == -2048, f"v after reset = {signed_of(b.v)}"
-    for name in ("f0", "f1", "w0", "w1", "w2"):
-        assert signed_of(getattr(b, name)) == 0, f"{name} after reset != 0"
+    b = _block(dut)
+    if b is None:
+        dut._log.info("internal hierarchy not present (gate-level netlist); checking outputs only")
+    else:
+        assert signed_of(b.v) == -2048, f"v after reset = {signed_of(b.v)}"
+        for name in ("f0", "f1", "w0", "w1", "w2"):
+            assert signed_of(getattr(b, name)) == 0, f"{name} after reset != 0"
     assert int(dut.uo_out.value) == 0, "uo_out not zero in reset"
 
     dut.rst_n.value = 1
@@ -168,7 +180,14 @@ async def test_arith_block(dut):
     dut.rst_n.value = 1
     await ClockCycles(dut.clk, 2)
 
-    b = dut.net.pair0.e_block
+    b = _block(dut)
+    if b is None:
+        # Gate-level netlists flatten the internal hierarchy, so this
+        # RTL-only check cannot run there; the pin-level tests still cover
+        # behaviour. (cocotb 1.9 has no runtime skip, so log and return.)
+        dut._log.warning("internal hierarchy not reachable (gate-level netlist); "
+                         "skipping block-arithmetic exact check")
+        return
     cases = [
         # (v, f0, f1, w0, w1, w2, ext, inh, exc, note)
         (1000, 0, 0, 0, 0, 0, 1, 0, 0, "leak+drive"),

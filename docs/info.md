@@ -6,141 +6,136 @@ You can also include images in this folder and reference them in the markdown. E
 512 kb in size, and the combined size of all images must be less than 1 MB.
 -->
 
-## 🧠 AdEx Spiking Neuron Core
+## 🧠 AdExp DPI Neuron Network (tt_um_dpi_adexp)
 
-This project is a digital hardware implementation of the Adaptive Exponential (AdEx) Integrate-and-Fire neuron model. It's designed to run on an ASIC, simulating the behavior of a biological neuron, including its membrane potential and adaptation mechanisms. The core is highly configurable, allowing it to model various neural firing patterns like regular spiking, bursting, and fast spiking.
+A digital spiking-neuron network for the IHP SG13G2 shuttle (TTIHP-26b). It emulates Adaptive Exponential (AdEx) integrate-and-fire dynamics with Differential-Pair-Integrator (DPI) style synapses, built entirely from **shifts, adds and subtracts**: there is no multiplier, no divider and no lookup table anywhere in the RTL, which makes the design compact, fully synthesizable, and easy to audit. It is the work of Saptarshi Ghosh (publishing as Saptarshi Ghosh).
+
+The baseline configuration is a **population of four blocks forming two excitatory/inhibitory (E/I) pairs** with reciprocal inhibition. Each block is a self-contained "population primitive" (1 membrane prime + 2 fast-positive units + 3 slow-negative adaptation units, 6 state variables in total). The architecture is compositional: `adex_block` → `adex_pair` → `adex_network`.
 
 ## How it works ⚙️
 
-The system operates based on two primary components: the **Neuron Core** and the **Parameter Loader**.
+### Arithmetic model (per block, per clock cycle)
 
-### 1. The Neuron Core
+All state variables are signed fixed-point. The membrane prime `v` is Q4.12 (1.0 = 4096), fast units are 10-bit signed, slow units are 12-bit signed. Every term is a shift-scaled constant or a state value; coupling is a binary selection of a constant, never a product.
 
-The core solves two coupled differential equations in real-time using Q4.12 fixed-point arithmetic. These equations govern the neuron's two main state variables:
-
-*   **V:** The membrane potential, which simulates the voltage across the neuron's cell membrane.
-*   **w:** The adaptation current, which models cellular fatigue and is responsible for spike-frequency adaptation.
-
-The behavior is defined by the following equations, which are a direct representation of the hardware's operation:
+Prime (membrane) update, no spike:
 
 ```math
-\frac{dV}{dt} = \frac{-g_L(V - E_L) + g_L\Delta_T\exp\left(\frac{V - V_T}{\Delta_T}\right) - w + I}{C} 
+v' = v - (v >> KV) + fast_drive - slow_drive + Iext - inh + exc
 ```
+
+Fast-positive units (drive the upstroke; accumulate while `v > VTRIG`):
+
 ```math
-\frac{dw}{dt} = \frac{a(V - E_L) - w}{\tau_w}
+f_i' = f_i - (f_i >> KF_i) + (v > VTRIG ? FINC_i : 0)
 ```
 
-When the membrane potential `V` crosses a threshold `VT`, the core outputs a digital **spike** ⚡. After a spike, `V` is reset to `Vreset` and the adaptation current `w` is increased by a value `b`.
+Slow-negative units (adaptation; decay always, bump on the block's own spike):
 
-### 2. The Parameter Loader 📥
+```math
+w_i' = w_i - (w_i >> KS_i) + (v > VTH ? WBUMP_i : 0)
+```
 
-The neuron's specific behavior is defined by 8 distinct user-configurable parameters. To configure the core, these parameters must be loaded serially via a simple 4-bit interface.
+On `v > VTH` the block emits a registered **spike** and performs a subtractive reset `v' = v - VSTEP` (classic AdEx spike-and-reset, without the exponential term: the fast units supply the upstroke instead). Drive contributions are
 
-The parameters are loaded in the following order:
+```math
+fast_drive = (f0 >> FSH0) + (f1 >> FSH1)
+slow_drive = (w0 >> SSH0) + (w1 >> SSH1) + (w2 >> SSH2)
+```
 
-| Index | Parameter | Symbol in Equation | Description                               |
-| :---: | :-------: | :---:              | :---------------------------------------- |
-|   0   | `DeltaT`  | `ΔT`               | Sharpness of the spike initiation         |
-|   1   |  `TauW`   | `τw`               | Adaptation time constant                  |
-|   2   |    `a`    | `a`                | Subthreshold adaptation level             |
-|   3   |    `b`    | `b`                | Spike-triggered adaptation increment      |
-|   4   | `Vreset`  | `Vreset`           | Voltage to reset to after a spike         |
-|   5   |   `VT`    | `VT`               | Firing threshold voltage                  |
-|   6   |  `Ibias`  | `I`                | Constant input current                    |
-|   7   |     `C`     | `C`                | Membrane capacitance                      |
+all values saturated to their widths. This is the "shift-only AdEx emulation" from `src/implementation_plan.md` (authoritative spec, kept in-repo).
 
+### The three slow units and coprime periods
 
-The loading process is controlled by the `ui_in` pins:
-*   `ui_in[4]` (`load_mode`): Must be high to enable loading.
-*   `ui_in[3]` (`load_enable`): A rising edge on this pin latches the 4-bit value present on `uio_in[3:0]`.
+Each block carries **three** slow-negative units whose decay time constants are a coprime triple of powers of two (plan section 5). Distinct coprime period sets per block keep E and I populations from locking into identical rhythms:
 
-Each 8-bit parameter is sent as two 4-bit nibbles (high nibble first). After all **16 nibbles** have been sent, a special **footer nibble (`0xF`)** must be sent to commit the new parameters to the core.
+| Pair | E slow periods (KS0, KS1, KS2) | I slow periods (KS0, KS1, KS2) |
+| :--- | :--- | :--- |
+| pair 0 | (5, 7, 11) | (13, 17, 19) |
+| pair 1 | (23, 29, 31) | (37, 41, 43) |
+| pair 2 (stretch, N_PAIRS=3) | (47, 53, 59) | (61, 67, 71) |
 
-### Inputs and Outputs
+All three slow units bump on the block's own spike (`W += WBUMP` each); setting WBUMP1/WBUMP2 = 0 recovers the "one designated unit" variant. This produces measurable spike-frequency adaptation: the ISI grows as the slow units accumulate.
 
-*   **Inputs**:
-    *   `ui_in[6]` (`clk`): Main clock signal.
-    *   `ui_in[5]` (`reset`): Active-high reset.
-    *   `ui_in[4]` (`load_mode`): Set to `1` to enable the parameter loader.
-    *   `ui_in[3]` (`load_enable`): Pulse high to load a 4-bit nibble from `uio_in`.
-    *   `ui_in[2]` (`enable_core`): Set to `1` to run the neuron simulation.
-    *   `ui_in[1]` (`debug_mode`): Selects the debug output on `uo_out[6:1]`.
-    *   `uio_in[3:0]`: 4-bit data bus for loading parameter nibbles.
-*   **Outputs**:
-    *   `uo_out[0]` (**`spike`**): The primary output. Pulses high for one clock cycle when the neuron fires.
-    *   `uo_out[6:1]`: A 6-bit debug bus showing the most significant bits of either `V` (if `debug_mode=0`) or `w` (if `debug_mode=1`).
+### Network structure
 
-## Firing Modes and How to Trigger Them 🧠⚡️
+* `adex_block` — the population primitive above (parameters in the next section).
+* `adex_pair` — one E block and one I block with **reciprocal inhibition**: E spikes inhibit I and vice versa (`inh_in` port, magnitude = 1.0 >> INH_SHIFT). E and I use different slow-period triples.
+* `adex_network` — two pairs (baseline, `N_PAIRS=2`), each pair isolated from the other; a three-pair stretch (`N_PAIRS=3`) adds an excitatory ring E0 → E1 → E2 → E0.
 
-The AdEx model's strength is its ability to reproduce different neural behaviors. The firing pattern is primarily determined by the interplay between the adaptation parameters (`a`, `b`, `τw`), input current (`I`), and membrane capacitance (`C`). By loading different parameter sets, you can make the neuron behave in specific ways.
+### Parameter table (compile-time, Verilog parameters)
 
-*Note: The 8-bit encoded value is what you need to send to the hardware. For signed values (`Vreset`, `VT`, `Ibias`), the encoding is `Real Value + 128`. For unsigned values, the encoding is just the `Real Value`. For the firing mode examples below, the `C` parameter should be loaded with its default value of `200` (Hex `0xC8`).*
+All behavioural constants are parameters of `adex_block` with provisional defaults. Retuning means editing the parameter defaults and re-synthesising (the runtime serial config loader is deferred; see Known limitations).
 
----
-### 📈 Regular Spiking (Adapting)
-This is the "default" behavior for many excitatory neurons. The firing rate is initially high and then slows down as the adaptation current `w` builds up.
+| Group | Parameter | Default | Meaning |
+| :--- | :--- | :--- | :--- |
+| Prime | `VINIT_Q` | -2048 | reset value (-0.5) |
+| | `VTH_Q` | 4096 | spike threshold (1.0) |
+| | `VTRIG_Q` | 3072 | fast-unit trigger (0.75) |
+| | `VSTEP_Q` | 4096 | subtractive reset step (1.0) |
+| | `KV` | 4 | membrane leak shift (tau = 2^KV cycles) |
+| Fast | `KF0`, `KF1` | 1, 2 | decay shifts |
+| | `FINC0`, `FINC1` | 128, 192 | increments while v > VTRIG |
+| | `FSH0`, `FSH1` | 1, 1 | drive output shifts |
+| Slow | `KS0..2` | (per pair, see table above) | decay shifts; **7 bits wide, periods up to 71** |
+| | `WBUMP0..2` | 256 each | spike-triggered bump |
+| | `SSH0..2` | 3, 3, 3 | drive output shifts |
+| Drive | `IEXT_Q` | 1024 | external current (0.25) |
+| | `INH_SHIFT` | 3 | inhibition = 1.0 >> 3 |
+| | `EXC_SHIFT` | 3 | excitation = 1.0 >> 3 |
 
-*   **Mechanism**: A non-zero spike-triggered adaptation (`b`) increases `w` with every spike, making it harder for the neuron to reach its firing threshold again.
+## Pin map (baseline, N_PAIRS=2)
 
-*   **Parameter Values**:
-| Parameter | Real-World Value | 8-bit Encoded Value | Hex Value |
-| :---      | :---             | :---                | :---      |
-| `a`       | 2 nS             | `2`                 | `0x02`    |
-| `b`       | 40 pA            | `40`                | `0x28`    |
-| `Vreset`  | -65 mV           | `63`                | `0x3F`    |
-| `Ibias`   | 50 pA            | `178`               | `0xB2`    |
+| Pin | Direction | Function |
+| :--- | :--- | :--- |
+| `clk` | in | system clock |
+| `rst_n` | in | active-low reset |
+| `ena` | in | unused (tied off by harness) |
+| `ui_in[0]` | in | PWM input current, E0 |
+| `ui_in[1]` | in | PWM input current, I0 |
+| `ui_in[2]` | in | PWM input current, E1 |
+| `ui_in[3]` | in | PWM input current, I1 |
+| `ui_in[7:4]` | in | unused (tie low) |
+| `uio_in[7:0]` | in | unused (tie low) |
+| `uo_out[0]` | out | spike E0 (1 cycle pulse) |
+| `uo_out[1]` | out | spike I0 |
+| `uo_out[2]` | out | spike E1 |
+| `uo_out[3]` | out | spike I1 |
+| `uo_out[4]` | out | any-spike aggregate (E0|I0|E1|I1) |
+| `uo_out[7:5]` | out | tied low |
+| `uio_out`, `uio_oe` | out | tied low (bidirectional unused) |
 
----
-### 💥 Bursting
-This behavior is characterized by clusters of high-frequency spikes separated by periods of silence (hyperpolarization).
-
-*   **Mechanism**: Strong subthreshold adaptation (`a`) and a less-negative reset potential (`Vreset`) are key. The adaptation current `w` builds up slowly, eventually stopping the burst. As `w` decays, the membrane potential depolarizes again, initiating the next burst.
-
-*   **Parameter Values**:
-| Parameter | Real-World Value | 8-bit Encoded Value | Hex Value |
-| :---      | :---             | :---                | :---      |
-| `a`       | 4 nS             | `4`                 | `0x04`    |
-| `b`       | 0 pA             | `0`                 | `0x00`    |
-| `Vreset`  | -50 mV           | `78`                | `0x4E`    |
-| `Ibias`   | 25 pA            | `153`               | `0x99`    |
-
----
-### 💨 Fast Spiking
-Typical of inhibitory interneurons, this mode involves sustained high-frequency firing with little to no adaptation or slowdown.
-
-*   **Mechanism**: This is achieved by simply turning off all adaptation mechanisms (`a` and `b` are zero). The neuron behaves like a simple leaky integrate-and-fire model, with its firing rate determined solely by the input current.
-
-*   **Parameter Values**:
-| Parameter | Real-World Value | 8-bit Encoded Value | Hex Value |
-| :---      | :---             | :---                | :---      |
-| `a`       | 0 nS             | `0`                 | `0x00`    |
-| `b`       | 0 pA             | `0`                 | `0x00`    |
-| `Vreset`  | -65 mV           | `63`                | `0x3F`    |
-| `Ibias`   | 80 pA            | `208`               | `0xD0`    |
-
----
+`ui_in[7:4]` and `uio_in` must be driven low; a floating input keeps the PWM drives off, so the network simply stays silent.
 
 ## How to test 🧪
 
-The recommended test procedure verifies the core's functionality by loading parameters to induce spiking and then observing the output.
+1. **Reset**: hold `rst_n` low for at least 5 clock cycles, then release.
+2. **Drive**: set some of `ui_in[3:0]` high (constant PWM = constant input current). E.g. drive all four high.
+3. **Observe**: `uo_out[0..3]` pulse for one cycle whenever the corresponding block crosses threshold; `uo_out[4]` pulses when any block fires.
 
-The test procedure is as follows:
+With all drives high and default parameters, measured behaviour (cocotb, RTL and gate-level):
 
-1.  **Reset**: The chip is held in reset for 10 clock cycles to initialize all internal states.
+* All four blocks spike; E blocks fire faster than I blocks (E0 ≈ 567 spikes vs I0 ≈ 222 per 60 000 cycles in a long run; E0 115 vs I0 49 in the first 1200 cycles).
+* **Adaptation**: E0's average ISI grows from ≈7 cycles (first spikes) to ≈10 cycles (steady state), ratio ≈1.4 — the slow units visibly slow the firing.
+* **Inhibition**: E0's spike count drops when I0 is driven (≈402 alone → ≈376 with I0 active) and recovers after.
+* **Pair isolation**: driving pair 0 only, pair 1 stays silent (baseline has no cross-pair coupling).
+* **No lock**: E and I spikes stay out of phase; coincident-spike fraction ≈0.03.
 
-2.  **Load Parameters**: To provoke a spike, the test injects a strong, constant positive input current (`Ibias`) and sets the membrane capacitance (`C`).
-    *   The test enters `load_mode`.
-    *   It sends 12 dummy nibbles for the first 6 parameters.
-    *   It sends the two nibbles for `Ibias` (a value of `200`, which is a strong supra-threshold current).
-    *   It sends the two nibbles for `C` (a value of `200`, the default).
-    *   It sends the `0xF` footer nibble to commit all 8 parameters.
-    *   The test exits `load_mode`.
+The automated suite is `test/test.py` (cocotb, 8 tests: reset state, exact block arithmetic vs a Python fixed-point reference, silence, spiking + aggregate OR, adaptation ratio, inhibition suppression, pair isolation, lock check). Run with `make -B` in `test/` (needs cocotb 1.9.2 + pytest 8.3.4; the user's `ccotb` mamba env has them). Two tests reach into internal hierarchy (`dut.net.pair0.e_block`); at gate level the netlist flattens that hierarchy, so those two log a warning and check only what is visible from the pins — the pin-level behaviour tests still run and pass on the gate netlist.
 
-3.  **Run and Verify**:
-    *   The test asserts `enable_core` to start the neuron simulation.
-    *   It then monitors the `uo_out[0]` (spike) pin on every clock cycle.
-    *   A successful test requires a spike to be detected within a set time limit (e.g., 1000 cycles).
+## Verification status (2026-08-08)
+
+* Block arithmetic exact-checked against an independent Python fixed-point reference (77/77 cases).
+* Old-vs-new `adex_block` differential equivalence: 5016/5016 states bit-identical after the lint-clean restructure.
+* Cocotb suite: 8/8 PASS at RTL; 6/8 behavioural tests PASS at gate level (2 internal-hierarchy tests guarded).
+* iverilog 13 compiles warning-free; Verilator lint is clean of WIDTHEXPAND/BLKSEQ (explicit sign-extension wires + combinational next-state logic).
+
+## Known limitations
+
+* **Parameters are compile-time only.** The old design's serial 8-parameter loader was dropped with the rewrite; runtime reconfiguration needs the deferred config loader (plan section 6 fallback) — see `src/implementation_plan.md`.
+* **Observability**: at gate level only the spike pins are visible; internal `v/f/w` states are not exposed (the old debug bus is gone).
+* `src/adex_neuron_system_tt_lut32.v` is the deprecated Q8.7 LUT-based core from the earlier iteration, kept on disk for reference; it is not in `info.yaml`'s source list and is not synthesised.
 
 ## External hardware
 
-N/A. This project is a self-contained digital core and requires no external components.
+N/A. Self-contained digital core; no external components required.

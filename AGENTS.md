@@ -11,10 +11,11 @@ shift/add/subtract arithmetic only. No multiplies, no divides, no LUTs.
 The authoritative specification is `src/implementation_plan.md` (untracked,
 written by the user). Read it before changing architecture. Milestones in the
 plan: M0 single block, M1 regime validation, M2 E/I pair, M3 two-pair baseline,
-M4 three-pair stretch. The user works top-down through these. Current status:
-RTL compiles clean with iverilog 13 (conda-forge); block arithmetic is verified
-exact by the standalone TB; cocotb suite written but not yet run (cocotb not
-installed in this env).
+M4 three-pair stretch. The user works top-down through these. Current status
+(2026-08-08): all four modules implemented and verified; cocotb suite 8/8 PASS
+in the `ccotb` mamba env (`make -B` in test/); gate-level CI behavioural tests
+pass (two RTL-internal tests are hierarchy-guarded at gate level); docs/info.md
+carries the full datasheet for the year-later reader.
 
 ## Hierarchy
 
@@ -25,8 +26,9 @@ src/adex_pair.v        one E/I pair, reciprocal inhibition via inh_in
 src/adex_block.v       population primitive: 1 prime + 2 fast + 3 slow units
 src/adex_neuron_system_tt_lut32.v   DEPRECATED old Q8.7 LUT core, superseded
 src/implementation_plan.md          the spec, untracked
-test/                  cocotb harness (test.py still targets the old interface)
+test/                  cocotb harness, 8 tests, suite green (ccotb env)
 info.yaml              TT metadata: source_files, pinout, tiles (2x2)
+docs/info.md           project datasheet (keep in sync with the design)
 ```
 
 ## Fixed-point and arithmetic rules
@@ -57,16 +59,22 @@ uio is unused (serial config loader deferred). `ena` is unused.
 
 ## Testing
 
-Run from `test/` with `make -B` (cocotb). `tb.v` instantiates `tt_um_dpi_adexp`
+Run from `test/` with `make -B` (cocotb; use the `ccotb` mamba env: export
+`PATH=/home/sapta/miniforge3/envs/ccotb/bin:$PATH` — `conda activate` is broken
+in non-interactive shells on this machine). `tb.v` instantiates `tt_um_dpi_adexp`
 and is valid; `test.py` targets the PWM/spike interface (8 tests: reset state,
 exact block arithmetic vs a Python fixed-point model, silence, spiking+OR
 aggregate, adaptation head8/tail100 ratio > 1.2, inhibition suppression,
-pair isolation, in-phase lock check). The same assertions were validated with
-a standalone iverilog behavioural TB: adaptation ratio 1.43, coincidence
-fraction 0.03, suppression 402->377->400, isolation clean. Plan section 8
-defines the regime tests (tonic, adapting, bursting, fast spiking at block
-level; antiphase, escape-vs-release, rebound at pair level); regime sweeps
-need a parameterised test instantiation or the deferred config loader.
+pair isolation, in-phase lock check). Suite is green: 8/8 at RTL; at gate level
+the two RTL-internal tests (reset internals, block arithmetic) are guarded by
+`_block(dut)` and log-and-return because synthesis flattens the hierarchy —
+cocotb 1.9 has no runtime skip. Standalone iverilog verification lives in
+`/tmp/hermes/` (diff TB old-vs-new block, 5016/5016 bit-identical). Behavioural
+numbers: adaptation ratio 1.43, coincidence fraction 0.03, suppression
+402->377->400, isolation clean. Plan section 8 defines the regime tests (tonic,
+adapting, bursting, fast spiking at block level; antiphase, escape-vs-release,
+rebound at pair level); regime sweeps need a parameterised test instantiation
+or the deferred config loader.
 
 ## Working rules
 
