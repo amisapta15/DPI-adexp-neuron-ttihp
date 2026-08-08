@@ -1,12 +1,14 @@
 /*
  * Copyright (c) 2025 Saptarshi Ghosh
  * SPDX-License-Identifier: Apache-2.0
+ *
+ * Multipurpose neuromorphic core (TTIHP-26b): shift-only, multiply/divide/LUT
+ * free AdEx-emulating network built from one reusable population primitive
+ * (adex_block), composed into E/I pairs (adex_pair) and then into a coupled
+ * network (adex_network). Architecture and milestones: src/implementation_plan.md.
  */
 
 `default_nettype none
-
-// Uncomment to switch back to LUT16
-//`define USE_LUT16
 
 module tt_um_dpi_adexp (
     input  wire [7:0] ui_in,     // dedicated inputs
@@ -20,20 +22,32 @@ module tt_um_dpi_adexp (
 );
 
     // ----------------------------------------------------
-    // Tie off bidirectional outputs (not used by this core)
+    // Bidirectional pins unused in the baseline (serial config
+    // loader is deferred; plan section 6 fallback).
     // ----------------------------------------------------
     assign uio_out = 8'b0;
     assign uio_oe  = 8'b0;
 
     // ----------------------------------------------------
-    // Instantiate the AdEx Neuron Core
+    // Baseline pin map (plan section 6):
+    //   ui_in[0] PWM E0     ui_in[1] PWM I0
+    //   ui_in[2] PWM E1     ui_in[3] PWM I1
+    //   uo_out[0] spike E0  uo_out[1] spike I0
+    //   uo_out[2] spike E1  uo_out[3] spike I1
+    //   uo_out[4] any-spike aggregate (debug)
+    // Stretch (M4): set N_PAIRS to 3; pins occupy [0..5].
     // ----------------------------------------------------
-    adex_neuron_system_tt_lut32 core (
-        .clk    (clk),
-        .rst_n  (rst_n),
-        .ui_in  (ui_in),
-        .uo_out (uo_out),
-        .uio_in (uio_in)
+    adex_network #(
+        .N_PAIRS   (2),
+        .INH_SHIFT (4'd3)
+    ) net (
+        .clk       (clk),
+        .rst_n     (rst_n),
+        .ext_drive ({ui_in[3], ui_in[2], ui_in[1], ui_in[0]}),
+        .spike     ({uo_out[3], uo_out[2], uo_out[1], uo_out[0]})
     );
+
+    assign uo_out[4]   = (uo_out[0] | uo_out[1] | uo_out[2] | uo_out[3]);
+    assign uo_out[7:5] = 3'b0;
 
 endmodule
