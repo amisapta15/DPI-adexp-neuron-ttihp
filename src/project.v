@@ -50,7 +50,7 @@ module tt_um_dpi_adexp (
     );
 
     // Aggregate computed from the internal spike bus, not from uo_out bits:
-    // Verilator flags a bus whose bits feed other bits as a circular path.
+    // deriving the OR from the outputs themselves would be a circular path.
     assign uo_out[3:0] = spikes;
     assign uo_out[4]   = (spikes != 4'b0);
     assign uo_out[7:5] = 3'b0;

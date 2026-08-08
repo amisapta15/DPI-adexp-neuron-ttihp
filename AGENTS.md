@@ -50,6 +50,14 @@ docs/info.md           project datasheet (keep in sync with the design)
   up to 71). Rule: any shift/period parameter that can hold a value >= 16 must
   be declared at least 7 bits wide; iverilog only warns on truncation, it does
   not error.
+- PITFALL (fixed 2026-08-08): Verilator treats ANY comment whose text begins
+  with the word "verilator" (both `//` and `/*` forms, case-insensitive) as a
+  lint pragma; an unrecognised one aborts with BADVLTPRAGMA / "Unknown
+  verilator comment", and the error message renders line comments in canonical
+  `/*...*/` form, which is misleading. Never start a comment with that word.
+  Local lint: `/home/sapta/miniforge3/envs/ccotb/bin/verilator --lint-only
+  -Wall --top-module tt_um_dpi_adexp src/project.v src/adex_block.v
+  src/adex_pair.v src/adex_network.v` (verilator 5.050 in the ccotb env).
 
 ## Pin map (baseline)
 
