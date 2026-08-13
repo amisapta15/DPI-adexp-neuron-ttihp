@@ -41,7 +41,7 @@ module tt_um_dpi_adexp (
     wire        [10:0] cfg_wbump_q;
     wire        [14:0] cfg_inh_amt_q;
 
-    adex_config config (
+    adex_config u_config (
       .clk           (clk),
       .rst_n         (rst_n),
       .spi_cs_n      (uio_in[0]),
