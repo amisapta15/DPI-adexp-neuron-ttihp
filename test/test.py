@@ -149,6 +149,14 @@ async def spi_send_frame(dut, frame):
     await Timer(40, units="ns")
 
 
+async def spi_write_and_commit(dut, writes):
+    """Write configuration fields, atomically activate them, and let them settle."""
+    for target, field, value in writes:
+        await spi_send_frame(dut, spi_write_frame(target, field, value))
+    await spi_send_frame(dut, 0xC0000000)
+    await ClockCycles(dut.clk, 20)
+
+
 async def count_spikes(dut, bit, cycles):
     """Count rising edges on uo_out[bit] over `cycles`."""
     prev = 0
@@ -175,17 +183,50 @@ async def collect_spike_times(dut, bit, cycles):
     return times
 
 
-async def collect_spikes_dual(dut, bits, cycles):
-    """Simultaneous spike-time trains for two output bits."""
-    trains = {b: [] for b in bits}
-    prev = {b: 0 for b in bits}
+async def collect_spike_train(dut, bit, cycles):
+    """Rising-edge times and the longest contiguous high output run."""
+    prev = 0
+    times = []
+    high_run = 0
+    max_high_run = 0
     for i in range(cycles):
         val = await next_uo_out(dut)
-        for b in bits:
-            cur = (val >> b) & 1
-            if cur and not prev[b]:
-                trains[b].append(i)
-            prev[b] = cur
+        cur = (val >> bit) & 1
+        if cur:
+            high_run += 1
+            max_high_run = max(max_high_run, high_run)
+            if not prev:
+                times.append(i)
+        else:
+            high_run = 0
+        prev = cur
+    return times, max_high_run
+
+
+async def collect_spike_trains(dut, bits, cycles):
+    """Simultaneous rising-edge trains and high-run widths for several outputs."""
+    trains = {bit: [] for bit in bits}
+    prev = {bit: 0 for bit in bits}
+    high_run = {bit: 0 for bit in bits}
+    max_high_run = {bit: 0 for bit in bits}
+    for i in range(cycles):
+        val = await next_uo_out(dut)
+        for bit in bits:
+            cur = (val >> bit) & 1
+            if cur:
+                high_run[bit] += 1
+                max_high_run[bit] = max(max_high_run[bit], high_run[bit])
+                if not prev[bit]:
+                    trains[bit].append(i)
+            else:
+                high_run[bit] = 0
+            prev[bit] = cur
+    return trains, max_high_run
+
+
+async def collect_spikes_dual(dut, bits, cycles):
+    """Simultaneous spike-time trains for two output bits."""
+    trains, _ = await collect_spike_trains(dut, bits, cycles)
     return trains
 
 
@@ -404,6 +445,64 @@ async def test_adaptation(dut):
 
 
 @cocotb.test()
+async def test_block_tonic_f_i_response(dut):
+    """With adaptation disabled, E0 fires tonically and faster for larger IEXT."""
+    start_clock(dut)
+
+    async def measure_rate(iext):
+        await reset_dut(dut)
+        await spi_write_and_commit(dut, [
+            (0, 1, iext),     # E0 IEXT
+            (0xF, 4, 0),      # WBUMP: disable spike-frequency adaptation
+        ])
+        dut.ui_in.value = 0b00000001
+        times = await collect_spike_times(dut, 0, 2000)
+        isi = [times[index + 1] - times[index] for index in range(len(times) - 1)]
+        return len(times), (sum(isi) / len(isi) if isi else 0)
+
+    low_count, low_isi = await measure_rate(512)
+    high_count, high_isi = await measure_rate(1024)
+    dut._log.info(
+        f"tonic f-I: IEXT=512 -> {low_count} spikes, ISI={low_isi:.2f}; "
+        f"IEXT=1024 -> {high_count} spikes, ISI={high_isi:.2f}"
+    )
+
+    assert low_count > 20, f"low-drive tonic response too weak: {low_count} spikes"
+    assert high_count > low_count * 1.3, \
+        f"f-I response is not increasing enough: {low_count} -> {high_count}"
+    assert high_isi < low_isi, \
+        f"higher drive did not shorten the tonic ISI: {low_isi:.2f} -> {high_isi:.2f}"
+
+
+@cocotb.test()
+async def test_block_fast_spiking(dut):
+    """A configured block supports pulse-clean fast spiking at a two-cycle ISI."""
+    start_clock(dut)
+    await reset_dut(dut)
+    await spi_write_and_commit(dut, [
+        (0, 1, 768),      # E0 IEXT
+        (0xF, 0, 2500),   # VTRIG
+        (0xF, 1, 1024),   # VSTEP
+        (0xF, 2, 256),    # FINC0
+        (0xF, 3, 192),    # FINC1
+        (0xF, 4, 0),      # WBUMP: no adaptation during the rate measurement
+    ])
+    dut.ui_in.value = 0b00000001
+    times, max_high_run = await collect_spike_train(dut, 0, 2000)
+    isi = [times[index + 1] - times[index] for index in range(len(times) - 1)]
+    avg_isi = sum(isi) / len(isi) if isi else 0
+    dut._log.info(
+        f"fast spiking: spikes={len(times)}, ISI={avg_isi:.2f}, "
+        f"max high run={max_high_run}"
+    )
+
+    assert len(times) > 800, f"fast-spiking response too sparse: {len(times)} spikes"
+    assert max_high_run == 1, \
+        f"fast-spiking output held high for {max_high_run} cycles instead of pulsing"
+    assert avg_isi <= 2.1, f"fast-spiking ISI too slow: {avg_isi:.2f} cycles"
+
+
+@cocotb.test()
 async def test_inhibition_suppresses(dut):
     """E0's firing rate drops while I0 is active and recovers after (escape/
     release behaviour, plan section 8, tested directionally from the pins)."""
@@ -467,6 +566,51 @@ async def test_pair_does_not_lock(dut):
     # ~33%.  A threshold of 0.5 still catches true phase-locking (frac → 1)
     # while tolerating the random baseline.
     assert frac < 0.5, f"E/I appear locked in-phase (coincidence {frac:.2f})"
+
+
+@cocotb.test()
+async def test_pair_phase_locked_alternation(dut):
+    """A tuned, driven E/I pair emits balanced, alternating spike pulses.
+
+    This is a phase-locked response to simultaneous external drive, not a
+    claim that the baseline pair is an autonomous biological oscillator.
+    """
+    start_clock(dut)
+    await reset_dut(dut)
+    await spi_write_and_commit(dut, [
+        (0, 0, 5120),     # E0 VTH
+        (1, 0, 3072),     # I0 VTH
+        (0, 1, 1024),     # E0 IEXT
+        (1, 1, 1024),     # I0 IEXT
+        (0xF, 4, 0),      # WBUMP: remove adaptation during phase measurement
+        (0xF, 5, 256),    # INH_AMT: weak reciprocal inhibition
+    ])
+    dut.ui_in.value = 0b00000011
+    trains, max_high_run = await collect_spike_trains(dut, (0, 1), 2000)
+    e_times, i_times = trains[0], trains[1]
+    events = sorted([(time, "E") for time in e_times]
+                    + [(time, "I") for time in i_times])
+    e_isi = [e_times[index + 1] - e_times[index] for index in range(len(e_times) - 1)]
+    i_isi = [i_times[index + 1] - i_times[index] for index in range(len(i_times) - 1)]
+    avg_e_isi = sum(e_isi) / len(e_isi) if e_isi else 0
+    avg_i_isi = sum(i_isi) / len(i_isi) if i_isi else 0
+    alternating = all(left[1] != right[1] for left, right in zip(events, events[1:]))
+    dut._log.info(
+        f"E/I phase lock: E={len(e_times)} I={len(i_times)}, "
+        f"ISI=({avg_e_isi:.2f}, {avg_i_isi:.2f}), "
+        f"first E={e_times[:6]}, first I={i_times[:6]}"
+    )
+
+    assert len(e_times) > 300 and len(i_times) > 300, \
+        f"pair firing is too weak: E={len(e_times)} I={len(i_times)}"
+    assert abs(len(e_times) - len(i_times)) <= 2, \
+        f"phase-locked pair is rate-imbalanced: E={len(e_times)} I={len(i_times)}"
+    assert max_high_run[0] == 1 and max_high_run[1] == 1, \
+        f"pair outputs must be one-cycle pulses: {max_high_run}"
+    assert set(e_times).isdisjoint(i_times), "E and I pulses should not coincide"
+    assert alternating, "E and I pulses should alternate in time"
+    assert 4.8 <= avg_e_isi <= 5.2 and 4.8 <= avg_i_isi <= 5.2, \
+        f"unexpected phase-locked period: E={avg_e_isi:.2f}, I={avg_i_isi:.2f}"
 
 
 @cocotb.test()
