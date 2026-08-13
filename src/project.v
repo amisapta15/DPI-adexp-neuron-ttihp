@@ -16,9 +16,10 @@ module tt_um_dpi_adexp (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-      // ----------------------------------------------------
-    // Bidirectional pins unused in the baseline (serial config
-    // loader is deferred; plan section 6 fallback).
+    // ----------------------------------------------------
+    // Bidirectional outputs are unused. Inputs provide write-only SPI mode 0:
+    //   uio_in[0] = CS_N, uio_in[1] = SCLK, uio_in[2] = MOSI.
+    // SCLK is synchronised into clk; see adex_config.v for timing limits.
     // ----------------------------------------------------
     assign uio_out = 8'b0;
     assign uio_oe  = 8'b0;
@@ -33,15 +34,56 @@ module tt_um_dpi_adexp (
     // Stretch (M4): set N_PAIRS to 3; pins occupy [0..5].
     // ----------------------------------------------------
     wire [3:0] spikes;
+    wire signed [15:0] cfg_vth0_q, cfg_vth1_q, cfg_vth2_q, cfg_vth3_q;
+    wire signed [15:0] cfg_iext0_q, cfg_iext1_q, cfg_iext2_q, cfg_iext3_q;
+    wire signed [15:0] cfg_vtrig_q, cfg_vstep_q;
+    wire        [8:0]  cfg_finc0, cfg_finc1;
+    wire        [10:0] cfg_wbump_q;
+    wire        [14:0] cfg_inh_amt_q;
+
+    adex_config config (
+      .clk           (clk),
+      .rst_n         (rst_n),
+      .spi_cs_n      (uio_in[0]),
+      .spi_sclk      (uio_in[1]),
+      .spi_mosi      (uio_in[2]),
+      .cfg_vth0_q    (cfg_vth0_q),
+      .cfg_vth1_q    (cfg_vth1_q),
+      .cfg_vth2_q    (cfg_vth2_q),
+      .cfg_vth3_q    (cfg_vth3_q),
+      .cfg_iext0_q   (cfg_iext0_q),
+      .cfg_iext1_q   (cfg_iext1_q),
+      .cfg_iext2_q   (cfg_iext2_q),
+      .cfg_iext3_q   (cfg_iext3_q),
+      .cfg_vtrig_q   (cfg_vtrig_q),
+      .cfg_vstep_q   (cfg_vstep_q),
+      .cfg_finc0     (cfg_finc0),
+      .cfg_finc1     (cfg_finc1),
+      .cfg_wbump_q   (cfg_wbump_q),
+      .cfg_inh_amt_q (cfg_inh_amt_q)
+    );
 
     adex_network #(
-        .N_PAIRS   (2),
-        .INH_SHIFT (4'd3)
+      .N_PAIRS   (2)
     ) net (
         .clk       (clk),
         .rst_n     (rst_n),
         .ext_drive ({ui_in[3], ui_in[2], ui_in[1], ui_in[0]}),
-        .spike     (spikes)
+        .spike     (spikes),
+        .cfg_vth0_q (cfg_vth0_q),
+        .cfg_vth1_q (cfg_vth1_q),
+        .cfg_vth2_q (cfg_vth2_q),
+        .cfg_vth3_q (cfg_vth3_q),
+        .cfg_iext0_q (cfg_iext0_q),
+        .cfg_iext1_q (cfg_iext1_q),
+        .cfg_iext2_q (cfg_iext2_q),
+        .cfg_iext3_q (cfg_iext3_q),
+        .cfg_vtrig_q (cfg_vtrig_q),
+        .cfg_vstep_q (cfg_vstep_q),
+        .cfg_finc0 (cfg_finc0),
+        .cfg_finc1 (cfg_finc1),
+        .cfg_wbump_q (cfg_wbump_q),
+        .cfg_inh_amt_q (cfg_inh_amt_q)
     );
 
     // Aggregate computed from the internal spike bus, not from uo_out bits:
@@ -55,7 +97,7 @@ module tt_um_dpi_adexp (
   //assign uio_out = 0;
   //assign uio_oe  = 0;
 
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+    // List unused inputs to prevent warnings.
+    wire _unused = &{ena, uio_in[7:3], 1'b0};
 
 endmodule

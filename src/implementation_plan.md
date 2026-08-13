@@ -21,14 +21,14 @@ Goal: a shift-only, multiply/divide-free, LUT-free core built from one small reu
 | Prime state width | 16-bit, Q4.12 | Provisional — confirm at M0 (see §7) |
 | Fast-positive state width | ~10-bit | Provisional |
 | Slow-negative state width | ~12-bit | Provisional |
-| Prime reset | Subtractive (`V -= Vstep`) + bump into one slow-negative unit (`W += Wbump`) | Frozen |
+| Prime reset | Subtractive (`V -= Vstep`) + shared bump into all three slow-negative units (`W += Wbump`) | Implemented |
 | E/I coupling within a pair | Reciprocal inhibition between prime spike outputs | Frozen |
-| Slow-negative periods | Distinct coprime triple per pair (see §4) | Frozen |
+| Slow-negative periods | Distinct coprime triple per pair (see §4) | Implemented with period counters |
 | Baseline network size | 2 pairs / 4 blocks / 24 units | Primary target |
 | Stretch network size | 3 pairs / 6 blocks / 36 units | Stretch, pending M3 measurement |
 | Cross-pair coupling (stretch) | Sparse hardwired excitatory ring (E0→E1→E2→E0), not a full matrix | Frozen |
 | Programmable synaptic crossbar | Not in baseline | Deferred |
-| On-chip PWM/duty-cycle generator | Not in baseline | Deferred, revisit only if pin pressure demands it |
+| Runtime configuration | Write-only SPI shadow/commit bank on `uio[2:0]` | Implemented for baseline controls |
 | 4-pair network | Ruled out | Area and pin budget don't support it |
 
 ## 3. Hierarchy
@@ -60,16 +60,17 @@ V[n+1] = V[n] - (V[n] >> kV) + fast_drive - slow_drive + Iext[n] - crossblock_in
 On `V[n] > Vth`:
 ```
 V[n+1] = V[n] - Vstep          (subtractive reset)
-W_bumped[n+1] = W_bumped[n] + Wbump   (one designated slow-negative unit)
+W_i[n+1] = W_i[n] + Wbump      (all three slow-negative units)
 ```
 
 **Fast-positive unit** (x2 per block): injects a fixed increment into the prime for a short window once `V` approaches threshold, decaying over a short period, providing the regenerative upstroke. No independent leak register, no PWM port.
 
 **Slow-negative unit** (x3 per block):
 ```
-W_i[n+1] = W_i[n] - (W_i[n] >> k_i)
+phase_i[n+1] = (phase_i[n] == k_i - 1) ? 0 : phase_i[n] + 1
+W_i[n+1] = W_i[n] + (phase_tick ? relax(W_i[n]) : 0)
 ```
-incremented on the block's own spike; `k_i` set by the block's assigned coprime period; combined (shift-scaled) output subtracts from the prime's next update.
+Every slow unit is incremented on the block's own spike. `k_i` is the unit's assigned coprime period in core cycles. On a period tick, `relax` moves the signed 12-bit state toward zero by one eighth of its magnitude, with a minimum one-count step. The combined shift-scaled output subtracts from the prime's next update.
 
 **Pair coupling** (reciprocal inhibition):
 ```
@@ -108,7 +109,8 @@ ui_in[1] – PWM I0        uo_out[1] – spike I0
 ui_in[2] – PWM E1        uo_out[2] – spike E1
 ui_in[3] – PWM I1        uo_out[3] – spike I1
 ui_in[4..7] – spare       uo_out[4..7] – spare / debug / aggregate
-uio – config clock, data, load strobe, select
+uio[0] – SPI CS_N         uio[1] – SPI SCLK        uio[2] – SPI MOSI
+uio[3..7] – spare; all uio output enables remain low (write-only SPI)
 ```
 
 **Stretch (3 pairs, 6 blocks):**
@@ -119,7 +121,7 @@ ui_in[6..7] – spare                       uo_out[6..7] – spare / debug / agg
 uio – config clock, data, load strobe, select
 ```
 
-Dedicated pins fit comfortably at both sizes; a loadable input register (shared serial-loaded register file, each block generating its own PWM internally from a stored duty-cycle value) is a documented fallback if more configuration margin or a fourth pair is wanted later, trading input timing precision on non-driver blocks for pin headroom.
+Dedicated pins fit comfortably at both sizes. The submitted baseline additionally uses the first three `uio` inputs for a runtime configuration bank. It accepts 32-bit SPI mode-0 frames at `SCLK <= clk/8`; writes update a shadow bank and a separate commit frame atomically activates it.
 
 ## 7. Development milestones
 
@@ -150,4 +152,4 @@ Dedicated pins fit comfortably at both sizes; a loadable input register (shared 
 
 - **Two pairs vs three pairs as primary target** — resolve from `G_2pair` and `G_3pair` at M3/M4, weighed against remaining time before the submission deadline.
 - **Q4.12 sufficiency** — resolve from the M0 fixed-point simulation.
-- **Dedicated pins vs loadable input register** — dedicated pins fit for both 2 and 3 pairs; only revisit if configuration pin count turns out tighter than expected once the actual loader protocol is designed.
+- **Configuration-bank area and timing** — measure the baseline's SPI shadow/active bank and its routing impact in synthesis and P&R before deciding whether to add runtime fields or a readback path.

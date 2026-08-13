@@ -5,7 +5,7 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = project.v adex_block.v adex_pair.v adex_network.v
+PROJECT_SOURCES = project.v adex_config.v adex_block.v adex_pair.v adex_network.v
 
 ifneq ($(GATES),yes)
 
