@@ -224,11 +224,19 @@ def detect_bursts(spike_times, isi_threshold):
 # Tests
 # ----------------------------------------------------------------------------
 
+def _project(dut):
+    """Return the project instance when cocotb runs through the tb wrapper."""
+    try:
+        return dut.user_project
+    except AttributeError:
+        return dut
+
+
 def _block(dut):
     """pair0's E block handle, or None if the internal hierarchy is not
     reachable (the gate-level netlist flattens it away)."""
     try:
-        return dut.net.pair0.e_block
+        return _project(dut).net.pair0.e_block
     except AttributeError:
         return None
 
@@ -327,8 +335,9 @@ async def test_spi_shadow_commit(dut):
     await reset_dut(dut)
 
     try:
-        config = dut.u_config
-        block = dut.net.pair0.e_block
+        project = _project(dut)
+        config = project.u_config
+        block = project.net.pair0.e_block
     except AttributeError:
         dut._log.warning("runtime configuration hierarchy is unavailable in this netlist; skipping")
         return
