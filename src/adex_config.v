@@ -61,10 +61,12 @@ module adex_config #(
     reg        spi_sclk_meta, spi_sclk_sync, spi_sclk_prev;
     reg        spi_mosi_meta, spi_mosi_sync;
     reg [4:0]  spi_bit_count;
-    reg [31:0] spi_shift;
+    // After each sampled bit, the next frame is formed by appending MOSI.
+    // The old MSB is never observed, so retain only the preceding 31 bits.
+    reg [30:0] spi_shift;
 
     wire        spi_sclk_rise = spi_sclk_sync & ~spi_sclk_prev;
-    wire [31:0] spi_frame = {spi_shift[30:0], spi_mosi_sync};
+    wire [31:0] spi_frame = {spi_shift, spi_mosi_sync};
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -106,7 +108,7 @@ module adex_config #(
             spi_mosi_meta   <= 1'b0;
             spi_mosi_sync   <= 1'b0;
             spi_bit_count   <= 5'd0;
-            spi_shift       <= 32'd0;
+            spi_shift       <= 31'd0;
         end else begin
             spi_cs_meta   <= spi_cs_n;
             spi_cs_sync   <= spi_cs_meta;
@@ -118,11 +120,11 @@ module adex_config #(
 
             if (spi_cs_sync) begin
                 spi_bit_count <= 5'd0;
-                spi_shift     <= 32'd0;
+                spi_shift     <= 31'd0;
             end else if (spi_sclk_rise) begin
                 if (spi_bit_count == 5'd31) begin
                     spi_bit_count <= 5'd0;
-                    spi_shift     <= 32'd0;
+                    spi_shift     <= 31'd0;
 
                     if ((spi_frame[31:28] == 4'hA) && (spi_frame[3:0] == 4'd0)) begin
                         case (spi_frame[27:24])
@@ -185,7 +187,7 @@ module adex_config #(
                     end
                 end else begin
                     spi_bit_count <= spi_bit_count + 5'd1;
-                    spi_shift     <= spi_frame;
+                    spi_shift     <= spi_frame[30:0];
                 end
             end
         end

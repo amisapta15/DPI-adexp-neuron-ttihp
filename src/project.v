@@ -5,6 +5,7 @@
 
 `default_nettype none
 
+/* verilator lint_off DECLFILENAME */
 module tt_um_dpi_adexp (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
@@ -98,6 +99,7 @@ module tt_um_dpi_adexp (
   //assign uio_oe  = 0;
 
     // List unused inputs to prevent warnings.
-    wire _unused = &{ena, uio_in[7:3], 1'b0};
+    wire _unused = &{ena, ui_in[7:4], uio_in[7:3], 1'b0};
 
 endmodule
+/* verilator lint_on DECLFILENAME */
