@@ -17,14 +17,22 @@
 `default_nettype none
 
 module adex_config #(
-    parameter signed [15:0] DEFAULT_VTH_Q     = 16'sd4096,
-    parameter signed [15:0] DEFAULT_IEXT_Q    = 16'sd1024,
-    parameter signed [15:0] DEFAULT_VTRIG_Q   = 16'sd3072,
-    parameter signed [15:0] DEFAULT_VSTEP_Q   = 16'sd4096,
+    // Field widths are trimmed to the demonstrated operating range to save
+    // flip-flop and adder area (fix for P&R density overflow). Signed:
+    //   VTH/VTRIG/VSTEP 14-bit  -> +/-8191  (default VTH=4096, tests <=5120)
+    //   IEXT           12-bit   -> +/-2047  (default 1024, tests <=1024)
+    // Unsigned:
+    //   FINC0/1         9-bit   -> 0..511
+    //   WBUMP           10-bit  -> 0..1023 (default 256, tests <=600)
+    //   INH_AMT         12-bit  -> 0..4095 (default 512, tests <=256)
+    parameter signed [13:0] DEFAULT_VTH_Q     = 14'sd4096,
+    parameter signed [11:0] DEFAULT_IEXT_Q    = 12'sd1024,
+    parameter signed [13:0] DEFAULT_VTRIG_Q   = 14'sd3072,
+    parameter signed [13:0] DEFAULT_VSTEP_Q   = 14'sd4096,
     parameter        [8:0]  DEFAULT_FINC0     = 9'd128,
     parameter        [8:0]  DEFAULT_FINC1     = 9'd192,
-    parameter        [10:0] DEFAULT_WBUMP_Q   = 11'd256,
-    parameter        [14:0] DEFAULT_INH_AMT_Q = 15'd512
+    parameter        [9:0]  DEFAULT_WBUMP_Q   = 10'd256,
+    parameter        [11:0] DEFAULT_INH_AMT_Q = 12'd512
 ) (
     input  wire               clk,
     input  wire               rst_n,
@@ -32,30 +40,30 @@ module adex_config #(
     input  wire               spi_sclk,
     input  wire               spi_mosi,
 
-    output reg signed [15:0] cfg_vth0_q,
-    output reg signed [15:0] cfg_vth1_q,
-    output reg signed [15:0] cfg_vth2_q,
-    output reg signed [15:0] cfg_vth3_q,
-    output reg signed [15:0] cfg_iext0_q,
-    output reg signed [15:0] cfg_iext1_q,
-    output reg signed [15:0] cfg_iext2_q,
-    output reg signed [15:0] cfg_iext3_q,
-    output reg signed [15:0] cfg_vtrig_q,
-    output reg signed [15:0] cfg_vstep_q,
+    output reg signed [13:0] cfg_vth0_q,
+    output reg signed [13:0] cfg_vth1_q,
+    output reg signed [13:0] cfg_vth2_q,
+    output reg signed [13:0] cfg_vth3_q,
+    output reg signed [11:0] cfg_iext0_q,
+    output reg signed [11:0] cfg_iext1_q,
+    output reg signed [11:0] cfg_iext2_q,
+    output reg signed [11:0] cfg_iext3_q,
+    output reg signed [13:0] cfg_vtrig_q,
+    output reg signed [13:0] cfg_vstep_q,
     output reg        [8:0]  cfg_finc0,
     output reg        [8:0]  cfg_finc1,
-    output reg        [10:0] cfg_wbump_q,
-    output reg        [14:0] cfg_inh_amt_q
+    output reg        [9:0]  cfg_wbump_q,
+    output reg        [11:0] cfg_inh_amt_q
 );
 
-    reg signed [15:0] shadow_vth0_q, shadow_vth1_q;
-    reg signed [15:0] shadow_vth2_q, shadow_vth3_q;
-    reg signed [15:0] shadow_iext0_q, shadow_iext1_q;
-    reg signed [15:0] shadow_iext2_q, shadow_iext3_q;
-    reg signed [15:0] shadow_vtrig_q, shadow_vstep_q;
+    reg signed [13:0] shadow_vth0_q, shadow_vth1_q;
+    reg signed [13:0] shadow_vth2_q, shadow_vth3_q;
+    reg signed [11:0] shadow_iext0_q, shadow_iext1_q;
+    reg signed [11:0] shadow_iext2_q, shadow_iext3_q;
+    reg signed [13:0] shadow_vtrig_q, shadow_vstep_q;
     reg        [8:0]  shadow_finc0, shadow_finc1;
-    reg        [10:0] shadow_wbump_q;
-    reg        [14:0] shadow_inh_amt_q;
+    reg        [9:0]  shadow_wbump_q;
+    reg        [11:0] shadow_inh_amt_q;
 
     reg        spi_cs_meta, spi_cs_sync;
     reg        spi_sclk_meta, spi_sclk_sync, spi_sclk_prev;

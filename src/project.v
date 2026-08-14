@@ -35,12 +35,12 @@ module tt_um_dpi_adexp (
     // Stretch (M4): set N_PAIRS to 3; pins occupy [0..5].
     // ----------------------------------------------------
     wire [3:0] spikes;
-    wire signed [15:0] cfg_vth0_q, cfg_vth1_q, cfg_vth2_q, cfg_vth3_q;
-    wire signed [15:0] cfg_iext0_q, cfg_iext1_q, cfg_iext2_q, cfg_iext3_q;
-    wire signed [15:0] cfg_vtrig_q, cfg_vstep_q;
+    wire signed [13:0] cfg_vth0_q, cfg_vth1_q, cfg_vth2_q, cfg_vth3_q;
+    wire signed [11:0] cfg_iext0_q, cfg_iext1_q, cfg_iext2_q, cfg_iext3_q;
+    wire signed [13:0] cfg_vtrig_q, cfg_vstep_q;
     wire        [8:0]  cfg_finc0, cfg_finc1;
-    wire        [10:0] cfg_wbump_q;
-    wire        [14:0] cfg_inh_amt_q;
+    wire        [9:0]  cfg_wbump_q;
+    wire        [11:0] cfg_inh_amt_q;
 
     adex_config u_config (
       .clk           (clk),

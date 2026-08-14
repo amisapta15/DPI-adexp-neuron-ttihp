@@ -21,16 +21,16 @@ module adex_pair #(
     input  wire e_drive,   // PWM input current for the E block
     input  wire i_drive,   // PWM input current for the I block
     input  wire e_exc,     // network ring excitation into E (tie 0 at pair level)
-    input  wire signed [15:0] e_vth_q,
-    input  wire signed [15:0] i_vth_q,
-    input  wire signed [15:0] e_iext_q,
-    input  wire signed [15:0] i_iext_q,
-    input  wire signed [15:0] cfg_vtrig_q,
-    input  wire signed [15:0] cfg_vstep_q,
+    input  wire signed [13:0] e_vth_q,
+    input  wire signed [13:0] i_vth_q,
+    input  wire signed [11:0] e_iext_q,
+    input  wire signed [11:0] i_iext_q,
+    input  wire signed [13:0] cfg_vtrig_q,
+    input  wire signed [13:0] cfg_vstep_q,
     input  wire        [8:0]  cfg_finc0,
     input  wire        [8:0]  cfg_finc1,
-    input  wire        [10:0] cfg_wbump_q,
-    input  wire        [14:0] cfg_inh_amt_q,
+    input  wire        [9:0]  cfg_wbump_q,
+    input  wire        [11:0] cfg_inh_amt_q,
     output wire e_spike,
     output wire i_spike
 );

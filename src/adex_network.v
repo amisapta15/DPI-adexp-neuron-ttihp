@@ -20,20 +20,20 @@ module adex_network #(
     input  wire rst_n,
     input  wire [2*N_PAIRS-1:0] ext_drive,  // [2p] = E_p PWM, [2p+1] = I_p PWM
     output wire [2*N_PAIRS-1:0] spike,      // [2p] = E_p spike, [2p+1] = I_p spike
-    input  wire signed [15:0] cfg_vth0_q,
-    input  wire signed [15:0] cfg_vth1_q,
-    input  wire signed [15:0] cfg_vth2_q,
-    input  wire signed [15:0] cfg_vth3_q,
-    input  wire signed [15:0] cfg_iext0_q,
-    input  wire signed [15:0] cfg_iext1_q,
-    input  wire signed [15:0] cfg_iext2_q,
-    input  wire signed [15:0] cfg_iext3_q,
-    input  wire signed [15:0] cfg_vtrig_q,
-    input  wire signed [15:0] cfg_vstep_q,
+    input  wire signed [13:0] cfg_vth0_q,
+    input  wire signed [13:0] cfg_vth1_q,
+    input  wire signed [13:0] cfg_vth2_q,
+    input  wire signed [13:0] cfg_vth3_q,
+    input  wire signed [11:0] cfg_iext0_q,
+    input  wire signed [11:0] cfg_iext1_q,
+    input  wire signed [11:0] cfg_iext2_q,
+    input  wire signed [11:0] cfg_iext3_q,
+    input  wire signed [13:0] cfg_vtrig_q,
+    input  wire signed [13:0] cfg_vstep_q,
     input  wire        [8:0]  cfg_finc0,
     input  wire        [8:0]  cfg_finc1,
-    input  wire        [10:0] cfg_wbump_q,
-    input  wire        [14:0] cfg_inh_amt_q
+    input  wire        [9:0]  cfg_wbump_q,
+    input  wire        [11:0] cfg_inh_amt_q
 );
 
     wire e0s, i0s, e1s, i1s;
