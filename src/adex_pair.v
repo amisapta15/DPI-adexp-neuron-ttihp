@@ -14,7 +14,10 @@
 module adex_pair #(
     // Slow-negative periods per block. 7 bits: periods up to 71.
     parameter [6:0] E_KS0 = 7'd5,  E_KS1 = 7'd7,  E_KS2 = 7'd11,
-    parameter [6:0] I_KS0 = 7'd13, I_KS1 = 7'd17, I_KS2 = 7'd19
+    parameter [6:0] I_KS0 = 7'd13, I_KS1 = 7'd17, I_KS2 = 7'd19,
+    // Phase-counter width (see adex_block). 6 bits covers periods <= 63, which
+    // is the whole baseline; the stretch pair (periods <= 71) must use 7.
+    parameter [3:0] PHASE_W = 4'd7
 ) (
     input  wire clk,
     input  wire rst_n,
@@ -38,7 +41,7 @@ module adex_pair #(
     wire e_spk, i_spk;
 
     adex_block #(
-        .KS0       (E_KS0), .KS1 (E_KS1), .KS2 (E_KS2)
+        .KS0       (E_KS0), .KS1 (E_KS1), .KS2 (E_KS2), .PHASE_W (PHASE_W)
     ) e_block (
         .clk       (clk),
         .rst_n     (rst_n),
@@ -57,7 +60,7 @@ module adex_pair #(
     );
 
     adex_block #(
-        .KS0       (I_KS0), .KS1 (I_KS1), .KS2 (I_KS2)
+        .KS0       (I_KS0), .KS1 (I_KS1), .KS2 (I_KS2), .PHASE_W (PHASE_W)
     ) i_block (
         .clk       (clk),
         .rst_n     (rst_n),

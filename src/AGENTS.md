@@ -26,7 +26,7 @@ src/adex_pair.v        one E/I pair, reciprocal inhibition via inh_in
 src/adex_block.v       population primitive: 1 prime + 2 fast + 3 slow units
 src/adex_neuron_system_tt_lut32.v   DEPRECATED old Q8.7 LUT core, superseded
 src/implementation_plan.md          implementation specification
-test/                  cocotb harness, 9 tests (run required after current changes)
+test/                  cocotb harness, 14 tests (all passing as of 2026-08-14)
 info.yaml              TT metadata: source_files, pinout, tiles (2x2)
 docs/info.md           project datasheet (keep in sync with the design)
 ```
@@ -73,13 +73,12 @@ low. `ena` is unused.
 
 Run from `test/` with `make -B` (cocotb; use the `ccotb` mamba env: export
 `PATH=/home/sapta/miniforge3/envs/ccotb/bin:$PATH` — `conda activate` is broken
-in non-interactive shells on this machine). `test.py` has 9 tests: reset state,
-exact block arithmetic with period-counter wrap, SPI shadow/commit behavior,
-silence, spiking+OR aggregate, adaptation, inhibition suppression, pair
-isolation, and in-phase lock check. Three RTL-hierarchy tests log and return
-when a gate-level netlist flattens the relevant modules. The current test
-reference model matches the counter-driven slow decay. Rerun RTL, gate-level,
-lint, synthesis, and P&R before recording behavioural or area results.
+in non-interactive shells on this machine). `test.py` has 14 tests (see the
+area/P&R status section below for the full list). Three RTL-hierarchy tests
+log and return when a gate-level netlist flattens the relevant modules. The
+current test reference model matches the counter-driven slow decay. Rerun RTL,
+gate-level, lint, synthesis, and P&R before recording behavioural or area
+results.
 
 ## Working rules
 
@@ -93,3 +92,100 @@ lint, synthesis, and P&R before recording behavioural or area results.
 - Match existing Verilog style: `default_nettype none` at the top of each
   module file, named port connections, comments referencing plan sections.
 - Old LUT32 file is deprecated; do not re-add it to `info.yaml` source_files.
+
+## Area / P&R status (2026-08-14) — 2x2 tile density
+
+### The CI failure (root cause, from GDS_logs/runs/wokwi)
+The OpenROAD flow fails at **step 37 (post-CTS resizer -> detailed_placement)**
+with `[DPL-0036] Detailed placement failed`, NOT at the base-area stage. Two
+compounding problems:
+
+1. **Base is already over 80%.** Step 28 (global placement, pre-CTS, no repair
+   buffers) reports placed cell area **102,753 um^2 = 81.1%** of the 126,685 um^2
+   core — over the 80% target before a single buffer is added.
+2. **Repair adds ~7,000 um^2 of buffers, then placement fails.**
+   - Step 32/34: pre-CTS `repair_timing` inserts **496 timing-repair buffers =
+     +3,599.77 um^2** -> 106,353 um^2 = 84.0% (step 34).
+   - Step 37: post-CTS resizer finds **553 hold-violating endpoints** and inserts
+     **621 hold buffers** (reported +9.3%), then `detailed_placement` fails on
+     **14 high-fanout instances** named `fanout355` (x2) and `fanout304` (x2) —
+     these are the **global config nets** (VTRIG/VSTEP/FINC0/FINC1/WBUMP/INH_AMT)
+     fanned to all 4 blocks.
+
+**Density budget:** to land <= 80% (101,348 um^2) *after* both buffer sets
+(~7,000 um^2), base must be <= **~94,300 um^2 ~= 74% of core**.
+
+### What was changed this session (working tree, NOT yet committed)
+Goal: cut base area while keeping all 14 cocotb tests green and all 14 config
+fields / 4 neurons / all dynamics intact.
+
+- `src/adex_block.v`
+  - **Removed the dead negative branch of `slow_relax`.** The slow units
+    (w0/w1/w2) start at 0 and only ever add +wbump (spike) and relax *toward*
+    zero, so their state is provably always >= 0; the `value < 0` path is
+    unreachable. Behaviour-identical for every reachable state and for every
+    `test_arith_block` case (which only drives non-negative w). Saves ~4,400 um^2.
+  - Width trims (net-neutral after ABC re-optimises, kept for documentation):
+    v-accum 18->17b, fast adder 12->11b, slow adder/relax 14->13b; removed dead
+    16-bit widened wires.
+- `src/adex_pair.v` — added `parameter [3:0] PHASE_W = 4'd7`, threaded to both blocks.
+- `src/adex_network.v` — pair0/pair1 (baseline, periods <= 43) use `PHASE_W=4'd6`;
+  pair2 (stretch, periods <= 71) keeps `PHASE_W=4'd7`. Saves ~566 um^2.
+
+### Measured area (local yosys + sg13g2 liberty, flattened, ABC)
+| variant            | area (um^2) | % of core | cells |
+|--------------------|-------------|-----------|-------|
+| HEAD (baseline)    | 104,192     | 82.2%     | 6,826 |
+| after all changes  | **99,044**  | **78.2%** | 6,704 |
+
+Local yosys runs ~1,400 um^2 higher than CI (104,192 vs 102,753) — treat the two
+as consistent within measurement variance. **Current 78.2% is still ~4,700 um^2
+over the ~74% target** once buffers are added. More reduction is needed.
+
+### Cost-centre breakdown (per `adex_block`; x4 = 77% of total)
+- slow_relax / slow units: ~20,760 um^2 (zeroing removes it)
+- fast units: ~22,247 um^2
+- `adex_config`: 25,758 um^2 (25%) — already field-width-trimmed, near-minimal
+- 94 DFFs/block x 4 = 376 DFFs dominate state area (37,378 um^2 sequential per CI)
+
+### What is locked by tests (cannot delete)
+`test_arith_block` checks exact arithmetic and directly drives v/f0/f1/w0/w1/w2/
+phases, including all three slow units and both fast units. So the slow and fast
+unit logic must stay; optimise *within* them (dead branches, sharing), not by
+removing them. The `(spike_now ? wbump : 0)` term is identical in all 3 slow-unit
+adders — a sharing candidate.
+
+### Next steps (NOT done)
+1. Cut base another ~4,700 um^2 to reach ~74%. Candidates: share the common
+   `(spike_now ? wbump : 0)` term; re-examine the 18-bit prime accumulator and the
+   sat16/sat10/sat12 helpers; look for further dead branches in the fast units.
+2. **High-fanout config nets (fanout355/304)** are the actual placement blocker
+   even at lower density. Option: replicate the global config flops per-pair (or
+   per-block) to cut fanout 4x, at the cost of extra flop area — weigh against the
+   density budget.
+3. Re-run the full flow (synth -> P&R) to confirm the resizer's buffer count drops
+   and detailed_placement legalises.
+
+### Test status (2026-08-14)
+**14 cocotb tests, all PASS** (`TESTS=14 PASS=14 FAIL=0 SKIP=0`):
+reset_state, arith_block, spi_shadow_commit, no_input_no_spike, basic_spiking,
+adaptation, block_tonic_f_i_response, block_fast_spiking, inhibition_suppresses,
+pair_isolation, pair_does_not_lock, pair_phase_locked_alternation,
+bursting_pattern, burst_length_vs_wbump. The three RTL-hierarchy tests
+(reset_state, arith_block, spi_shadow_commit) require the internal hierarchy and
+log-and-return on a flattened gate netlist.
+
+### Toolchain note (IMPORTANT for future sessions)
+- The **`tt` mamba env does NOT exist** on this machine (no conda/mamba/micromamba
+  env named `tt`; verified exhaustively). Do not rely on it.
+- The only iverilog/vvp/cocotb is the **oss-cad-suite** at a path containing a
+  space (`.../Pico FPGA boards/Pico_ICE/oss-cad-suite`). The space breaks cocotb's
+  make wrapper and the `readlink -f` path resolution in the iverilog/vvp wrappers.
+- **Working fix:** full `cp -a` of the suite to a space-free path, e.g.
+  `cp -a "<spacey suite>" /tmp/cadsuite`, then `export PATH=/tmp/cadsuite/bin:$PATH`.
+  A real copy (not symlinks) is required so `readlink -f` stays space-free. Then
+  `cd test && make -B MODULE=test` runs all 14 tests. /tmp is tmpfs, so redo the
+  copy each session.
+- Area measurement: `bash /tmp/adex_exp/measure.sh <blockfile> <label>` (yosys +
+  sg13g2 liberty, flattened, ABC). sg13g2 liberty at
+  `.../IHP-Open-PDK/ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_typ_1p20V_25C.lib`.

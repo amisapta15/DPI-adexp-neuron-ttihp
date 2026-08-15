@@ -42,7 +42,8 @@ module adex_network #(
 
     adex_pair #(
         .E_KS0     (7'd5),  .E_KS1 (7'd7),  .E_KS2 (7'd11),
-        .I_KS0     (7'd13), .I_KS1 (7'd17), .I_KS2 (7'd19)
+        .I_KS0     (7'd13), .I_KS1 (7'd17), .I_KS2 (7'd19),
+        .PHASE_W   (4'd6)   // baseline periods <= 43 fit in 6 bits
     ) pair0 (
         .clk       (clk),
         .rst_n     (rst_n),
@@ -65,7 +66,8 @@ module adex_network #(
 
     adex_pair #(
         .E_KS0     (7'd23), .E_KS1 (7'd29), .E_KS2 (7'd31),
-        .I_KS0     (7'd37), .I_KS1 (7'd41), .I_KS2 (7'd43)
+        .I_KS0     (7'd37), .I_KS1 (7'd41), .I_KS2 (7'd43),
+        .PHASE_W   (4'd6)   // baseline periods <= 43 fit in 6 bits
     ) pair1 (
         .clk       (clk),
         .rst_n     (rst_n),
@@ -92,7 +94,8 @@ module adex_network #(
 
             adex_pair #(
                 .E_KS0     (7'd47), .E_KS1 (7'd53), .E_KS2 (7'd59),
-                .I_KS0     (7'd61), .I_KS1 (7'd67), .I_KS2 (7'd71)
+                .I_KS0     (7'd61), .I_KS1 (7'd67), .I_KS2 (7'd71),
+                .PHASE_W   (4'd7)   // stretch periods up to 71 need 7 bits
             ) pair2 (
                 .clk       (clk),
                 .rst_n     (rst_n),

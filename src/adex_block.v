@@ -55,6 +55,10 @@ module adex_block #(
     parameter        [3:0]  SSH1      = 4'd3,
     parameter        [3:0]  SSH2      = 4'd3,
     parameter        [3:0]  SLOW_DECAY_SHIFT = 4'd3,
+    // Phase-counter width. 6 bits covers the baseline periods (<=43); 7 bits
+    // is required for the stretch periods (<=71). Kept a parameter so the
+    // baseline can be placed leaner without truncating the stretch.
+    parameter        [3:0]  PHASE_W   = 4'd7,
 
     // ----- Drive / coupling -----
     parameter        [3:0]  EXC_SHIFT = 4'd3         // excitation  = 1.0 >> EXC_SHIFT
@@ -79,7 +83,7 @@ module adex_block #(
     reg signed [15:0] v;           // prime potential (Q4.12)
     reg signed [9:0]  f0, f1;      // fast-positive units
     reg signed [11:0] w0, w1, w2;  // slow-negative units
-    reg        [6:0]  w0_phase, w1_phase, w2_phase;
+    reg [PHASE_W-1:0] w0_phase, w1_phase, w2_phase;
 
     // ---------------- Combinational ----------------
     wire spike_now = (v > cfg_vth_q);
@@ -135,12 +139,17 @@ module adex_block #(
     wire signed [11:0] f1_next = 12'sd0 + $signed(f1) - ($signed(f1) >>> KF1) + (trig_now ? finc1_12 : 12'sd0);
 
     // Slow-negative: all three units relax toward zero on their own periods.
-    wire w0_decay_tick = (KS0 != 7'd0) && (w0_phase == (KS0 - 7'd1));
-    wire w1_decay_tick = (KS1 != 7'd0) && (w1_phase == (KS1 - 7'd1));
-    wire w2_decay_tick = (KS2 != 7'd0) && (w2_phase == (KS2 - 7'd1));
-    wire [6:0] w0_phase_next = w0_decay_tick ? 7'd0 : w0_phase + 7'd1;
-    wire [6:0] w1_phase_next = w1_decay_tick ? 7'd0 : w1_phase + 7'd1;
-    wire [6:0] w2_phase_next = w2_decay_tick ? 7'd0 : w2_phase + 7'd1;
+    // Periods are taken in the PHASE_W-bit counter domain so a period that
+    // does not fit (e.g. 71 with PHASE_W=6) reads as 0 and simply never ticks.
+    wire [PHASE_W-1:0] w0_period = KS0[PHASE_W-1:0];
+    wire [PHASE_W-1:0] w1_period = KS1[PHASE_W-1:0];
+    wire [PHASE_W-1:0] w2_period = KS2[PHASE_W-1:0];
+    wire w0_decay_tick = (w0_period != {PHASE_W{1'b0}}) && (w0_phase == (w0_period - 1'b1));
+    wire w1_decay_tick = (w1_period != {PHASE_W{1'b0}}) && (w1_phase == (w1_period - 1'b1));
+    wire w2_decay_tick = (w2_period != {PHASE_W{1'b0}}) && (w2_phase == (w2_period - 1'b1));
+    wire [PHASE_W-1:0] w0_phase_next = w0_decay_tick ? {PHASE_W{1'b0}} : w0_phase + 1'b1;
+    wire [PHASE_W-1:0] w1_phase_next = w1_decay_tick ? {PHASE_W{1'b0}} : w1_phase + 1'b1;
+    wire [PHASE_W-1:0] w2_phase_next = w2_decay_tick ? {PHASE_W{1'b0}} : w2_phase + 1'b1;
 
     function automatic signed [13:0] slow_relax(input signed [13:0] value);
         reg signed [13:0] magnitude;
@@ -149,11 +158,11 @@ module adex_block #(
                 magnitude = value >>> SLOW_DECAY_SHIFT;
                 if (magnitude == 14'sd0) magnitude = 14'sd1;
                 slow_relax = -magnitude;
-            end else if (value < 14'sd0) begin
-                magnitude = (-value) >>> SLOW_DECAY_SHIFT;
-                if (magnitude == 14'sd0) magnitude = 14'sd1;
-                slow_relax = magnitude;
             end else begin
+                // The slow units only ever accumulate +wbump (spike) and relax
+                // toward zero, so their state is always >= 0; a negative value
+                // is unreachable and its branch is omitted (area fix, behaviour
+                // identical for all reachable states).
                 slow_relax = 14'sd0;
             end
         end
@@ -203,9 +212,9 @@ module adex_block #(
             w0    <= 12'sd0;
             w1    <= 12'sd0;
             w2    <= 12'sd0;
-            w0_phase <= 7'd0;
-            w1_phase <= 7'd0;
-            w2_phase <= 7'd0;
+            w0_phase <= {PHASE_W{1'b0}};
+            w1_phase <= {PHASE_W{1'b0}};
+            w2_phase <= {PHASE_W{1'b0}};
             spike <= 1'b0;
         end else begin
             spike <= spike_now;
