@@ -155,37 +155,54 @@ unit logic must stay; optimise *within* them (dead branches, sharing), not by
 removing them. The `(spike_now ? wbump : 0)` term is identical in all 3 slow-unit
 adders — a sharing candidate.
 
-### Next steps
-1. [DONE 2026-08-16] Shared the common `(spike_now ? wbump_14 : 0)` term into one
-   `wbump_term_14` wire used by all three slow-unit accumulators. Behaviour-
-   identical (each unit still adds wbump_14 exactly on its own spike clock);
-   synthesis builds one AND/MUX instead of three. Tiny area win only.
-2. [REMAINING] Cut base another ~4,000+ um^2 to reach ~74%. The block-level
-   shavings left (helper widths, fast-unit dead branches) are small after ABC
-   re-optimises; the structural lever is the high-fanout config nets below.
-3. **High-fanout config nets (fanout355/304) are the actual placement blocker**
-   even at lower density. Option: replicate the six global config flops
-   (VTRIG/VSTEP/FINC0/FINC1/WBUMP/INH_AMT) per-block (or per-pair) to cut
-   fanout 4x, at the cost of extra flop area — weigh against the density budget.
-   PRESERVES `test_spi_shadow_commit`: E0 VTH/IEXT stay single shared values;
-   only the global fields gain per-block copies, all fed the same write and
-   converged on COMMIT.
-4. [REMAINING] Re-run the full flow (synth -> P&R) to confirm the resizer's
-   buffer count drops and detailed_placement legalises. Verify against the
-   full 14-test suite first.
+### Next steps / session log
+**2026-08-16 (THIS SESSION) — all three RTL edits verified 14/14 PASS + lint clean.**
+1. [DONE, in HEAD 3a31ee8] Shared the `(spike_now ? wbump_14 : 0)` term into one
+   `wbump_term_14` wire across the three slow-unit accumulators. Behaviour-identical.
+2. [DONE, in HEAD 3a31ee8] Narrowed `sat16` input from `[19:0]` to `[17:0]` (the
+   prime accumulator `v_sum` is 18-bit; dropped bits were pure sign-extension).
+3. [DONE, UNCOMMITTED in working tree] Removed the dead, unreferenced `wbump_q16`
+   widen wire. This is the ONLY remaining adex_block.v working-tree change.
+4. [REJECTED] Per-block replication of the six global config flops to cut fanout
+   (fanout355/304). Adds ~204 flop-bits ~= +20,000 um^2, far exceeding the ~7,000
+   um^2 of hold buffers it removes. Net area loss; reverted cleanly.
 
-### Test status (2026-08-14)
+**Verified 2026-08-16:** cocotb 14/14 PASS, FAIL=0, SKIP=0 (iverilog 13.0 via the
+oss-cad-suite copied to /tmp/cadsuite; `cd test && make -B MODULE=test`).
+`verilator --lint-only -Wall` on the 5-source set is warning-clean for adex_block.v;
+remaining WIDTHTRUNC warnings are pre-existing, intentional SPI slice assignments in
+adex_config.v. Lint count dropped 36 (baseline) -> 34.
+
+**Area-feasibility VERDICT (2026-08-16): base is at its floor. Do NOT keep shaving.**
+Reaching 74% base by safe RTL reduction is NOT possible while preserving all 14
+tests. Locked logic dominates: 376 state DFFs ~37,378 um^2 (widths fixed by
+test_arith_block / the Python fixed-point reference: v=16b, f0/f1=10b, w0/w1/w2=12b,
+arithmetic shifts); sat16 NEEDS the 18-bit accumulator (reachable ~44k intermediate
+exceeds signed-16 max before clamp, and the reference model computes unbounded-
+then-sat); adex_config ~25,758 um^2 is near-minimal (binding widths from tests:
+VTH=5120 forces [13:0], IEXT=1024 forces 12-bit signed). Further width trims save
+~100-200 um^2 each and change config semantics.
+
+**REMAINING decisive step — a REAL P&R run, not more RTL.** The 78.2% is a local
+yosys area estimate, NOT an OpenROAD place-and-route attempt at reduced area. CI
+failed at detailed_placement, not base density. Whether the current RTL legalises is
+UNVERIFIED. Requires running the TT-IHP synth->P&R flow and reading real numbers
+(tool execution needs explicit user authorisation per the working rules).
+
+### Test status (last verified 2026-08-16; originally 2026-08-14)
 **14 cocotb tests, all PASS** (`TESTS=14 PASS=14 FAIL=0 SKIP=0`):
 reset_state, arith_block, spi_shadow_commit, no_input_no_spike, basic_spiking,
 adaptation, block_tonic_f_i_response, block_fast_spiking, inhibition_suppresses,
 pair_isolation, pair_does_not_lock, pair_phase_locked_alternation,
 bursting_pattern, burst_length_vs_wbump. The three RTL-hierarchy tests
 (reset_state, arith_block, spi_shadow_commit) require the internal hierarchy and
-log-and-return on a flattened gate netlist.
+log-and-return on a flattened gate netlist. 14/14 re-confirmed 2026-08-16 after
+the adex_block.v area edits (see session log above).
 
 ### Toolchain note (IMPORTANT for future sessions)
 - The **`tt` mamba env does NOT exist** on this machine (no conda/mamba/micromamba
-  env named `tt`; verified exhaustively). Do not rely on it.
+  env named `tt`; verified exhaustively again on 2026-08-16 — present envs are
+  `bnew`, `nestml`, `work`). Do not rely on it. There is also no `ccotb` env.
 - The only iverilog/vvp/cocotb is the **oss-cad-suite** at a path containing a
   space (`.../Pico FPGA boards/Pico_ICE/oss-cad-suite`). The space breaks cocotb's
   make wrapper and the `readlink -f` path resolution in the iverilog/vvp wrappers.
@@ -193,7 +210,7 @@ log-and-return on a flattened gate netlist.
   `cp -a "<spacey suite>" /tmp/cadsuite`, then `export PATH=/tmp/cadsuite/bin:$PATH`.
   A real copy (not symlinks) is required so `readlink -f` stays space-free. Then
   `cd test && make -B MODULE=test` runs all 14 tests. /tmp is tmpfs, so redo the
-  copy each session.
+  copy each session (was re-copied and confirmed working on 2026-08-16).
 - Area measurement: `bash /tmp/adex_exp/measure.sh <blockfile> <label>` (yosys +
   sg13g2 liberty, flattened, ABC). sg13g2 liberty at
   `.../IHP-Open-PDK/ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_typ_1p20V_25C.lib`.

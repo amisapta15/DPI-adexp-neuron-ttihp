@@ -75,13 +75,19 @@ All three slow units bump on the block's own spike (`W += WBUMP_Q` each). This p
 
 | Group | Runtime field | Default | Meaning |
 | :--- | :--- | :--- | :--- |
-| Per neuron | `VTH_Q` | 4096 | signed 16-bit spike threshold |
-| Per neuron | `IEXT_Q` | 1024 | signed 16-bit input-current magnitude |
-| Global | `VTRIG_Q` | 3072 | signed 16-bit fast-unit trigger |
-| Global | `VSTEP_Q` | 4096 | signed 16-bit subtractive reset step |
+| Per neuron | `VTH_Q` | 4096 | signed 14-bit spike threshold (max +8191; E0 test uses 5120) |
+| Per neuron | `IEXT_Q` | 1024 | signed 12-bit input-current magnitude (default 1024, tests <=1024) |
+| Global | `VTRIG_Q` | 3072 | signed 14-bit fast-unit trigger |
+| Global | `VSTEP_Q` | 4096 | signed 14-bit subtractive reset step |
 | Global | `FINC0`, `FINC1` | 128, 192 | unsigned 9-bit fast-unit increments |
-| Global | `WBUMP_Q` | 256 | unsigned 11-bit bump for each slow unit |
-| Global | `INH_AMT_Q` | 512 | unsigned 15-bit reciprocal-inhibition magnitude |
+| Global | `WBUMP_Q` | 256 | unsigned 10-bit bump for each slow unit (default 256, tests <=600) |
+| Global | `INH_AMT_Q` | 512 | unsigned 12-bit reciprocal-inhibition magnitude (default 512, tests <=256) |
+
+The 14-bit V/VTRIG/VSTEP, 12-bit IEXT, and 12-bit INH_AMT field widths are the
+demonstrated operating ranges (see `src/adex_config.v` header); the 14-bit signed
+thresholds are required because the E0 phase-locked test raises `VTH_Q` to 5120
+(13-bit signed caps at +4095), and 12-bit signed IEXT is required for +1024
+(11-bit signed caps at +1023).
 
 `VINIT_Q`, `KV`, `KF0/1`, `FSH0/1`, `KS0..2`, `SSH0..2`, `SLOW_DECAY_SHIFT`, and the optional stretch-ring excitation magnitude remain compile-time constants. Keeping shift counts static avoids variable shifters in the neuron datapath.
 
@@ -133,15 +139,22 @@ With the default parameters, the intended pin-level checks are:
 * **Pair isolation**: driving pair 0 does not create a direct input to pair 1 in the baseline configuration.
 * **No lock**: E0 and I0 do not sustain in-phase spiking under the default drive used by the testbench.
 
-These are behavioural checks, not validated numerical characterisation. The new slow-period implementation and runtime configuration interface require fresh simulation and synthesis measurements.
+These are behavioural checks, not validated numerical characterisation. The RTL has been re-verified with the full 14-test suite (see Verification scope below).
 
-The automated suite is `test/test.py` (cocotb, 9 tests: reset state, directed E0 block arithmetic against a Python fixed-point reference, SPI shadow/commit behavior, silence, spiking + aggregate OR, adaptation ratio, inhibition suppression, pair isolation, and lock check). The arithmetic test uses nine directed vectors and exercises period-counter wrap; the SPI test checks that a write has no effect before commit and reaches E0 after commit. Run with `make -B` in `test/`. Three tests reach into internal hierarchy (`dut.net.pair0.e_block` or `dut.u_config`); at gate level the netlist can flatten that hierarchy, so their internal checks log a warning and return. `test_reset_state` still checks that the visible outputs are zero in reset.
+The automated suite is `test/test.py` (cocotb, **14 tests**: reset state, directed E0 block arithmetic against a Python fixed-point reference, SPI shadow/commit behavior, silence, spiking + aggregate OR, adaptation ratio, tonic f-I response, fast spiking, inhibition suppression, pair isolation, no-lock, phase-locked alternation, bursting pattern, and burst length vs WBUMP). The arithmetic test uses nine directed vectors and exercises period-counter wrap; the SPI test checks that a write has no effect before commit and reaches E0 after commit. Run with `make -B` in `test/`. Three tests reach into internal hierarchy (`dut.net.pair0.e_block` or `dut.u_config`); at gate level the netlist can flatten that hierarchy, so their internal checks log a warning and return. `test_reset_state` still checks that the visible outputs are zero in reset.
 
-## Verification scope (2026-08-13)
+## Verification scope (2026-08-16)
 
 * The active synthesis source list contains the wrapper, configuration bank, block, pair, and network modules; the legacy LUT core is excluded.
-* Cocotb 9/9 PASS at RTL (iverilog 13.0, cocotb 2.0.1). Measured spike metrics: E0=627, I0=376, E1=328, I1=329 over 6000 cycles; adaptation ISI head=6.5, tail=9.2; inhibition alone=437, with-I0=419, after=435; coincidence fraction=0.42 (threshold 0.5).
+* Cocotb **14/14 PASS** at RTL (iverilog 13.0 via the oss-cad-suite; `cd test && make -B MODULE=test`). Measured spike metrics (2026-08-16 run): E0=627, I0=376, E1=328, I1=329 over 6000 cycles; adaptation ISI head8=6.5, tail100=9.2; tonic f-I IEXT=512->241 spikes/ISI 8.28 vs IEXT=1024->424 spikes/ISI 4.71; fast spiking 997 spikes/ISI 2.00; inhibition alone=437, with-I0=419, after=435; coincidence fraction=0.42 (threshold 0.5); bursting 166 bursts/avg size 5.1, WBUMP=600 -> avg size 2.0.
 * Three tests (`test_reset_state`, `test_arith_block`, `test_spi_shadow_commit`) access internal hierarchy; at gate level these log a warning and return without checking internals.
+* `verilator --lint-only -Wall` on the five-source set is warning-clean for `adex_block.v`; the remaining WIDTHTRUNC warnings are confined to `adex_config.v`'s SPI frame-slice assignments (intentional truncation) and predate this revision.
+
+### RTL area-reduction edits (2026-08-16, behaviour-identical, verified by the 14-test suite)
+* Factored the duplicated `(spike_now ? wbump_14 : 0)` term into one shared `wbump_term_14` wire across the three slow-unit accumulators.
+* Narrowed the `sat16` helper input from 20-bit to 18-bit (the prime accumulator `v_sum` is 18-bit; the dropped bits were pure sign-extension).
+* Removed the dead, unreferenced `wbump_q16` widen wire.
+All three preserve every state the reference model drives; the arithmetic lock `test_arith_block` still passes and lint warning count dropped (36 -> 34). Base area remains ~78% of core (yosys estimate); see `src/AGENTS.md` for the area-feasibility analysis.
 
 ## Known limitations
 

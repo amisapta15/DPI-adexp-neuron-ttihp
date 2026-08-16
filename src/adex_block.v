@@ -95,7 +95,6 @@ module adex_block #(
     // replays the bit pattern as signed and wraps values >= 2^(w-1)).
     wire signed [15:0] inh_amt_q16 = $signed({4'b0000, cfg_inh_amt_q}); // 12-bit unsigned -> 16-bit signed
     wire signed [15:0] exc_amt     = 16'sd4096 >>> EXC_SHIFT;
-    wire signed [15:0] wbump_q16   = $signed({6'b000000, cfg_wbump_q});
     wire signed [11:0] finc0_12    = $signed({3'b000, cfg_finc0});
     wire signed [11:0] finc1_12    = $signed({3'b000, cfg_finc1});
 
