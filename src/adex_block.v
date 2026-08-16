@@ -168,15 +168,22 @@ module adex_block #(
         end
     endfunction
 
+    // Slow bump shared across the three slow-unit accumulators (all three
+    // add the same (spike_now ? wbump_14 : 0) term; factoring it into one
+    // 1-bit-conditioned wire lets synthesis build a single AND/MUX instead
+    // of three, trimming a little adder-drive area. Behaviour-identical:
+    // each unit still adds wbump_14 exactly on its own spike clock.)
+    wire signed [13:0] wbump_term_14 = (spike_now ? wbump_14 : 14'sd0);
+
     wire signed [13:0] w0_next = 14'sd0 + w0_14
                                + (w0_decay_tick ? slow_relax(w0_14) : 14'sd0)
-                               + (spike_now ? wbump_14 : 14'sd0);
+                               + wbump_term_14;
     wire signed [13:0] w1_next = 14'sd0 + w1_14
                                + (w1_decay_tick ? slow_relax(w1_14) : 14'sd0)
-                               + (spike_now ? wbump_14 : 14'sd0);
+                               + wbump_term_14;
     wire signed [13:0] w2_next = 14'sd0 + w2_14
                                + (w2_decay_tick ? slow_relax(w2_14) : 14'sd0)
-                               + (spike_now ? wbump_14 : 14'sd0);
+                               + wbump_term_14;
 
     // ---------------- Saturating helpers ----------------
     function automatic signed [15:0] sat16(input signed [19:0] x);

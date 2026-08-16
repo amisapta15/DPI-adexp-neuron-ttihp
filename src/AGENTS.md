@@ -155,16 +155,24 @@ unit logic must stay; optimise *within* them (dead branches, sharing), not by
 removing them. The `(spike_now ? wbump : 0)` term is identical in all 3 slow-unit
 adders — a sharing candidate.
 
-### Next steps (NOT done)
-1. Cut base another ~4,700 um^2 to reach ~74%. Candidates: share the common
-   `(spike_now ? wbump : 0)` term; re-examine the 18-bit prime accumulator and the
-   sat16/sat10/sat12 helpers; look for further dead branches in the fast units.
-2. **High-fanout config nets (fanout355/304)** are the actual placement blocker
-   even at lower density. Option: replicate the global config flops per-pair (or
-   per-block) to cut fanout 4x, at the cost of extra flop area — weigh against the
-   density budget.
-3. Re-run the full flow (synth -> P&R) to confirm the resizer's buffer count drops
-   and detailed_placement legalises.
+### Next steps
+1. [DONE 2026-08-16] Shared the common `(spike_now ? wbump_14 : 0)` term into one
+   `wbump_term_14` wire used by all three slow-unit accumulators. Behaviour-
+   identical (each unit still adds wbump_14 exactly on its own spike clock);
+   synthesis builds one AND/MUX instead of three. Tiny area win only.
+2. [REMAINING] Cut base another ~4,000+ um^2 to reach ~74%. The block-level
+   shavings left (helper widths, fast-unit dead branches) are small after ABC
+   re-optimises; the structural lever is the high-fanout config nets below.
+3. **High-fanout config nets (fanout355/304) are the actual placement blocker**
+   even at lower density. Option: replicate the six global config flops
+   (VTRIG/VSTEP/FINC0/FINC1/WBUMP/INH_AMT) per-block (or per-pair) to cut
+   fanout 4x, at the cost of extra flop area — weigh against the density budget.
+   PRESERVES `test_spi_shadow_commit`: E0 VTH/IEXT stay single shared values;
+   only the global fields gain per-block copies, all fed the same write and
+   converged on COMMIT.
+4. [REMAINING] Re-run the full flow (synth -> P&R) to confirm the resizer's
+   buffer count drops and detailed_placement legalises. Verify against the
+   full 14-test suite first.
 
 ### Test status (2026-08-14)
 **14 cocotb tests, all PASS** (`TESTS=14 PASS=14 FAIL=0 SKIP=0`):
