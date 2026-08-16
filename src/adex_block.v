@@ -186,10 +186,16 @@ module adex_block #(
                                + wbump_term_14;
 
     // ---------------- Saturating helpers ----------------
-    function automatic signed [15:0] sat16(input signed [19:0] x);
+    // sat16's input is only ever the 18-bit prime accumulator (v_sum); the
+    // 20-bit signature was wider than any caller. Narrowing to [17:0] is
+    // behaviour-identical: v_sum can exceed +-32767 (up to ~+-131071) so the
+    // clamps are still reachable, and the dropped top bits are pure sign-
+    // extension, so every comparison result is unchanged. ABC builds one
+    // 2-bit-leaner comparator.
+    function automatic signed [15:0] sat16(input signed [17:0] x);
         begin
-            if      (x >  20'sd32767) sat16 =  16'sd32767;
-            else if (x < -20'sd32768) sat16 = -16'sd32768;
+            if      (x >  18'sd32767) sat16 =  16'sd32767;
+            else if (x < -18'sd32768) sat16 = -16'sd32768;
             else                      sat16 = x[15:0];
         end
     endfunction
