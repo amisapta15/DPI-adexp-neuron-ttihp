@@ -39,13 +39,12 @@ src/adex_network.v     two-pair baseline / three-pair stretch, E-ring
 src/adex_pair.v        one E/I pair, reciprocal inhibition
 src/adex_block.v       population primitive: 1 prime + 2 fast + 3 slow units
 src/adex_neuron_system_tt_lut32.v   deprecated LUT core, kept for reference
-test/                  cocotb suite (8 tests, green: `make -B` in test/)
+test/                  cocotb suite (9 tests, green: `make -B` in test/)
 ```
 
-## Verification status (2026-08-08)
+## Verification status (2026-08-13)
 
-Block arithmetic exact-checked against an independent Python fixed-point
-reference; old-vs-new block differential equivalence 5016/5016 states
-bit-identical; cocotb 8/8 PASS at RTL and the pin-level behavioural tests pass
-on the gate-level netlist. See `docs/info.md` for details and measured
-behavioural numbers.
+Cocotb 9/9 PASS at RTL (iverilog 13.0, cocotb 2.0.1). Tests cover reset state,
+directed block arithmetic vs. Python reference, SPI shadow/commit, silence,
+spiking + aggregate OR, adaptation ratio, inhibition suppression, pair
+isolation, and E/I lock check. See `docs/info.md` for details.
