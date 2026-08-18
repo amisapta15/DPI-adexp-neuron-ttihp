@@ -14,7 +14,6 @@ time constants. A three-pair stretch with an excitatory ring (E0→E1→E2→E0)
 parameterisable (`N_PAIRS=3`).
 
 - [Full project documentation / datasheet](docs/info.md)
-- [Implementation plan (spec)](src/implementation_plan.md)
 - Author: Saptarshi Ghosh
 
 ## Pin map (baseline)
