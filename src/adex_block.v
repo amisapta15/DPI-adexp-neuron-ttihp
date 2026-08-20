@@ -17,11 +17,13 @@
 // period counters make all configured periods through 71 effective with the
 // 12-bit state precision.
 //
-// Width strategy: every narrow signed operand is widened to its expression's
-// context by plain assignment into a wider `signed` wire (Verilog sign-extends
-// automatically), so there are no hand-rolled {{N{MSB}}, ...} concatenations
-// and no lint WIDTHEXPAND. Next-state values are combinational wires; the
-// clocked block only samples them, so there are no blocking assignments in
+// Width strategy: every narrow signed operand is sign-extended explicitly into
+// its expression's context via an {{N{MSB}}, value} concatenation wrapped in
+// $signed(), so each widened wire has an exact declared width. Verilator's
+// WIDTHEXPAND fires on a plain assignment (e.g. `wire [15:0] x = $signed(f0)`
+// where f0 is 10-bit), so the extensions are written out. The concatenation is
+// self-determined and adds no logic. Next-state values are combinational wires;
+// the clocked block only samples them, so there are no blocking assignments in
 // sequential logic (BLKSEQ-clean).
 //
 // Area note: the prime accumulator is 18-bit signed. Worst-case |sum| is
@@ -86,8 +88,13 @@ module adex_block #(
     reg [PHASE_W-1:0] w0_phase, w1_phase, w2_phase;
 
     // ---------------- Combinational ----------------
-    wire spike_now = (v > cfg_vth_q);
-    wire trig_now  = (v > cfg_vtrig_q);
+    // Threshold compares: v is 16-bit signed; VTH/VTRIG are 14-bit signed
+    // config fields, sign-extended to a common 16-bit context so the compare
+    // has exact-width operands (no WIDTHEXPAND).
+    wire signed [15:0] cfg_vth_16   = $signed({{2{cfg_vth_q[13]}},   cfg_vth_q});
+    wire signed [15:0] cfg_vtrig_16 = $signed({{2{cfg_vtrig_q[13]}}, cfg_vtrig_q});
+    wire spike_now = (v > cfg_vth_16);
+    wire trig_now  = (v > cfg_vtrig_16);
 
     // Runtime controls widened by implicit sign-extension. The config fields are
     // UNSIGNED; cast to a wide unsigned first (zero-extend), THEN to signed, so
@@ -98,30 +105,30 @@ module adex_block #(
     wire signed [11:0] finc0_12    = $signed({3'b000, cfg_finc0});
     wire signed [11:0] finc1_12    = $signed({3'b000, cfg_finc1});
 
-    // Unit states widened to 16-bit signed context.
-    wire signed [15:0] f0_16 = $signed(f0);
-    wire signed [15:0] f1_16 = $signed(f1);
-    wire signed [15:0] w0_16 = $signed(w0);
-    wire signed [15:0] w1_16 = $signed(w1);
-    wire signed [15:0] w2_16 = $signed(w2);
+    // Unit states widened to 16-bit signed context (explicit sign-extension).
+    wire signed [15:0] f0_16 = $signed({{6{f0[9]}},  f0});   // 10 -> 16
+    wire signed [15:0] f1_16 = $signed({{6{f1[9]}},  f1});   // 10 -> 16
+    wire signed [15:0] w0_16 = $signed({{4{w0[11]}}, w0});   // 12 -> 16
+    wire signed [15:0] w1_16 = $signed({{4{w1[11]}}, w1});
+    wire signed [15:0] w2_16 = $signed({{4{w2[11]}}, w2});
 
     // Drive contributions (16-bit signed context; shifts act after widening).
     wire signed [15:0] fast_drive = 16'sd0 + (f0_16 >>> FSH0) + (f1_16 >>> FSH1);
     wire signed [15:0] slow_drive = 16'sd0 + (w0_16 >>> SSH0) + (w1_16 >>> SSH1) + (w2_16 >>> SSH2);
 
     // Prime accumulator context (18-bit signed). See header for the range proof.
-    wire signed [17:0] v_18      = $signed(v);
-    wire signed [17:0] vstep_18  = $signed(cfg_vstep_q);
-    wire signed [17:0] iext_18   = $signed(cfg_iext_q);
-    wire signed [17:0] inh_18    = $signed(inh_amt_q16);
-    wire signed [17:0] exc_18    = $signed(exc_amt);
-    wire signed [17:0] fast_18   = $signed(fast_drive);
-    wire signed [17:0] slow_18   = $signed(slow_drive);
+    wire signed [17:0] v_18      = $signed({{2{v[15]}},   v});                 // 16 -> 18
+    wire signed [17:0] vstep_18  = $signed({{4{cfg_vstep_q[13]}}, cfg_vstep_q}); // 14 -> 18
+    wire signed [17:0] iext_18   = $signed({{6{cfg_iext_q[11]}}, cfg_iext_q});   // 12 -> 18
+    wire signed [17:0] inh_18    = $signed({{2{inh_amt_q16[15]}}, inh_amt_q16}); // 16 -> 18
+    wire signed [17:0] exc_18    = $signed({{2{exc_amt[15]}},  exc_amt});        // 16 -> 18
+    wire signed [17:0] fast_18   = $signed({{2{fast_drive[15]}}, fast_drive});   // 16 -> 18
+    wire signed [17:0] slow_18   = $signed({{2{slow_drive[15]}}, slow_drive});   // 16 -> 18
 
     // Slow-phase / unit widened contexts.
-    wire signed [13:0] w0_14 = $signed(w0);
-    wire signed [13:0] w1_14 = $signed(w1);
-    wire signed [13:0] w2_14 = $signed(w2);
+    wire signed [13:0] w0_14 = $signed({{2{w0[11]}}, w0});    // 12 -> 14
+    wire signed [13:0] w1_14 = $signed({{2{w1[11]}}, w1});
+    wire signed [13:0] w2_14 = $signed({{2{w2[11]}}, w2});
     wire signed [13:0] wbump_14 = $signed({4'b0000, cfg_wbump_q}); // 10-bit unsigned -> 14-bit signed
 
     // ---------------- Next-state (combinational) ----------------
@@ -133,9 +140,13 @@ module adex_block #(
                                  + (exc_in    ? exc_18  : 18'sd0); // ring excitation
     wire signed [17:0] v_sum = spike_now ? v_spk_sum : v_dyn_sum;
 
-    // Fast-positive: decay always, accumulate while V near threshold
-    wire signed [11:0] f0_next = 12'sd0 + $signed(f0) - ($signed(f0) >>> KF0) + (trig_now ? finc0_12 : 12'sd0);
-    wire signed [11:0] f1_next = 12'sd0 + $signed(f1) - ($signed(f1) >>> KF1) + (trig_now ? finc1_12 : 12'sd0);
+    // Fast-positive: decay always, accumulate while V near threshold. Each unit
+    // state is 10-bit; it is sign-extended to the 12-bit next-state context so
+    // the adder and the arithmetic shift have explicitly 12-bit operands.
+    wire signed [11:0] f0_12 = $signed({{2{f0[9]}}, f0});  // 10 -> 12
+    wire signed [11:0] f1_12 = $signed({{2{f1[9]}}, f1});
+    wire signed [11:0] f0_next = 12'sd0 + f0_12 - (f0_12 >>> KF0) + (trig_now ? finc0_12 : 12'sd0);
+    wire signed [11:0] f1_next = 12'sd0 + f1_12 - (f1_12 >>> KF1) + (trig_now ? finc1_12 : 12'sd0);
 
     // Slow-negative: all three units relax toward zero on their own periods.
     // Periods are taken in the PHASE_W-bit counter domain so a period that
