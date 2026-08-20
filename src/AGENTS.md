@@ -12,9 +12,9 @@ The authoritative specification is `src/implementation_plan.md`. Read it
 before changing architecture. Milestones in the plan: M0 single block, M1
 regime validation, M2 E/I pair, M3 two-pair baseline, M4 three-pair stretch.
 Current status (2026-08-13): the five active modules include a baseline
-write-only SPI configuration bank and counter-driven slow decay. The current
-working tree has not been simulated, linted, synthesised, or placed and routed
-since those changes; do not report historical pass counts for it.
+write-only SPI configuration bank and counter-driven slow decay.
+As of 2026-08-19 the working tree is lint-clean (`verilator --lint-only -Wall`
+on all five sources, zero warnings) and all 14 cocotb tests PASS.
 
 ## Hierarchy
 
@@ -59,6 +59,13 @@ docs/info.md           project datasheet (keep in sync with the design)
   Local lint: `/home/sapta/miniforge3/envs/ccotb/bin/verilator --lint-only
   -Wall --top-module tt_um_dpi_adexp src/project.v src/adex_config.v src/adex_block.v
   src/adex_pair.v src/adex_network.v` (verilator 5.050 in the ccotb env).
+    Lint WIDTH-strategy (2026-08-19): the five active sources are -Wall
+    warning-clean. adex_block.v uses explicit {{N{MSB}}, value} sign-extension
+    concats wrapped in $signed() (a plain `wire [15:0] x = $signed(f0)` with
+    10-bit f0 triggers WIDTHEXPAND, so the extensions must be written out);
+    adex_config.v slices the SPI value field to the exact shadow width (e.g.
+    $signed(spi_frame[17:4]) for a 14-bit field) so the intentional truncations
+    to trimmed field widths are not flagged as WIDTHTRUNC.
 
 ## Pin map (baseline)
 
@@ -200,17 +207,15 @@ log-and-return on a flattened gate netlist. 14/14 re-confirmed 2026-08-16 after
 the adex_block.v area edits (see session log above).
 
 ### Toolchain note (IMPORTANT for future sessions)
-- The **`tt` mamba env does NOT exist** on this machine (no conda/mamba/micromamba
-  env named `tt`; verified exhaustively again on 2026-08-16 — present envs are
-  `bnew`, `nestml`, `work`). Do not rely on it. There is also no `ccotb` env.
-- The only iverilog/vvp/cocotb is the **oss-cad-suite** at a path containing a
-  space (`.../Pico FPGA boards/Pico_ICE/oss-cad-suite`). The space breaks cocotb's
-  make wrapper and the `readlink -f` path resolution in the iverilog/vvp wrappers.
-- **Working fix:** full `cp -a` of the suite to a space-free path, e.g.
-  `cp -a "<spacey suite>" /tmp/cadsuite`, then `export PATH=/tmp/cadsuite/bin:$PATH`.
-  A real copy (not symlinks) is required so `readlink -f` stays space-free. Then
-  `cd test && make -B MODULE=test` runs all 14 tests. /tmp is tmpfs, so redo the
-  copy each session (was re-copied and confirmed working on 2026-08-16).
+- The **`tt` mamba env EXISTS** at `/home/sapta/miniforge3/envs/tt` with
+  iverilog, vvp and cocotb 2.0.1 (verified 2026-08-19). Use it for the cocotb
+  tests. The **`ccotb` env** also exists and holds verilator 5.050 and cocotb
+  1.9.2; use it for `verilator --lint-only -Wall`. An earlier note here claimed
+  neither env exists and that only the oss-cad-suite provides the simulator;
+  that is outdated and wrong — the oss-cad-suite workaround is NOT needed.
+- Run tests with `export PATH=/home/sapta/miniforge3/envs/tt/bin:$PATH` then
+  `cd test && make -B` (SIM=icarus via cocotb; `conda activate` is broken in
+  non-interactive shells, so export PATH instead). All 14 tests pass.
 - Area measurement: `bash /tmp/adex_exp/measure.sh <blockfile> <label>` (yosys +
   sg13g2 liberty, flattened, ABC). sg13g2 liberty at
   `.../IHP-Open-PDK/ihp-sg13g2/libs.ref/sg13g2_stdcell/lib/sg13g2_stdcell_typ_1p20V_25C.lib`.

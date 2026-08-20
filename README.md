@@ -22,7 +22,24 @@ parameterisable (`N_PAIRS=3`).
 - `ui_in[0..3]` — PWM input currents for E0, I0, E1, I1
 - `uo_out[0..3]` — spikes E0, I0, E1, I1 (one-cycle pulses)
 - `uo_out[4]` — any-spike aggregate
-- `clk` / `rst_n` — clock and active-low reset; `uio` and `ui_in[7:4]` unused (tie low)
+- `uio[2:0]` — SPI mode-0 bus (CS_N, SCLK, MOSI), write-only runtime config
+  (see below); all uio output enables stay low
+- `clk` / `rst_n` — clock and active-low reset; `ui_in[7:4]` and `ena` unused
+  (tie low / leave unconnected)
+
+## Runtime configuration (SPI, write-only)
+
+A 32-bit, SPI mode-0 (MSB first) write-only bank sets per-neuron firing
+thresholds and global dynamics:
+
+- singleton WRITE frame: `[31:28]=0xA [27:24]=target [23:20]=field [19:4]=value`
+- COMMIT frame: `[31:28]=0xC [27:0]=0` copies the whole shadow bank to the
+  active bank on one edge
+- targets 0..3 select E0, I0, E1, I1; target `0xF` selects global fields
+- per-neuron fields: `0`=VTH_Q, `1`=IEXT_Q
+- global fields: `0`=VTRIG_Q, `1`=VSTEP_Q, `2`=FINC0, `3`=FINC1,
+  `4`=WBUMP_Q, `5`=INH_AMT_Q
+- require SCLK ≤ clk/8 and CS_N stable for ≥2 clk cycles around a frame
 
 ## Bring-up in one minute
 
@@ -38,13 +55,17 @@ src/project.v          top wrapper (tt_um_dpi_adexp), baseline pin map
 src/adex_network.v     two-pair baseline / three-pair stretch, E-ring
 src/adex_pair.v        one E/I pair, reciprocal inhibition
 src/adex_block.v       population primitive: 1 prime + 2 fast + 3 slow units
+src/adex_config.v      SPI mode-0 shadow/commit configuration bank (write-only)
 src/adex_neuron_system_tt_lut32.v   deprecated LUT core, kept for reference
-test/                  cocotb suite (9 tests, green: `make -B` in test/)
+test/                  cocotb suite (14 tests, green: `make -B` in test/)
 ```
 
-## Verification status (2026-08-13)
+## Verification status (2026-08-19)
 
-Cocotb 9/9 PASS at RTL (iverilog 13.0, cocotb 2.0.1). Tests cover reset state,
-directed block arithmetic vs. Python reference, SPI shadow/commit, silence,
-spiking + aggregate OR, adaptation ratio, inhibition suppression, pair
-isolation, and E/I lock check. See `docs/info.md` for details.
+Cocotb **14/14 PASS** at RTL (iverilog + cocotb 2.0.1 in the `tt` mamba env).
+Tests cover reset state, directed block arithmetic vs. Python reference, SPI
+shadow/commit, silence, spiking + aggregate OR, adaptation ratio, F/I response,
+fast-spiking, inhibition suppression, E/I isolation and non-locking, phase
+alternation, bursting pattern and burst length vs. WBUMP. `verilator
+--lint-only -Wall` on the five active sources is **warning-clean** (zero
+warnings). See `docs/info.md` for details.
