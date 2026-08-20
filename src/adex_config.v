@@ -13,6 +13,11 @@
 // Per-neuron fields: 0=VTH_Q, 1=IEXT_Q.
 // Global fields: 0=VTRIG_Q, 1=VSTEP_Q, 2=FINC0, 3=FINC1,
 //                4=WBUMP_Q, 5=INH_AMT_Q.
+// The 16-bit value field is a signed two's-complement number. Shadow fields are
+// narrower than the value field, so each WRITE stores only the low N bits of
+// the value (equivalent to truncating the 16-bit value); the slice is written
+// with an explicit part-select (e.g. $signed(frame[17:4]) for a 14-bit field)
+// so Verilator does not flag an intentional truncation as WIDTHTRUNC.
 // ============================================================================
 `default_nettype none
 
@@ -138,40 +143,40 @@ module adex_config #(
                         case (spi_frame[27:24])
                             4'd0: begin
                                 case (spi_frame[23:20])
-                                    4'd0: shadow_vth0_q  <= $signed(spi_frame[19:4]);
-                                    4'd1: shadow_iext0_q <= $signed(spi_frame[19:4]);
+                                    4'd0: shadow_vth0_q  <= $signed(spi_frame[17:4]); // value[13:0]
+                                    4'd1: shadow_iext0_q <= $signed(spi_frame[15:4]); // value[11:0]
                                     default: begin end
                                 endcase
                             end
                             4'd1: begin
                                 case (spi_frame[23:20])
-                                    4'd0: shadow_vth1_q  <= $signed(spi_frame[19:4]);
-                                    4'd1: shadow_iext1_q <= $signed(spi_frame[19:4]);
+                                    4'd0: shadow_vth1_q  <= $signed(spi_frame[17:4]);
+                                    4'd1: shadow_iext1_q <= $signed(spi_frame[15:4]);
                                     default: begin end
                                 endcase
                             end
                             4'd2: begin
                                 case (spi_frame[23:20])
-                                    4'd0: shadow_vth2_q  <= $signed(spi_frame[19:4]);
-                                    4'd1: shadow_iext2_q <= $signed(spi_frame[19:4]);
+                                    4'd0: shadow_vth2_q  <= $signed(spi_frame[17:4]);
+                                    4'd1: shadow_iext2_q <= $signed(spi_frame[15:4]);
                                     default: begin end
                                 endcase
                             end
                             4'd3: begin
                                 case (spi_frame[23:20])
-                                    4'd0: shadow_vth3_q  <= $signed(spi_frame[19:4]);
-                                    4'd1: shadow_iext3_q <= $signed(spi_frame[19:4]);
+                                    4'd0: shadow_vth3_q  <= $signed(spi_frame[17:4]);
+                                    4'd1: shadow_iext3_q <= $signed(spi_frame[15:4]);
                                     default: begin end
                                 endcase
                             end
                             4'hF: begin
                                 case (spi_frame[23:20])
-                                    4'd0: shadow_vtrig_q   <= $signed(spi_frame[19:4]);
-                                    4'd1: shadow_vstep_q   <= $signed(spi_frame[19:4]);
+                                    4'd0: shadow_vtrig_q   <= $signed(spi_frame[17:4]); // value[13:0]
+                                    4'd1: shadow_vstep_q   <= $signed(spi_frame[17:4]);
                                     4'd2: shadow_finc0     <= spi_frame[12:4];
                                     4'd3: shadow_finc1     <= spi_frame[12:4];
-                                    4'd4: shadow_wbump_q   <= spi_frame[14:4];
-                                    4'd5: shadow_inh_amt_q <= spi_frame[18:4];
+                                    4'd4: shadow_wbump_q   <= spi_frame[13:4];          // value[9:0]
+                                    4'd5: shadow_inh_amt_q <= spi_frame[15:4];          // value[11:0]
                                     default: begin end
                                 endcase
                             end
