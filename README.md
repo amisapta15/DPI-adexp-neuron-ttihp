@@ -59,12 +59,13 @@ src/adex_neuron_system_tt_lut32.v   deprecated LUT core, kept for reference
 test/                  cocotb suite (14 tests, green: `make -B` in test/)
 ```
 
-## Verification status (2026-08-19)
+## Verification status (final pre-tapeout run, 2026-08-20)
 
-Cocotb **14/14 PASS** at RTL (iverilog + cocotb 2.0.1 in the `tt` mamba env).
-Tests cover reset state, directed block arithmetic vs. Python reference, SPI
+Cocotb **14/14 PASS** at RTL (`TESTS=14 PASS=14 FAIL=0 SKIP=0`; Icarus Verilog
+13.0 + cocotb 2.0.1 on Python 3.11, in the `tt` mamba env). Tests cover reset
+state, directed block arithmetic vs. a Python fixed-point reference, SPI
 shadow/commit, silence, spiking + aggregate OR, adaptation ratio, F/I response,
 fast-spiking, inhibition suppression, E/I isolation and non-locking, phase
 alternation, bursting pattern and burst length vs. WBUMP. `verilator
---lint-only -Wall` on the five active sources is **warning-clean** (zero
-warnings). See `docs/info.md` for details.
+--lint-only -Wall` (Verilator 5.050) on the five active sources is
+**warning-clean — zero warnings**. See `docs/info.md` for the full metrics.
